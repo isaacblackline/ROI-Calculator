@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>G8 ROI Calculator</title>
+  <style>
+    :root {
+      font-family: "Calibre", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.4;
+      color: #101820; /* Blackline Black */
+    }
+
+    body {
+      margin: 0;
+      padding: 1.5rem;
+      background: #f2f3f5;
+    }
+
+    .roi-calculator {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 0 2rem 1.75rem 2rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+      border-top: 4px solid #A6192E; /* Safety Red accent bar */
+      overflow: hidden;
+    }
+
+    /* Brand bar: logo on white background */
+    .roi-brand-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0.75rem 2rem;
+      margin: 0 -2rem;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e4e7;
+    }
+
+    .roi-logo {
+      height: 36px;
+      width: auto;
+      display: block;
+    }
+
+    /* Title bar: white text on black */
+    .roi-title-bar {
+      margin: 0 -2rem 1.5rem -2rem;
+      padding: 0.9rem 2rem;
+      background: #101820; /* Blackline Black */
+      color: #ffffff;
+    }
+
+    .roi-title-bar h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .roi-calculator p.intro {
+      font-size: 0.95rem;
+      color: #333;
+      margin-bottom: 1.25rem;
+      background: #f8f5f6;
+      border-left: 4px solid #A6192E;
+      padding: 0.75rem 0.75rem;
+      border-radius: 3px;
+    }
+
+    .roi-calculator h2 {
+      font-size: 1.05rem;
+      margin-top: 1.75rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 3px;
+      background: #f8f5f6;
+      border-left: 4px solid #A6192E;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .section-note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-card {
+      background: #f7f8fa;
+      border-radius: 4px;
+      padding: 0.75rem 0.9rem 0.9rem 0.9rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #e0e2e6;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 0.5rem 1rem;
+      align-items: center;
+    }
+
+    .inputs-grid label {
+      font-size: 0.9rem;
+    }
+
+    .inputs-grid input {
+      width: 100%;
+      padding: 0.4rem 0.45rem;
+      border-radius: 3px;
+      border: 1px solid #c5c9cf;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+      color: #101820;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    .inputs-grid input.green-input {
+      background: #f2f5fa;
+      border-left: 3px solid #A6192E;
+    }
+
+    .inputs-grid input.orange-input,
+    .scenario-table input.orange-input {
+      background: #fdf3f4;
+      border-left: 3px solid #A6192E;
+    }
+
+    .inputs-grid input:focus,
+    .scenario-table input:focus {
+      outline: none;
+      border-color: #101820;
+      box-shadow: 0 0 0 1px rgba(16, 24, 32, 0.25);
+      background-color: #ffffff;
+    }
+
+    .scenario-table,
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .scenario-table th,
+    .scenario-table td,
+    .results-table th,
+    .results-table td {
+      border: 1px solid #dde1e6;
+      padding: 0.35rem 0.5rem;
+      text-align: right;
+    }
+
+    .scenario-table th:first-child,
+    .scenario-table td:first-child,
+    .results-table th:first-child,
+    .results-table td:first-child {
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .scenario-table thead th {
+      background: #fbe9ec;
+      font-weight: 600;
+    }
+
+    .results-table thead th {
+      background: #fbe9ec;
+      font-weight: 600;
+    }
+
+    .scenario-table tbody tr:nth-child(even) {
+      background: #fafbfc;
+    }
+
+    .results-table tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .results-table tfoot td {
+      font-weight: 600;
+      background: #e6e7ea;
+    }
+
+    .results-table .highlight-row {
+      background: #fdecee;
+      font-weight: 700;
+      border-left: 3px solid #A6192E;
+    }
+
+    .small-text {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.75rem;
+    }
+
+    .small-text ul {
+      margin: 0.25rem 0 0.25rem 1.25rem;
+      padding: 0;
+    }
+
+    /* Reset button styles */
+    .reset-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    #reset_baseline_btn {
+      padding: 0.4rem 0.75rem;
+      border-radius: 3px;
+      border: 1px solid #A6192E;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    #reset_baseline_btn:hover {
+      background: #fbe9ec;
+    }
+
+    .reset-help {
+      color: #555;
+    }
+
+    /* Currency row styles */
+    .currency-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .currency-row label {
+      font-weight: 600;
+    }
+
+    .currency-row select {
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      border: 1px solid #c5c9cf;
+      font-size: 0.9rem;
+      background: #ffffff;
+    }
+
+    .currency-help {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    /* Explainer blocks below the results table */
+    .explainer-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: nowrap;
+    }
+
+    .explainer-card {
+      flex: 1;
+      background: #f7f8fa;
+      border-radius: 4px;
+      border: 1px solid #e0e2e6;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.85rem;
+    }
+
+    .explainer-card h3 {
+      margin: 0 0 0.35rem 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .explainer-card p {
+      margin: 0 0 0.35rem 0;
+      font-weight: 500;
+    }
+
+    .explainer-list {
+      margin: 0 0 0 1.1rem;
+      padding: 0;
+    }
+
+    .explainer-list li {
+      margin-bottom: 0.2rem;
+    }
+
+    @media (max-width: 720px) {
+      .roi-calculator {
+        padding: 0 1rem 1.25rem 1rem;
+      }
+
+      .roi-brand-bar {
+        padding: 0.75rem 1rem;
+        margin: 0 -1rem;
+      }
+
+      .roi-title-bar {
+        padding: 0.9rem 1rem;
+        margin: 0 -1rem 1.25rem -1rem;
+      }
+
+      .roi-title-bar h1 {
+        font-size: 1.3rem;
+      }
+
+      .inputs-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .scenario-table,
+      .results-table {
+        font-size: 0.8rem;
+      }
+
+      .reset-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .currency-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .explainer-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="roi-calculator">
+  <!-- Brand logo on white background -->
+  <div class="roi-brand-bar">
+    <img
+      src="https://www.blacklinesafety.com/hubfs/Blacklinesafety_2021/images/Logo_color.svg"
+      alt="Blackline Safety logo"
+      class="roi-logo"
+    >
+  </div>
+
+  <!-- Title bar with white text on black -->
+  <div class="roi-title-bar">
+    <h1>G8 ROI Calculator</h1>
+  </div>
+
+  <p class="intro">
+    Enter a few values in the input fields below. Scenario assumptions illustrate conservative, typical, and high-value minimum savings.
+    The calculator then shows savings, Year&nbsp;1 ROI, and payback period for each scenario.
+  </p>
+
+  <!-- Reset to baseline values -->
+  <div class="reset-row">
+    <button type="button" id="reset_baseline_btn">Reset to baseline values</button>
+    <span class="reset-help">
+      Resets all inputs back to the original baseline values shown when the calculator first loaded.
+    </span>
+  </div>
+
+  <!-- Currency selector -->
+  <div class="currency-row">
+    <label for="currency_select">Currency:</label>
+    <select id="currency_select">
+      <option value="CAD" selected>CAD (Canadian Dollar)</option>
+      <option value="USD">USD (US Dollar)</option>
+      <option value="EUR">EUR (Euro)</option>
+      <option value="GBP">GBP (Pound Sterling)</option>
+      <option value="AUD">AUD (Australian Dollar)</option>
+    </select>
+    <span class="currency-help">
+      All monetary inputs and results are treated as being in the selected currency (no exchange-rate conversion).
+    </span>
+  </div>
+
+  <!-- Customer Inputs -->
+  <h2>Customer Inputs</h2>
+  <div class="section-card">
+    <div class="section-note">
+      Edit the fields below to reflect your deployment.
+    </div>
+
+    <div class="inputs-grid">
+      <label for="num_workers" id="label_num_workers">Number of devices to be replaced/purchased</label>
+      <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
+
+      <label for="hourly_cost" id="label_hourly_cost">Average hourly labour cost (CAD/hr)</label>
+      <input class="green-input" type="number" id="hourly_cost" value="45" min="0" step="0.01">
+
+      <label for="cost_radio" id="label_cost_radio">
+        Annual cost of one radio and any associated subscription (CAD)
+      </label>
+      <input class="green-input" type="number" id="cost_radio" value="900" min="0" step="0.01">
+
+      <label for="cost_legacy_detector" id="label_cost_legacy_detector">
+        Annual cost of one portable gas detector and any associated subscription (CAD)
+      </label>
+      <input class="green-input" type="number" id="cost_legacy_detector" value="500" min="0" step="0.01">
+
+      <label for="cost_lone_worker" id="label_cost_lone_worker">
+        Annual cost of one lone worker device or app and any associated subscription (CAD)
+      </label>
+      <input class="green-input" type="number" id="cost_lone_worker" value="0" min="0" step="0.01">
+
+      <label for="hardware_cost">G8 hardware cost per device</label>
+      <input class="green-input" type="number" id="hardware_cost" value="1200" min="0" step="0.01">
+
+      <label for="subscription_cost">G8 annual service plan per device</label>
+      <input class="green-input" type="number" id="subscription_cost" value="600" min="0" step="0.01">
+    </div>
+
+    <p class="small-text">
+      Assumptions:<br>
+      • <strong>Number of devices to be replaced/purchased</strong> = number of G8 devices purchased (cost is based on this).<br>
+      • <strong>Adoption rate</strong> (below) affects savings only, not hardware/service plan cost.<br>
+      • Assumes G8 replaces a radio, a portable gas detector, and any lone worker device or app for each device purchased.
+        If your baseline is different, adjust the annual radio, detector, and lone worker cost inputs above.
+    </p>
+  </div>
+
+  <!-- Add-on Features -->
+  <h2>Add-on Features</h2>
+  <div class="section-card">
+    <div class="section-note">
+      Optional annual add-ons that increase the total G8 cost.
+    </div>
+    <div class="inputs-grid">
+      <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
+      <input class="green-input" type="number" id="addon_ptt" value="0" min="0" step="0.01">
+
+      <label for="addon_monitoring" id="label_addon_monitoring">
+        Blackline Safety Monitoring (24/7 by expert team) per device (annual, CAD)
+      </label>
+      <input class="green-input" type="number" id="addon_monitoring" value="0" min="0" step="0.01">
+    </div>
+    <p class="small-text">
+      Enter the annual cost per device for each add-on you plan to include. These values are added to the G8 cost used in the ROI and payback calculations.<br>
+      Device consolidation savings are calculated net of the G8 service plan and add-ons, so the savings shown already account for these recurring costs.
+    </p>
+  </div>
+
+  <!-- General Assumptions -->
+  <h2>General Assumptions</h2>
+  <div class="section-card">
+    <div class="section-note">
+      These are editable if your operation uses different values.
+    </div>
+    <div class="inputs-grid">
+      <label for="workdays_per_year">Workdays per year</label>
+      <input class="green-input" type="number" id="workdays_per_year" value="220" min="0" step="1">
+
+      <label for="weeks_per_year">Weeks per year</label>
+      <input class="green-input" type="number" id="weeks_per_year" value="52" min="0" step="1">
+
+      <label for="other_annual_costs" id="label_other_annual_costs">Other costs</label>
+      <input class="green-input" type="number" id="other_annual_costs" value="0" min="0" step="1">
+    </div>
+    <p class="small-text">
+      “Other costs” is an optional field to capture any other one-time costs related to getting G8 up and running
+      (for example implementation, training, change management, or integration). It is added to the G8 cost when
+      calculating Year&nbsp;1 ROI and payback.
+    </p>
+  </div>
+
+  <!-- Scenario Assumptions -->
+  <h2>Scenario Assumptions</h2>
+  <div class="section-card">
+    <div class="section-note">
+      Adjust the assumptions (right-hand columns) to reflect conservative, typical, and high-value outcomes.
+    </div>
+
+    <table class="scenario-table">
+      <thead>
+      <tr>
+        <th>Assumption</th>
+        <th>Conservative</th>
+        <th>Typical</th>
+        <th>High-Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Minutes saved per worker per day</td>
+        <td><input class="orange-input" type="number" id="minutes_saved_conservative" value="5" min="0" step="0.1"></td>
+        <td><input class="orange-input" type="number" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
+        <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
+      </tr>
+      <tr>
+        <td>Adoption rate of new workflows (0–1)</td>
+        <td><input class="orange-input" type="number" id="adoption_conservative" value="0.6" min="0" max="1" step="0.01"></td>
+        <td><input class="orange-input" type="number" id="adoption_typical" value="0.75" min="0" max="1" step="0.01"></td>
+        <td><input class="orange-input" type="number" id="adoption_high" value="0.9" min="0" max="1" step="0.01"></td>
+      </tr>
+      <tr>
+        <td>Admin hours saved per device per week</td>
+        <td><input class="orange-input" type="number" id="admin_hours_conservative" value="0.5" min="0" step="0.1"></td>
+        <td><input class="orange-input" type="number" id="admin_hours_typical" value="1" min="0" step="0.1"></td>
+        <td><input class="orange-input" type="number" id="admin_hours_high" value="1.5" min="0" step="0.1"></td>
+      </tr>
+      <tr>
+        <td id="label_gas_savings">Calibration gas savings per device per year (CAD)</td>
+        <td><input class="orange-input" type="number" id="gas_savings_conservative" value="50" min="0" step="0.01"></td>
+        <td><input class="orange-input" type="number" id="gas_savings_typical" value="100" min="0" step="0.01"></td>
+        <td><input class="orange-input" type="number" id="gas_savings_high" value="150" min="0" step="0.01"></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p class="small-text">
+      Calibration gas savings assume bump testing roughly every 30&nbsp;days and calibration about every 180&nbsp;days, based on sensor manufacturer recommendations.
+      If your SOP requires daily bump tests or more frequent calibrations, set calibration gas savings to 0 or adjust the values to match your program.
+    </p>
+  </div>
+
+  <!-- Scenario Results -->
+  <h2>Scenario Results (Annual)</h2>
+  <div class="section-card">
+    <div class="section-note">
+      Results are calculated automatically from the inputs and assumptions above.
+    </div>
+
+    <table class="results-table">
+      <thead>
+      <tr>
+        <th></th>
+        <th>Conservative</th>
+        <th>Typical</th>
+        <th>High-Value</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th scope="row">Worker time savings value</th>
+        <td id="workerTime_conservative"></td>
+        <td id="workerTime_typical"></td>
+        <td id="workerTime_high"></td>
+      </tr>
+      <tr>
+        <th scope="row">Admin / fleet management savings</th>
+        <td id="adminSavings_conservative"></td>
+        <td id="adminSavings_typical"></td>
+        <td id="adminSavings_high"></td>
+      </tr>
+      <tr>
+        <th scope="row">Calibration gas savings</th>
+        <td id="gasSavings_conservative"></td>
+        <td id="gasSavings_typical"></td>
+        <td id="gasSavings_high"></td>
+      </tr>
+      <tr>
+        <th scope="row">Device consolidation savings</th>
+        <td id="deviceSavings_conservative"></td>
+        <td id="deviceSavings_typical"></td>
+        <td id="deviceSavings_high"></td>
+      </tr>
+      <tr class="highlight-row">
+        <th scope="row">Total annual savings</th>
+        <td id="totalSavings_conservative"></td>
+        <td id="totalSavings_typical"></td>
+        <td id="totalSavings_high"></td>
+      </tr>
+      <tr>
+        <th scope="row">Total Year 1 G8 cost</th>
+        <td id="totalCost_conservative"></td>
+        <td id="totalCost_typical"></td>
+        <td id="totalCost_high"></td>
+      </tr>
+      <tr class="highlight-row">
+        <th scope="row">Year 1 ROI</th>
+        <td id="roi_conservative"></td>
+        <td id="roi_typical"></td>
+        <td id="roi_high"></td>
+      </tr>
+      <tr>
+        <th scope="row">Payback period (months)</th>
+        <td id="payback_conservative"></td>
+        <td id="payback_typical"></td>
+        <td id="payback_high"></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p class="small-text">
+      Notes:<br>
+      • Year&nbsp;1 ROI = (Total annual savings) / (Total Year&nbsp;1 G8 cost).<br>
+      • Total Year&nbsp;1 G8 cost includes G8 hardware, first-year service plan, add-on features, and any one-time “Other costs” entered above.<br>
+      • Device consolidation savings are calculated as the combined annual cost of a radio, portable gas detector, and lone worker device, minus the annual G8 service plan and add-ons. This means the consolidation savings shown are net of G8’s recurring costs.<br>
+      • Payback period (months) = 12 × Total Year&nbsp;1 G8 cost / Total annual savings.<br>
+      • Adoption rate is entered as a decimal (e.g., 0.75 = 75%).
+    </p>
+
+    <!-- Two side-by-side explainer blocks -->
+    <div class="explainer-row">
+      <div class="explainer-card">
+        <h3>Minutes saved per worker per day</h3>
+        <p>This is how much time G8 saves people through:</p>
+        <ul class="explainer-list">
+          <li>Faster start and end of shift with one device instead of three.</li>
+          <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+          <li>Faster check ins and status updates on a single device.</li>
+          <li>Less time spent switching between different systems for gas, location, and alerts.</li>
+          <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
+          <li>Fewer device issues because workers only need to manage one device.</li>
+          <li>Less walking to find people or equipment because workers can call or alert from the device.</li>
+        </ul>
+      </div>
+
+      <div class="explainer-card">
+        <h3>Admin hours saved per week</h3>
+        <p>Time saved in managing devices, including:</p>
+        <ul class="explainer-list">
+          <li>Logging, tracking, and chasing down devices</li>
+          <li>Manual bump/calibration tracking</li>
+          <li>Updating device assignments</li>
+          <li>Audits and compliance documentation</li>
+          <li>Swap-outs and troubleshooting</li>
+          <li>Data extraction or manual reporting</li>
+          <li>Maintaining radios, gas detectors and LW devices</li>
+          <li>Synchronizing data across systems</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="small-text">
+      <strong>Disclaimer:</strong> This calculator provides directional estimates only. Actual results will vary based on your
+      specific operations, configuration, and adoption levels. Use it to frame discussions and compare scenarios, not as a
+      guarantee of future performance.
+    </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // --- Currency support ---
+  var currentCurrency = 'CAD';
+
+  var currencyInfoMap = {
+    CAD: { code: 'CAD', symbol: '$' },
+    USD: { code: 'USD', symbol: '$' },
+    EUR: { code: 'EUR', symbol: '€' },
+    GBP: { code: 'GBP', symbol: '£' },
+    AUD: { code: 'AUD', symbol: '$' }
+  };
+
+  function getCurrencyInfo() {
+    return currencyInfoMap[currentCurrency] || currencyInfoMap.CAD;
+  }
+
+  function updateCurrencyLabels() {
+    var code = currentCurrency;
+
+    var label = document.getElementById('label_hourly_cost');
+    if (label) label.textContent = 'Average hourly labour cost (' + code + '/hr)';
+
+    label = document.getElementById('label_cost_radio');
+    if (label) label.textContent = 'Annual cost of one radio and any associated subscription (' + code + ')';
+
+    label = document.getElementById('label_cost_legacy_detector');
+    if (label) label.textContent = 'Annual cost of one portable gas detector and any associated subscription (' + code + ')';
+
+    label = document.getElementById('label_cost_lone_worker');
+    if (label) label.textContent = 'Annual cost of one lone worker device or app and any associated subscription (' + code + ')';
+
+    label = document.getElementById('label_gas_savings');
+    if (label) label.textContent = 'Calibration gas savings per device per year (' + code + ')';
+
+    label = document.getElementById('label_addon_ptt');
+    if (label) label.textContent = 'Push-to-Talk add-on per device (annual, ' + code + ')';
+
+    label = document.getElementById('label_addon_monitoring');
+    if (label) {
+      label.textContent = 'Blackline Safety Monitoring (24/7 by expert team) per device (annual, ' + code + ')';
+    }
+  }
+
+  function parseNumber(id) {
+    var el = document.getElementById(id);
+    if (!el) return 0;
+    var raw = String(el.value).replace(/,/g, '').trim();
+    var n = parseFloat(raw);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function formatCurrency(value) {
+    var info = getCurrencyInfo();
+    return info.symbol + value.toLocaleString(undefined, {
+      maximumFractionDigits: 0
+    }) + ' ' + info.code;
+  }
+
+  function formatPercent(value) {
+    return (value * 100).toLocaleString(undefined, {
+      maximumFractionDigits: 1
+    }) + '%';
+  }
+
+  function formatMonths(value) {
+    return value.toLocaleString(undefined, {
+      maximumFractionDigits: 1
+    });
+  }
+
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.textContent = text;
+    }
+  }
+
+  function recalc() {
+    // Base inputs
+    var B6  = parseNumber('num_workers');          // Number of devices to be replaced/purchased
+    var B7  = parseNumber('hourly_cost');          // Average hourly labour cost
+    var B8  = parseNumber('cost_radio');           // Annual cost of one radio + subscription per device
+    var B9  = parseNumber('cost_legacy_detector'); // Annual cost of one portable gas detector + subscription per device
+    var B10 = parseNumber('hardware_cost');        // G8 hardware cost per device
+    var B11 = parseNumber('subscription_cost');    // G8 annual service plan per device
+    var B12 = parseNumber('cost_lone_worker');     // Annual cost of lone worker device/app + subscription per device
+    var B13 = parseNumber('workdays_per_year');    // Workdays per year
+    var B14 = parseNumber('weeks_per_year');       // Weeks per year
+    var otherCosts = parseNumber('other_annual_costs'); // One-time other costs (total)
+
+    // Add-on features (annual cost per device)
+    var addonPTT = parseNumber('addon_ptt');               // Push-to-Talk per device per year
+    var addonMonitoring = parseNumber('addon_monitoring'); // Monitoring per device per year
+
+    // Scenario inputs
+    var scenarios = {
+      conservative: {
+        minutesPerDay: parseNumber('minutes_saved_conservative'),
+        adoption:      parseNumber('adoption_conservative'),
+        adminHours:    parseNumber('admin_hours_conservative'),
+        gasSavings:    parseNumber('gas_savings_conservative')
+      },
+      typical: {
+        minutesPerDay: parseNumber('minutes_saved_typical'),
+        adoption:      parseNumber('adoption_typical'),
+        adminHours:    parseNumber('admin_hours_typical'),
+        gasSavings:    parseNumber('gas_savings_typical')
+      },
+      high: {
+        minutesPerDay: parseNumber('minutes_saved_high'),
+        adoption:      parseNumber('adoption_high'),
+        adminHours:    parseNumber('admin_hours_high'),
+        gasSavings:    parseNumber('gas_savings_high')
+      }
+    };
+
+    // Net device consolidation savings per device (annual):
+    // (radio + gas detector + lone worker annual cost) - (G8 service plan + add-ons)
+    var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring;
+    var deviceConsolidationPerDevice = (B8 + B9 + B12) - g8RecurringPerDevice;
+    var deviceConsolidation = B6 * deviceConsolidationPerDevice;
+
+    // Total Year 1 G8 cost: hardware + first-year service + first-year add-ons + one-time other costs
+    var totalYear1G8Cost = B6 * (B10 + B11 + addonPTT + addonMonitoring) + otherCosts;
+
+    // Compute each scenario
+    Object.keys(scenarios).forEach(function (key) {
+      var s = scenarios[key];
+
+      // Worker time savings:
+      var workerTimeSavings = B6 * (s.minutesPerDay / 60) * B13 * s.adoption * B7;
+
+      // Admin savings:
+      var adminSavings = B6 * s.adminHours * B14 * B7;
+
+      // Calibration gas savings:
+      var gasSavings = B6 * s.gasSavings;
+
+      // Total annual savings
+      var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
+
+      // Year 1 ROI
+      var roi = totalYear1G8Cost === 0 ? 0 : totalSavings / totalYear1G8Cost;
+
+      // Payback (months)
+      var payback = totalSavings === 0 ? 0 : (12 * totalYear1G8Cost / totalSavings);
+
+      var suffix = '_' + key;
+
+      setText('workerTime' + suffix,      formatCurrency(workerTimeSavings));
+      setText('adminSavings' + suffix,    formatCurrency(adminSavings));
+      setText('gasSavings' + suffix,      formatCurrency(gasSavings));
+      setText('deviceSavings' + suffix,   formatCurrency(deviceConsolidation));
+      setText('totalSavings' + suffix,    formatCurrency(totalSavings));
+      setText('totalCost' + suffix,       formatCurrency(totalYear1G8Cost));
+      setText('roi' + suffix,             formatPercent(roi));
+      setText('payback' + suffix,         formatMonths(payback));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var baselineValues = {};
+
+    // Capture baseline values on load & attach listeners
+    var inputs = document.querySelectorAll('input');
+    inputs.forEach(function (input) {
+      if (input.id) {
+        baselineValues[input.id] = input.value;
+      }
+      input.addEventListener('input', recalc);
+      input.addEventListener('change', recalc);
+    });
+
+    // Reset button handler
+    var resetBtn = document.getElementById('reset_baseline_btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        Object.keys(baselineValues).forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.value = baselineValues[id];
+          }
+        });
+        recalc();
+      });
+    }
+
+    // Currency selector handler
+    var currencySelect = document.getElementById('currency_select');
+    if (currencySelect) {
+      currentCurrency = currencySelect.value || 'CAD';
+      currencySelect.addEventListener('change', function () {
+        currentCurrency = this.value || 'CAD';
+        updateCurrencyLabels();
+        recalc();
+      });
+    }
+
+    // Initial render
+    updateCurrencyLabels();
+    recalc();
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
