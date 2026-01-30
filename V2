@@ -286,7 +286,7 @@
       border-color: #101820;
     }
 
-    /* Popover anchors to the right of the icon */
+    /* Popover */
     .info-popover {
       position: absolute;
       top: 50%;
@@ -302,6 +302,14 @@
       padding: 0.8rem 0.9rem;
       z-index: 50;
       display: none;
+
+      /* ✅ Wrap long text instead of scrolling */
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+
+      /* ✅ Ensure no scrollbars appear */
+      overflow: visible;
     }
 
     .info-popover[aria-hidden="false"] {
@@ -334,6 +342,10 @@
       font-weight: 700;
       color: #101820;
       margin: 0 0 0.2rem 0;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .info-popover .popover-body {
@@ -341,6 +353,31 @@
       line-height: 1.35;
       color: #333;
       margin: 0;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    /* List styling inside popovers */
+    .info-popover ul {
+      margin: 0.35rem 0 0 1.1rem;
+      padding: 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #333;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .info-popover li {
+      margin-bottom: 0.25rem;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     /* Explainer blocks below the results table */
@@ -418,7 +455,7 @@
         align-items: flex-start;
       }
 
-      /* On mobile: fall back to below so it doesn't overflow */
+      /* On mobile: fall back below so it doesn't overflow */
       .info-popover {
         top: calc(100% + 10px);
         left: 0;
@@ -726,7 +763,7 @@
       </label>
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
-      <!-- MOVED: Other costs (with popover) -->
+      <!-- Other costs (with popover) -->
       <label for="other_annual_costs" id="label_other_annual_costs">
         <span class="label-with-info">
           Other costs
@@ -788,7 +825,35 @@
       </thead>
       <tbody>
       <tr>
-        <td>Minutes saved per worker per day</td>
+        <td>
+          <span class="label-with-info">
+            Minutes saved per worker per day
+            <span class="info-wrap">
+              <button
+                type="button"
+                class="info-icon-btn"
+                id="minutes_saved_info_btn"
+                aria-label="Minutes saved per worker per day information"
+                aria-expanded="false"
+                aria-controls="minutes_saved_info_popover"
+              >&#9432;</button>
+              <div class="info-popover" id="minutes_saved_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">This is how much time G8 can save workers through:</div>
+                  <ul>
+                    <li>Faster start and end of shift with one device instead of three.</li>
+                    <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+                    <li>Faster check-ins and status updates on a single device.</li>
+                    <li>Less time spent switching between different systems for gas, location, and alerts.</li>
+                    <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
+                    <li>Fewer device issues because workers only need to manage one device.</li>
+                    <li>Less walking to find people or equipment because workers can call from the device.</li>
+                  </ul>
+                </div>
+              </div>
+            </span>
+          </span>
+        </td>
         <td><input class="orange-input" type="number" id="minutes_saved_conservative" value="5" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
@@ -898,20 +963,6 @@
     </p>
 
     <div class="explainer-row">
-      <div class="explainer-card">
-        <h3>Minutes saved per worker per day</h3>
-        <p>This is how much time G8 saves people through:</p>
-        <ul class="explainer-list">
-          <li>Faster start and end of shift with one device instead of three.</li>
-          <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
-          <li>Faster check ins and status updates on a single device.</li>
-          <li>Less time spent switching between different systems for gas, location, and alerts.</li>
-          <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
-          <li>Fewer device issues because workers only need to manage one device.</li>
-          <li>Less walking to find people or equipment because workers can call or alert from the device.</li>
-        </ul>
-      </div>
-
       <div class="explainer-card">
         <h3>Admin hours saved per week</h3>
         <p>Time saved in managing devices, including:</p>
@@ -1167,6 +1218,7 @@
     setupPopover('g8_hw_info_btn', 'g8_hw_info_popover');
     setupPopover('g8_plan_info_btn', 'g8_plan_info_popover');
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
+    setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
     updateCurrencyLabels();
     recalc();
