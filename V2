@@ -104,6 +104,14 @@
       align-items: center;
     }
 
+    /* Label + icon wrapper for specific rows */
+    .label-with-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
     .inputs-grid label {
       font-size: 0.9rem;
     }
@@ -163,11 +171,7 @@
       white-space: nowrap;
     }
 
-    .scenario-table thead th {
-      background: #fbe9ec;
-      font-weight: 600;
-    }
-
+    .scenario-table thead th,
     .results-table thead th {
       background: #fbe9ec;
       font-weight: 600;
@@ -181,11 +185,6 @@
       background: #fafafa;
     }
 
-    .results-table tfoot td {
-      font-weight: 600;
-      background: #e6e7ea;
-    }
-
     .results-table .highlight-row {
       background: #fdecee;
       font-weight: 700;
@@ -196,11 +195,6 @@
       font-size: 0.8rem;
       color: #666;
       margin-top: 0.75rem;
-    }
-
-    .small-text ul {
-      margin: 0.25rem 0 0.25rem 1.25rem;
-      padding: 0;
     }
 
     /* Reset button styles */
@@ -240,6 +234,7 @@
       margin-bottom: 1rem;
       font-size: 0.9rem;
       flex-wrap: wrap;
+      position: relative;
     }
 
     .currency-row label {
@@ -254,9 +249,106 @@
       background: #ffffff;
     }
 
-    .currency-help {
-      font-size: 0.8rem;
-      color: #555;
+    /* Info icon + popover */
+    .info-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .info-icon-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid #c5c9cf;
+      background: #ffffff;
+      color: #101820;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      font-weight: 800;
+      font-size: 0.9rem;
+      user-select: none;
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .info-icon-btn:hover {
+      background: #fbe9ec;
+      border-color: #A6192E;
+    }
+
+    .info-icon-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(16, 24, 32, 0.18);
+      border-color: #101820;
+    }
+
+    /* Popover anchors to the right of the icon */
+    .info-popover {
+      position: absolute;
+      top: 50%;
+      left: calc(100% + 10px);
+      right: auto;
+      transform: translateY(-50%);
+      width: 440px;
+      max-width: calc(100vw - 48px);
+      background: #ffffff;
+      border: 1px solid #e0e2e6;
+      border-radius: 4px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+      padding: 0.8rem 0.9rem;
+      z-index: 50;
+      display: none;
+    }
+
+    .info-popover[aria-hidden="false"] {
+      display: block;
+    }
+
+    .info-popover::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border-left: 1px solid #e0e2e6;
+      border-bottom: 1px solid #e0e2e6;
+    }
+
+    /* Default popover text (11px per your requirement) */
+    .info-popover .popover-body {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #333;
+    }
+
+    .info-popover .popover-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #101820;
+      margin: 0 0 0.35rem 0;
+    }
+
+    .info-popover .kv {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 0.35rem 0.6rem;
+      margin: 0;
+    }
+
+    .info-popover .k {
+      font-weight: 700;
+      color: #101820;
+    }
+
+    .info-popover .v {
+      color: #333;
     }
 
     /* Explainer blocks below the results table */
@@ -334,6 +426,23 @@
         align-items: flex-start;
       }
 
+      /* On mobile: fall back to below so it doesn't overflow */
+      .info-popover {
+        top: calc(100% + 10px);
+        left: 0;
+        transform: none;
+        width: 100%;
+      }
+
+      .info-popover::before {
+        left: 10px;
+        top: -7px;
+        transform: rotate(45deg);
+        border-left: 1px solid #e0e2e6;
+        border-bottom: none;
+        border-top: 1px solid #e0e2e6;
+      }
+
       .explainer-row {
         flex-direction: column;
       }
@@ -357,8 +466,9 @@
   </div>
 
   <p class="intro">
-    Enter a few values in the input fields below. Scenario assumptions illustrate conservative, typical, and high-value minimum savings.
-    The calculator then shows savings, Year&nbsp;1 ROI, and payback period for each scenario.
+    <strong>Measure your savings</strong><br>
+    Enter a few values to start. Every field is flexible and can be changed anytime. We’ll show savings, Year&nbsp;1 ROI,
+    and payback across conservative, typical, and high-value scenarios.
   </p>
 
   <!-- Reset to baseline values -->
@@ -379,8 +489,29 @@
       <option value="GBP">GBP (Pound Sterling)</option>
       <option value="AUD">AUD (Australian Dollar)</option>
     </select>
-    <span class="currency-help">
-      All monetary inputs and results are treated as being in the selected currency (no exchange-rate conversion).
+
+    <span class="info-wrap">
+      <button
+        type="button"
+        class="info-icon-btn"
+        id="currency_info_btn"
+        aria-label="Pricing and currency information"
+        aria-expanded="false"
+        aria-controls="currency_info_popover"
+      >
+        &#9432;
+      </button>
+
+      <div class="info-popover" id="currency_info_popover" role="dialog" aria-hidden="true">
+        <div class="popover-body">
+          <div class="kv">
+            <div class="k">Currency handling:</div>
+            <div class="v">All monetary inputs and results are treated as being in the selected currency. No exchange-rate conversion is applied.</div>
+            <div class="k">Pricing source and purchase method:</div>
+            <div class="v">The ROI calculator works irrespective of purchase method, including lease or purchase. Always pull G8 pricing from the price list and enter the applicable full-year values into the relevant fields.</div>
+          </div>
+        </div>
+      </div>
     </span>
   </div>
 
@@ -393,31 +524,142 @@
 
     <div class="inputs-grid">
       <label for="num_workers" id="label_num_workers">Number of devices to be replaced/purchased</label>
-      <input class="green-input" type="number" id="num_workers" value="200" min="0" step="1">
+      <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
 
       <label for="hourly_cost" id="label_hourly_cost">Average hourly labour cost (CAD/hr)</label>
-      <input class="green-input" type="number" id="hourly_cost" value="60" min="0" step="0.01">
+      <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
 
+      <!-- Radio (Option B) -->
       <label for="cost_radio" id="label_cost_radio">
-        Annual price of one radio and any associated subscription (CAD)
+        <span class="label-with-info">
+          Annual price of one radio and any associated subscription (CAD)
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="radio_info_btn"
+              aria-label="Radio pricing information"
+              aria-expanded="false"
+              aria-controls="radio_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-body">
+                <div class="kv">
+                  <div class="k">Baseline:</div>
+                  <div class="v">Motorola DP4801 EX</div>
+                  <div class="k">Update for customer:</div>
+                  <div class="v">Change the price here to reflect the customer’s radio.</div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </span>
       </label>
-      <input class="green-input" type="number" id="cost_radio" value="2400" min="0" step="0.01">
+      <input class="green-input" type="number" id="cost_radio" value="2950" min="0" step="0.01">
 
+      <!-- Portable gas detector (Option B) -->
       <label for="cost_legacy_detector" id="label_cost_legacy_detector">
-        Annual price of one portable gas detector and any associated subscription (CAD)
+        <span class="label-with-info">
+          Annual price of one portable gas detector and any associated subscription (CAD)
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="detector_info_btn"
+              aria-label="Portable gas detector pricing information"
+              aria-expanded="false"
+              aria-controls="detector_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-body">
+                <div class="kv">
+                  <div class="k">Baseline:</div>
+                  <div class="v">MSA Altair io4 + Complete Service Plan</div>
+                  <div class="k">Update for customer:</div>
+                  <div class="v">Change the price here to reflect the customer’s gas detector.</div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </span>
       </label>
-      <input class="green-input" type="number" id="cost_legacy_detector" value="1200" min="0" step="0.01">
+      <input class="green-input" type="number" id="cost_legacy_detector" value="1152" min="0" step="0.01">
 
+      <!-- Lone worker (Option B) -->
       <label for="cost_lone_worker" id="label_cost_lone_worker">
-        Annual price of one lone worker device or app and any associated subscription (CAD)
+        <span class="label-with-info">
+          Annual price of one lone worker device or app and any associated subscription (CAD)
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="lw_info_btn"
+              aria-label="Lone worker pricing information"
+              aria-expanded="false"
+              aria-controls="lw_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-body">
+                <div class="kv">
+                  <div class="k">Baseline:</div>
+                  <div class="v">Twig Neo</div>
+                  <div class="k">Update for customer:</div>
+                  <div class="v">Change the price to reflect the customer’s lone worker device or app.</div>
+                </div>
+              </div>
+            </div>
+          </span>
+        </span>
       </label>
-      <input class="green-input" type="number" id="cost_lone_worker" value="800" min="0" step="0.01">
+      <input class="green-input" type="number" id="cost_lone_worker" value="700" min="0" step="0.01">
 
-      <label for="hardware_cost">G8 hardware price per device</label>
-      <input class="green-input" type="number" id="hardware_cost" value="1885" min="0" step="0.01">
+      <!-- G8 hardware (Option A) -->
+      <label for="hardware_cost">
+        <span class="label-with-info">
+          G8 hardware price per device
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="g8_hw_info_btn"
+              aria-label="G8 hardware configuration information"
+              aria-expanded="false"
+              aria-controls="g8_hw_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="g8_hw_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-body">
+                <div class="popover-title">Pricing guidance</div>
+                Default configuration is set as 4 gas sensor (H2S, LEL MPS, CO and O2) on a 2 year warranty.
+              </div>
+            </div>
+          </span>
+        </span>
+      </label>
+      <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
 
-      <label for="subscription_cost">G8 annual service plan price per device</label>
-      <input class="green-input" type="number" id="subscription_cost" value="204" min="0" step="0.01">
+      <!-- G8 service plan (Option A) -->
+      <label for="subscription_cost">
+        <span class="label-with-info">
+          G8 annual service plan price per device
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="g8_plan_info_btn"
+              aria-label="G8 service plan information"
+              aria-expanded="false"
+              aria-controls="g8_plan_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="g8_plan_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-body">
+                <div class="popover-title">Pricing guidance</div>
+                This is set as PRO service plan.
+              </div>
+            </div>
+          </span>
+        </span>
+      </label>
+      <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
     </div>
 
     <p class="small-text">
@@ -437,12 +679,17 @@
     </div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
-      <input class="green-input" type="number" id="addon_ptt" value="0" min="0" step="0.01">
+      <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
       <label for="addon_monitoring" id="label_addon_monitoring">
         Blackline Safety Monitoring (24/7 by expert team) per device (annual, CAD)
       </label>
-      <input class="green-input" type="number" id="addon_monitoring" value="0" min="0" step="0.01">
+      <input class="green-input" type="number" id="addon_monitoring" value="276" min="0" step="0.01">
+
+      <label for="addon_emergency_voice" id="label_addon_emergency_voice">
+        Emergency Voice per device (annual, CAD)
+      </label>
+      <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
     </div>
     <p class="small-text">
       Enter the annual cost per device for each add-on you plan to include. These values are added to the G8 cost used in the ROI and payback calculations.<br>
@@ -600,7 +847,6 @@
       • Adoption rate is entered as a decimal (e.g., 0.75 = 75%).
     </p>
 
-    <!-- Two side-by-side explainer blocks -->
     <div class="explainer-row">
       <div class="explainer-card">
         <h3>Minutes saved per worker per day</h3>
@@ -644,7 +890,6 @@
 (function () {
   'use strict';
 
-  // --- Currency support ---
   var currentCurrency = 'CAD';
 
   var currencyInfoMap = {
@@ -684,6 +929,9 @@
     if (label) {
       label.textContent = 'Blackline Safety Monitoring (24/7 by expert team) per device (annual, ' + code + ')';
     }
+
+    label = document.getElementById('label_addon_emergency_voice');
+    if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
   }
 
   function parseNumber(id) {
@@ -696,48 +944,38 @@
 
   function formatCurrency(value) {
     var info = getCurrencyInfo();
-    return info.symbol + value.toLocaleString(undefined, {
-      maximumFractionDigits: 0
-    }) + ' ' + info.code;
+    return info.symbol + value.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' ' + info.code;
   }
 
   function formatPercent(value) {
-    return (value * 100).toLocaleString(undefined, {
-      maximumFractionDigits: 1
-    }) + '%';
+    return (value * 100).toLocaleString(undefined, { maximumFractionDigits: 1 }) + '%';
   }
 
   function formatMonths(value) {
-    return value.toLocaleString(undefined, {
-      maximumFractionDigits: 1
-    });
+    return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
   }
 
   function setText(id, text) {
     var el = document.getElementById(id);
-    if (el) {
-      el.textContent = text;
-    }
+    if (el) el.textContent = text;
   }
 
   function recalc() {
-    // Base inputs
-    var B6  = parseNumber('num_workers');          // Number of devices to be replaced/purchased
-    var B7  = parseNumber('hourly_cost');          // Average hourly labour cost
-    var B8  = parseNumber('cost_radio');           // Annual cost of one radio + subscription per device
-    var B9  = parseNumber('cost_legacy_detector'); // Annual cost of one portable gas detector + subscription per device
-    var B10 = parseNumber('hardware_cost');        // G8 hardware cost per device
-    var B11 = parseNumber('subscription_cost');    // G8 annual service plan per device
-    var B12 = parseNumber('cost_lone_worker');     // Annual cost of lone worker device/app + subscription per device
-    var B13 = parseNumber('workdays_per_year');    // Workdays per year
-    var B14 = parseNumber('weeks_per_year');       // Weeks per year
-    var otherCosts = parseNumber('other_annual_costs'); // One-time other costs (total)
+    var B6  = parseNumber('num_workers');
+    var B7  = parseNumber('hourly_cost');
+    var B8  = parseNumber('cost_radio');
+    var B9  = parseNumber('cost_legacy_detector');
+    var B10 = parseNumber('hardware_cost');
+    var B11 = parseNumber('subscription_cost');
+    var B12 = parseNumber('cost_lone_worker');
+    var B13 = parseNumber('workdays_per_year');
+    var B14 = parseNumber('weeks_per_year');
+    var otherCosts = parseNumber('other_annual_costs');
 
-    // Add-on features (annual cost per device)
-    var addonPTT = parseNumber('addon_ptt');               // Push-to-Talk per device per year
-    var addonMonitoring = parseNumber('addon_monitoring'); // Monitoring per device per year
+    var addonPTT = parseNumber('addon_ptt');
+    var addonMonitoring = parseNumber('addon_monitoring');
+    var addonEmergencyVoice = parseNumber('addon_emergency_voice');
 
-    // Scenario inputs
     var scenarios = {
       conservative: {
         minutesPerDay: parseNumber('minutes_saved_conservative'),
@@ -759,78 +997,94 @@
       }
     };
 
-    // Net device consolidation savings per device (annual):
-    // (radio + gas detector + lone worker annual cost) - (G8 service plan + add-ons)
-    var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring;
+    var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring + addonEmergencyVoice;
+
     var deviceConsolidationPerDevice = (B8 + B9 + B12) - g8RecurringPerDevice;
     var deviceConsolidation = B6 * deviceConsolidationPerDevice;
 
-    // Total Year 1 G8 cost: hardware + first-year service + first-year add-ons + one-time other costs
-    var totalYear1G8Cost = B6 * (B10 + B11 + addonPTT + addonMonitoring) + otherCosts;
+    var totalYear1G8Cost = B6 * (B10 + B11 + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
-    // Compute each scenario
     Object.keys(scenarios).forEach(function (key) {
       var s = scenarios[key];
 
-      // Worker time savings:
       var workerTimeSavings = B6 * (s.minutesPerDay / 60) * B13 * s.adoption * B7;
-
-      // Admin savings:
       var adminSavings = B6 * s.adminHours * B14 * B7;
-
-      // Calibration gas savings:
       var gasSavings = B6 * s.gasSavings;
 
-      // Total annual savings
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // Year 1 ROI
       var roi = totalYear1G8Cost === 0 ? 0 : totalSavings / totalYear1G8Cost;
-
-      // Payback (months)
       var payback = totalSavings === 0 ? 0 : (12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
 
-      setText('workerTime' + suffix,      formatCurrency(workerTimeSavings));
-      setText('adminSavings' + suffix,    formatCurrency(adminSavings));
-      setText('gasSavings' + suffix,      formatCurrency(gasSavings));
-      setText('deviceSavings' + suffix,   formatCurrency(deviceConsolidation));
-      setText('totalSavings' + suffix,    formatCurrency(totalSavings));
-      setText('totalCost' + suffix,       formatCurrency(totalYear1G8Cost));
-      setText('roi' + suffix,             formatPercent(roi));
-      setText('payback' + suffix,         formatMonths(payback));
+      setText('workerTime' + suffix,    formatCurrency(workerTimeSavings));
+      setText('adminSavings' + suffix,  formatCurrency(adminSavings));
+      setText('gasSavings' + suffix,    formatCurrency(gasSavings));
+      setText('deviceSavings' + suffix, formatCurrency(deviceConsolidation));
+      setText('totalSavings' + suffix,  formatCurrency(totalSavings));
+      setText('totalCost' + suffix,     formatCurrency(totalYear1G8Cost));
+      setText('roi' + suffix,           formatPercent(roi));
+      setText('payback' + suffix,       formatMonths(payback));
+    });
+  }
+
+  function setupPopover(btnId, popoverId) {
+    var btn = document.getElementById(btnId);
+    var pop = document.getElementById(popoverId);
+    if (!btn || !pop) return;
+
+    function closePopover() {
+      pop.setAttribute('aria-hidden', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function openPopover() {
+      pop.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    function togglePopover() {
+      var isHidden = pop.getAttribute('aria-hidden') !== 'false';
+      if (isHidden) openPopover();
+      else closePopover();
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      togglePopover();
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!pop.contains(e.target) && e.target !== btn) closePopover();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePopover();
     });
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
 
-    // Capture baseline values on load & attach listeners
     var inputs = document.querySelectorAll('input');
     inputs.forEach(function (input) {
-      if (input.id) {
-        baselineValues[input.id] = input.value;
-      }
+      if (input.id) baselineValues[input.id] = input.value;
       input.addEventListener('input', recalc);
       input.addEventListener('change', recalc);
     });
 
-    // Reset button handler
     var resetBtn = document.getElementById('reset_baseline_btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
         Object.keys(baselineValues).forEach(function (id) {
           var el = document.getElementById(id);
-          if (el) {
-            el.value = baselineValues[id];
-          }
+          if (el) el.value = baselineValues[id];
         });
         recalc();
       });
     }
 
-    // Currency selector handler
     var currencySelect = document.getElementById('currency_select');
     if (currencySelect) {
       currentCurrency = currencySelect.value || 'CAD';
@@ -841,7 +1095,16 @@
       });
     }
 
-    // Initial render
+    // Existing currency popover
+    setupPopover('currency_info_btn', 'currency_info_popover');
+
+    // New popovers (Customer Inputs)
+    setupPopover('radio_info_btn', 'radio_info_popover');
+    setupPopover('detector_info_btn', 'detector_info_popover');
+    setupPopover('lw_info_btn', 'lw_info_popover');
+    setupPopover('g8_hw_info_btn', 'g8_hw_info_popover');
+    setupPopover('g8_plan_info_btn', 'g8_plan_info_popover');
+
     updateCurrencyLabels();
     recalc();
   });
