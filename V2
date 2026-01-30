@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -400,24 +399,24 @@
       <input class="green-input" type="number" id="hourly_cost" value="60" min="0" step="0.01">
 
       <label for="cost_radio" id="label_cost_radio">
-        Annual cost of one radio and any associated subscription (CAD)
+        Annual price of one radio and any associated subscription (CAD)
       </label>
       <input class="green-input" type="number" id="cost_radio" value="2400" min="0" step="0.01">
 
       <label for="cost_legacy_detector" id="label_cost_legacy_detector">
-        Annual cost of one portable gas detector and any associated subscription (CAD)
+        Annual price of one portable gas detector and any associated subscription (CAD)
       </label>
       <input class="green-input" type="number" id="cost_legacy_detector" value="1200" min="0" step="0.01">
 
       <label for="cost_lone_worker" id="label_cost_lone_worker">
-        Annual cost of one lone worker device or app and any associated subscription (CAD)
+        Annual price of one lone worker device or app and any associated subscription (CAD)
       </label>
       <input class="green-input" type="number" id="cost_lone_worker" value="800" min="0" step="0.01">
 
-      <label for="hardware_cost">G8 hardware cost per device</label>
+      <label for="hardware_cost">G8 hardware price per device</label>
       <input class="green-input" type="number" id="hardware_cost" value="1885" min="0" step="0.01">
 
-      <label for="subscription_cost">G8 annual service plan per device</label>
+      <label for="subscription_cost">G8 annual service plan price per device</label>
       <input class="green-input" type="number" id="subscription_cost" value="204" min="0" step="0.01">
     </div>
 
@@ -667,13 +666,13 @@
     if (label) label.textContent = 'Average hourly labour cost (' + code + '/hr)';
 
     label = document.getElementById('label_cost_radio');
-    if (label) label.textContent = 'Annual cost of one radio and any associated subscription (' + code + ')';
+    if (label) label.textContent = 'Annual price of one radio and any associated subscription (' + code + ')';
 
     label = document.getElementById('label_cost_legacy_detector');
-    if (label) label.textContent = 'Annual cost of one portable gas detector and any associated subscription (' + code + ')';
+    if (label) label.textContent = 'Annual price of one portable gas detector and any associated subscription (' + code + ')';
 
     label = document.getElementById('label_cost_lone_worker');
-    if (label) label.textContent = 'Annual cost of one lone worker device or app and any associated subscription (' + code + ')';
+    if (label) label.textContent = 'Annual price of one lone worker device or app and any associated subscription (' + code + ')';
 
     label = document.getElementById('label_gas_savings');
     if (label) label.textContent = 'Calibration gas savings per device per year (' + code + ')';
@@ -850,4 +849,3 @@
 </script>
 </body>
 </html>
-```
