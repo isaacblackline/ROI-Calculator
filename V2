@@ -104,7 +104,7 @@
       align-items: center;
     }
 
-    /* Label + icon wrapper for specific rows */
+    /* Label + icon wrapper */
     .label-with-info {
       display: inline-flex;
       align-items: center;
@@ -293,7 +293,7 @@
       left: calc(100% + 10px);
       right: auto;
       transform: translateY(-50%);
-      width: 440px;
+      width: 360px;
       max-width: calc(100vw - 48px);
       background: #ffffff;
       border: 1px solid #e0e2e6;
@@ -321,34 +321,26 @@
       border-bottom: 1px solid #e0e2e6;
     }
 
-    /* Default popover text (11px per your requirement) */
-    .info-popover .popover-body {
-      font-size: 11px;
-      line-height: 1.35;
-      color: #333;
+    /* Popover content: stacked heading + body */
+    .popover-section {
+      margin-bottom: 0.55rem;
+    }
+    .popover-section:last-child {
+      margin-bottom: 0;
     }
 
     .info-popover .popover-title {
       font-size: 11px;
       font-weight: 700;
       color: #101820;
-      margin: 0 0 0.35rem 0;
+      margin: 0 0 0.2rem 0;
     }
 
-    .info-popover .kv {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      gap: 0.35rem 0.6rem;
-      margin: 0;
-    }
-
-    .info-popover .k {
-      font-weight: 700;
-      color: #101820;
-    }
-
-    .info-popover .v {
+    .info-popover .popover-body {
+      font-size: 11px;
+      line-height: 1.35;
       color: #333;
+      margin: 0;
     }
 
     /* Explainer blocks below the results table */
@@ -449,6 +441,7 @@
     }
   </style>
 </head>
+
 <body>
 <div class="roi-calculator">
   <!-- Brand logo on white background -->
@@ -467,7 +460,7 @@
 
   <p class="intro">
     <strong>Measure your savings</strong><br>
-    Enter a few values to start. Every field is flexible and can be changed anytime. We’ll show savings, Year&nbsp;1 ROI,
+    Enter a few values to start. Every field is flexible and can be changed anytime. We'll show savings, Year&nbsp;1 ROI,
     and payback across conservative, typical, and high-value scenarios.
   </p>
 
@@ -503,13 +496,13 @@
       </button>
 
       <div class="info-popover" id="currency_info_popover" role="dialog" aria-hidden="true">
-        <div class="popover-body">
-          <div class="kv">
-            <div class="k">Currency handling:</div>
-            <div class="v">All monetary inputs and results are treated as being in the selected currency. No exchange-rate conversion is applied.</div>
-            <div class="k">Pricing source and purchase method:</div>
-            <div class="v">The ROI calculator works irrespective of purchase method, including lease or purchase. Always pull G8 pricing from the price list and enter the applicable full-year values into the relevant fields.</div>
-          </div>
+        <div class="popover-section">
+          <div class="popover-title">Currency handling</div>
+          <p class="popover-body">All monetary inputs and results are treated as being in the selected currency. No exchange-rate conversion is applied.</p>
+        </div>
+        <div class="popover-section">
+          <div class="popover-title">Pricing source and purchase method</div>
+          <p class="popover-body">The ROI calculator works irrespective of purchase method, including lease or purchase. Always pull G8 pricing from the price list and enter the applicable full-year values into the relevant fields.</p>
         </div>
       </div>
     </span>
@@ -518,21 +511,66 @@
   <!-- Customer Inputs -->
   <h2>Customer Inputs</h2>
   <div class="section-card">
-    <div class="section-note">
-      Edit the fields below to reflect your deployment.
-    </div>
+    <div class="section-note">Edit the fields below to reflect your deployment.</div>
 
     <div class="inputs-grid">
-      <label for="num_workers" id="label_num_workers">Number of devices to be replaced/purchased</label>
+      <!-- Number of devices: popover -->
+      <label for="num_workers" id="label_num_workers">
+        <span class="label-with-info">
+          Number of devices to be replaced/purchased
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="num_workers_info_btn"
+              aria-label="Number of devices information"
+              aria-expanded="false"
+              aria-controls="num_workers_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="num_workers_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-section">
+                <div class="popover-title">Number of devices to be replaced or purchased</div>
+                <p class="popover-body">
+                  The number of devices the customer plans to buy. It is assumed the customer will replace the same quantity
+                  of devices for gas detection, radio communication, and lone worker.
+                </p>
+              </div>
+            </div>
+          </span>
+        </span>
+      </label>
       <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
 
-      <label for="hourly_cost" id="label_hourly_cost">Average hourly labour cost (CAD/hr)</label>
+      <!-- Average hourly labour cost: popover -->
+      <label for="hourly_cost" id="label_hourly_cost">
+        <span class="label-with-info">
+          <span id="label_hourly_cost_text">Average hourly labour cost (CAD/hr)</span>
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="hourly_cost_info_btn"
+              aria-label="Average hourly labour cost information"
+              aria-expanded="false"
+              aria-controls="hourly_cost_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="hourly_cost_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-section">
+                <div class="popover-title">Average hourly labor cost</div>
+                <p class="popover-body">
+                  The estimated hourly cost of a field worker, based on wages or salary.
+                </p>
+              </div>
+            </div>
+          </span>
+        </span>
+      </label>
       <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
 
       <!-- Radio (Option B) -->
       <label for="cost_radio" id="label_cost_radio">
         <span class="label-with-info">
-          Annual price of one radio and any associated subscription (CAD)
+          <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button
               type="button"
@@ -543,13 +581,13 @@
               aria-controls="radio_info_popover"
             >&#9432;</button>
             <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
-              <div class="popover-body">
-                <div class="kv">
-                  <div class="k">Baseline:</div>
-                  <div class="v">Motorola DP4801 EX</div>
-                  <div class="k">Update for customer:</div>
-                  <div class="v">Change the price here to reflect the customer’s radio.</div>
-                </div>
+              <div class="popover-section">
+                <div class="popover-title">Baseline</div>
+                <p class="popover-body">Motorola DP4801 EX</p>
+              </div>
+              <div class="popover-section">
+                <div class="popover-title">Update for customer</div>
+                <p class="popover-body">Replace with the customer’s current radio + subscription price.</p>
               </div>
             </div>
           </span>
@@ -560,7 +598,7 @@
       <!-- Portable gas detector (Option B) -->
       <label for="cost_legacy_detector" id="label_cost_legacy_detector">
         <span class="label-with-info">
-          Annual price of one portable gas detector and any associated subscription (CAD)
+          <span id="label_cost_legacy_detector_text">Annual price of one portable gas detector and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button
               type="button"
@@ -571,13 +609,13 @@
               aria-controls="detector_info_popover"
             >&#9432;</button>
             <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
-              <div class="popover-body">
-                <div class="kv">
-                  <div class="k">Baseline:</div>
-                  <div class="v">MSA Altair io4 + Complete Service Plan</div>
-                  <div class="k">Update for customer:</div>
-                  <div class="v">Change the price here to reflect the customer’s gas detector.</div>
-                </div>
+              <div class="popover-section">
+                <div class="popover-title">Baseline</div>
+                <p class="popover-body">MSA Altair io4 + Complete Service Plan</p>
+              </div>
+              <div class="popover-section">
+                <div class="popover-title">Update for customer</div>
+                <p class="popover-body">Change the price here to reflect the customer's gas detector.</p>
               </div>
             </div>
           </span>
@@ -588,7 +626,7 @@
       <!-- Lone worker (Option B) -->
       <label for="cost_lone_worker" id="label_cost_lone_worker">
         <span class="label-with-info">
-          Annual price of one lone worker device or app and any associated subscription (CAD)
+          <span id="label_cost_lone_worker_text">Annual price of one lone worker device or app and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button
               type="button"
@@ -599,13 +637,13 @@
               aria-controls="lw_info_popover"
             >&#9432;</button>
             <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
-              <div class="popover-body">
-                <div class="kv">
-                  <div class="k">Baseline:</div>
-                  <div class="v">Twig Neo</div>
-                  <div class="k">Update for customer:</div>
-                  <div class="v">Change the price to reflect the customer’s lone worker device or app.</div>
-                </div>
+              <div class="popover-section">
+                <div class="popover-title">Baseline</div>
+                <p class="popover-body">Twig Neo</p>
+              </div>
+              <div class="popover-section">
+                <div class="popover-title">Update for customer</div>
+                <p class="popover-body">Change the price to reflect the customer's lone worker device or app.</p>
               </div>
             </div>
           </span>
@@ -627,9 +665,9 @@
               aria-controls="g8_hw_info_popover"
             >&#9432;</button>
             <div class="info-popover" id="g8_hw_info_popover" role="dialog" aria-hidden="true">
-              <div class="popover-body">
+              <div class="popover-section">
                 <div class="popover-title">Pricing guidance</div>
-                Default configuration is set as 4 gas sensor (H2S, LEL MPS, CO and O2) on a 2 year warranty.
+                <p class="popover-body">Default configuration is set as 4 gas sensor (H2S, LEL MPS, CO and O2) on a 2 year warranty</p>
               </div>
             </div>
           </span>
@@ -651,9 +689,9 @@
               aria-controls="g8_plan_info_popover"
             >&#9432;</button>
             <div class="info-popover" id="g8_plan_info_popover" role="dialog" aria-hidden="true">
-              <div class="popover-body">
+              <div class="popover-section">
                 <div class="popover-title">Pricing guidance</div>
-                This is set as PRO service plan.
+                <p class="popover-body">This is set as PRO service plan</p>
               </div>
             </div>
           </span>
@@ -663,19 +701,16 @@
     </div>
 
     <p class="small-text">
-      Assumptions:<br>
-      • <strong>Number of devices to be replaced/purchased</strong> = number of G8 devices purchased (cost is based on this).<br>
-      • <strong>Adoption rate</strong> (below) affects savings only, not hardware/service plan cost.<br>
-      • Assumes G8 replaces a radio, a portable gas detector, and any lone worker device or app for each device purchased.
-        If your baseline is different, adjust the annual radio, detector, and lone worker cost inputs above.
+      Assumption:<br>
+      Assumes G8 replaces a radio, a portable gas detector, and any lone worker device or app for each device purchased.
     </p>
   </div>
 
-  <!-- Add-on Features -->
-  <h2>Add-on Features</h2>
+  <!-- Add-on Features / Other Costs -->
+  <h2>Add-on Features/Other Costs</h2>
   <div class="section-card">
     <div class="section-note">
-      Optional annual add-ons that increase the total G8 cost.
+      Optional annual add-ons and other G8-related costs.
     </div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
@@ -690,11 +725,34 @@
         Emergency Voice per device (annual, CAD)
       </label>
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
+
+      <!-- MOVED: Other costs (with popover) -->
+      <label for="other_annual_costs" id="label_other_annual_costs">
+        <span class="label-with-info">
+          Other costs
+          <span class="info-wrap">
+            <button
+              type="button"
+              class="info-icon-btn"
+              id="other_costs_info_btn"
+              aria-label="Other costs information"
+              aria-expanded="false"
+              aria-controls="other_costs_info_popover"
+            >&#9432;</button>
+            <div class="info-popover" id="other_costs_info_popover" role="dialog" aria-hidden="true">
+              <div class="popover-section">
+                <div class="popover-title">Other costs</div>
+                <p class="popover-body">
+                  In this field, include any additional G8 related costs such as implementation, training, extended warranty,
+                  extra cartridges, or other add-ons.
+                </p>
+              </div>
+            </div>
+          </span>
+        </span>
+      </label>
+      <input class="green-input" type="number" id="other_annual_costs" value="0" min="0" step="1">
     </div>
-    <p class="small-text">
-      Enter the annual cost per device for each add-on you plan to include. These values are added to the G8 cost used in the ROI and payback calculations.<br>
-      Device consolidation savings are calculated net of the G8 service plan and add-ons, so the savings shown already account for these recurring costs.
-    </p>
   </div>
 
   <!-- General Assumptions -->
@@ -709,15 +767,7 @@
 
       <label for="weeks_per_year">Weeks per year</label>
       <input class="green-input" type="number" id="weeks_per_year" value="52" min="0" step="1">
-
-      <label for="other_annual_costs" id="label_other_annual_costs">Other costs</label>
-      <input class="green-input" type="number" id="other_annual_costs" value="0" min="0" step="1">
     </div>
-    <p class="small-text">
-      “Other costs” is an optional field to capture any other one-time costs related to getting G8 up and running
-      (for example implementation, training, change management, or integration). It is added to the G8 cost when
-      calculating Year&nbsp;1 ROI and payback.
-    </p>
   </div>
 
   <!-- Scenario Assumptions -->
@@ -841,8 +891,8 @@
     <p class="small-text">
       Notes:<br>
       • Year&nbsp;1 ROI = (Total annual savings) / (Total Year&nbsp;1 G8 cost).<br>
-      • Total Year&nbsp;1 G8 cost includes G8 hardware, first-year service plan, add-on features, and any one-time “Other costs” entered above.<br>
-      • Device consolidation savings are calculated as the combined annual cost of a radio, portable gas detector, and lone worker device, minus the annual G8 service plan and add-ons. This means the consolidation savings shown are net of G8’s recurring costs.<br>
+      • Total Year&nbsp;1 G8 cost includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.<br>
+      • Device consolidation savings are calculated as the combined annual cost of a radio, portable gas detector, and lone worker device, minus the annual G8 service plan and add-ons. This means the consolidation savings shown are net of G8's recurring costs.<br>
       • Payback period (months) = 12 × Total Year&nbsp;1 G8 cost / Total annual savings.<br>
       • Adoption rate is entered as a decimal (e.g., 0.75 = 75%).
     </p>
@@ -907,28 +957,26 @@
   function updateCurrencyLabels() {
     var code = currentCurrency;
 
-    var label = document.getElementById('label_hourly_cost');
-    if (label) label.textContent = 'Average hourly labour cost (' + code + '/hr)';
+    var hourlyText = document.getElementById('label_hourly_cost_text');
+    if (hourlyText) hourlyText.textContent = 'Average hourly labour cost (' + code + '/hr)';
 
-    label = document.getElementById('label_cost_radio');
-    if (label) label.textContent = 'Annual price of one radio and any associated subscription (' + code + ')';
+    var radioText = document.getElementById('label_cost_radio_text');
+    if (radioText) radioText.textContent = 'Annual price of one radio and any associated subscription (' + code + ')';
 
-    label = document.getElementById('label_cost_legacy_detector');
-    if (label) label.textContent = 'Annual price of one portable gas detector and any associated subscription (' + code + ')';
+    var detectorText = document.getElementById('label_cost_legacy_detector_text');
+    if (detectorText) detectorText.textContent = 'Annual price of one portable gas detector and any associated subscription (' + code + ')';
 
-    label = document.getElementById('label_cost_lone_worker');
-    if (label) label.textContent = 'Annual price of one lone worker device or app and any associated subscription (' + code + ')';
+    var lwText = document.getElementById('label_cost_lone_worker_text');
+    if (lwText) lwText.textContent = 'Annual price of one lone worker device or app and any associated subscription (' + code + ')';
 
-    label = document.getElementById('label_gas_savings');
+    var label = document.getElementById('label_gas_savings');
     if (label) label.textContent = 'Calibration gas savings per device per year (' + code + ')';
 
     label = document.getElementById('label_addon_ptt');
     if (label) label.textContent = 'Push-to-Talk add-on per device (annual, ' + code + ')';
 
     label = document.getElementById('label_addon_monitoring');
-    if (label) {
-      label.textContent = 'Blackline Safety Monitoring (24/7 by expert team) per device (annual, ' + code + ')';
-    }
+    if (label) label.textContent = 'Blackline Safety Monitoring (24/7 by expert team) per device (annual, ' + code + ')';
 
     label = document.getElementById('label_addon_emergency_voice');
     if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
@@ -998,7 +1046,6 @@
     };
 
     var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring + addonEmergencyVoice;
-
     var deviceConsolidationPerDevice = (B8 + B9 + B12) - g8RecurringPerDevice;
     var deviceConsolidation = B6 * deviceConsolidationPerDevice;
 
@@ -1029,10 +1076,24 @@
     });
   }
 
+  // Registry so only one popover can be open at a time
+  var popoverRegistry = [];
+
+  function closeAllPopovers(exceptPopoverEl) {
+    popoverRegistry.forEach(function (item) {
+      if (item.pop !== exceptPopoverEl) {
+        item.pop.setAttribute('aria-hidden', 'true');
+        item.btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
   function setupPopover(btnId, popoverId) {
     var btn = document.getElementById(btnId);
     var pop = document.getElementById(popoverId);
     if (!btn || !pop) return;
+
+    popoverRegistry.push({ btn: btn, pop: pop });
 
     function closePopover() {
       pop.setAttribute('aria-hidden', 'true');
@@ -1040,6 +1101,7 @@
     }
 
     function openPopover() {
+      closeAllPopovers(pop);
       pop.setAttribute('aria-hidden', 'false');
       btn.setAttribute('aria-expanded', 'true');
     }
@@ -1095,15 +1157,16 @@
       });
     }
 
-    // Existing currency popover
+    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
-
-    // New popovers (Customer Inputs)
+    setupPopover('num_workers_info_btn', 'num_workers_info_popover');
+    setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
     setupPopover('radio_info_btn', 'radio_info_popover');
     setupPopover('detector_info_btn', 'detector_info_popover');
     setupPopover('lw_info_btn', 'lw_info_popover');
     setupPopover('g8_hw_info_btn', 'g8_hw_info_popover');
     setupPopover('g8_plan_info_btn', 'g8_plan_info_popover');
+    setupPopover('other_costs_info_btn', 'other_costs_info_popover');
 
     updateCurrencyLabels();
     recalc();
