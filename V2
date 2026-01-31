@@ -419,43 +419,6 @@
       display: none;
     }
 
-    /* Explainer blocks below the results table */
-    .explainer-row {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: nowrap;
-    }
-
-    .explainer-card {
-      flex: 1;
-      background: #f7f8fa;
-      border-radius: 4px;
-      border: 1px solid #e0e2e6;
-      padding: 0.75rem 0.9rem;
-      font-size: 0.85rem;
-    }
-
-    .explainer-card h3 {
-      margin: 0 0 0.35rem 0;
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .explainer-card p {
-      margin: 0 0 0.35rem 0;
-      font-weight: 500;
-    }
-
-    .explainer-list {
-      margin: 0 0 0 1.1rem;
-      padding: 0;
-    }
-
-    .explainer-list li {
-      margin-bottom: 0.2rem;
-    }
-
     @media (max-width: 720px) {
       .roi-calculator {
         padding: 0 1rem 1.25rem 1rem;
@@ -509,10 +472,6 @@
         border-left: 1px solid #e0e2e6;
         border-bottom: none;
         border-top: 1px solid #e0e2e6;
-      }
-
-      .explainer-row {
-        flex-direction: column;
       }
     }
   </style>
@@ -906,7 +865,7 @@
         <td><input class="orange-input" type="text" id="adoption_high" value="0.9" inputmode="decimal" autocomplete="off"></td>
       </tr>
 
-      <!-- UPDATED: Admin hours saved row with tabbed popover (Option 2) -->
+      <!-- Admin hours saved row with tabbed popover -->
       <tr>
         <td>
           <span class="label-with-info">
@@ -1074,22 +1033,7 @@
       • Adoption rate is displayed as a percent but calculated as a decimal (0–1).
     </p>
 
-    <div class="explainer-row">
-      <div class="explainer-card">
-        <h3>Admin hours saved per week</h3>
-        <p>Time saved in managing devices, including:</p>
-        <ul class="explainer-list">
-          <li>Logging, tracking, and chasing down devices</li>
-          <li>Manual bump/calibration tracking</li>
-          <li>Updating device assignments</li>
-          <li>Audits and compliance documentation</li>
-          <li>Swap-outs and troubleshooting</li>
-          <li>Data extraction or manual reporting</li>
-          <li>Maintaining radios, gas detectors and LW devices</li>
-          <li>Synchronizing data across systems</li>
-        </ul>
-      </div>
-    </div>
+    <!-- REMOVED: Admin hours saved per week explainer block (now captured in popup) -->
 
     <p class="small-text">
       <strong>Disclaimer:</strong> This calculator provides directional estimates only. Actual results will vary based on your
