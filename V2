@@ -897,11 +897,13 @@
         <td><input class="orange-input" type="number" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
       </tr>
+
       <tr>
         <td>Adoption rate of new workflows (0–1)</td>
-        <td><input class="orange-input" type="number" id="adoption_conservative" value="0.6" min="0" max="1" step="0.01"></td>
-        <td><input class="orange-input" type="number" id="adoption_typical" value="0.75" min="0" max="1" step="0.01"></td>
-        <td><input class="orange-input" type="number" id="adoption_high" value="0.9" min="0" max="1" step="0.01"></td>
+        <!-- Display as percent, but parsed/stored as decimal 0–1 for calculations -->
+        <td><input class="orange-input" type="text" id="adoption_conservative" value="0.6" inputmode="decimal" autocomplete="off"></td>
+        <td><input class="orange-input" type="text" id="adoption_typical" value="0.75" inputmode="decimal" autocomplete="off"></td>
+        <td><input class="orange-input" type="text" id="adoption_high" value="0.9" inputmode="decimal" autocomplete="off"></td>
       </tr>
 
       <!-- UPDATED: Admin hours saved row with tabbed popover (Option 2) -->
@@ -1069,7 +1071,7 @@
       • Total Year&nbsp;1 G8 cost includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.<br>
       • Device consolidation savings are calculated as the combined annual cost of a radio, portable gas detector, and lone worker device, minus the annual G8 service plan and add-ons. This means the consolidation savings shown are net of G8's recurring costs.<br>
       • Payback period (months) = 12 × Total Year&nbsp;1 G8 cost / Total annual savings.<br>
-      • Adoption rate is entered as a decimal (e.g., 0.75 = 75%).
+      • Adoption rate is displayed as a percent but calculated as a decimal (0–1).
     </p>
 
     <div class="explainer-row">
@@ -1143,9 +1145,46 @@
     if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
   }
 
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function isAdoptionField(id) {
+    return id === 'adoption_conservative' || id === 'adoption_typical' || id === 'adoption_high';
+  }
+
+  // Converts user-visible percent or decimal into a decimal 0–1
+  function parseAdoption(raw) {
+    var s = String(raw || '').trim();
+    if (!s) return 0;
+
+    var hasPct = s.indexOf('%') !== -1;
+    s = s.replace('%', '').replace(/,/g, '').trim();
+
+    var n = parseFloat(s);
+    if (isNaN(n)) return 0;
+
+    // If user typed "60%" or "60" -> treat as percent
+    if (hasPct || n > 1) n = n / 100;
+
+    return clamp(n, 0, 1);
+  }
+
+  function formatAdoptionDisplayFromDecimal(decimal) {
+    var d = clamp(decimal, 0, 1);
+    var pct = Math.round(d * 100);
+    return pct.toString() + '%';
+  }
+
   function parseNumber(id) {
     var el = document.getElementById(id);
     if (!el) return 0;
+
+    // Adoption: display percent but parse to decimal 0–1
+    if (isAdoptionField(id)) {
+      return parseAdoption(el.value);
+    }
+
     var raw = String(el.value).replace(/,/g, '').trim();
     var n = parseFloat(raw);
     return isNaN(n) ? 0 : n;
@@ -1207,6 +1246,7 @@
     };
 
     var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring + addonEmergencyVoice;
+
     var deviceConsolidationPerDevice = (B8 + B9 + B12) - g8RecurringPerDevice;
     var deviceConsolidation = B6 * deviceConsolidationPerDevice;
 
@@ -1287,7 +1327,7 @@
     });
   }
 
-  // NEW: tabs inside a popover (Option 2)
+  // Tabs inside a popover
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1333,15 +1373,44 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var baselineValues = {};
+  function formatAllAdoptionFieldsToPercent() {
+    ['adoption_conservative', 'adoption_typical', 'adoption_high'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
 
+      var dec = parseAdoption(el.value);
+      el.value = formatAdoptionDisplayFromDecimal(dec);
+    });
+  }
+
+  function wireAdoptionFormatting() {
+    ['adoption_conservative', 'adoption_typical', 'adoption_high'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener('blur', function () {
+        var dec = parseAdoption(el.value);
+        el.value = formatAdoptionDisplayFromDecimal(dec);
+        recalc();
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Normalize adoption display BEFORE baseline capture
+    formatAllAdoptionFieldsToPercent();
+
+    var baselineValues = {};
     var inputs = document.querySelectorAll('input');
+
     inputs.forEach(function (input) {
       if (input.id) baselineValues[input.id] = input.value;
       input.addEventListener('input', recalc);
       input.addEventListener('change', recalc);
     });
+
+    // Adoption: keep display as percent after editing
+    wireAdoptionFormatting();
 
     var resetBtn = document.getElementById('reset_baseline_btn');
     if (resetBtn) {
@@ -1350,6 +1419,10 @@
           var el = document.getElementById(id);
           if (el) el.value = baselineValues[id];
         });
+
+        // Ensure adoption stays formatted as percent after reset
+        formatAllAdoptionFieldsToPercent();
+
         recalc();
       });
     }
@@ -1376,7 +1449,7 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
-    // NEW: Admin hours popover + tabs
+    // Admin hours popover + tabs
     setupPopover('admin_hours_info_btn', 'admin_hours_info_popover');
     setupPopoverTabs('admin_hours_info_popover');
 
