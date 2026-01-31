@@ -303,12 +303,12 @@
       z-index: 50;
       display: none;
 
-      /* ✅ Wrap long text instead of scrolling */
+      /* Wrap long text instead of scrolling */
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
 
-      /* ✅ Ensure no scrollbars appear */
+      /* Ensure no scrollbars appear */
       overflow: visible;
     }
 
@@ -378,6 +378,45 @@
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
+    }
+
+    /* Tabs inside popovers */
+    .popover-tabs {
+      display: flex;
+      gap: 0.35rem;
+      margin: 0.55rem 0 0.6rem 0;
+      flex-wrap: wrap;
+    }
+
+    .popover-tab-btn {
+      font-size: 11px;
+      line-height: 1;
+      padding: 0.35rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid #c5c9cf;
+      background: #ffffff;
+      color: #101820;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .popover-tab-btn:hover {
+      background: #fbe9ec;
+      border-color: #A6192E;
+    }
+
+    .popover-tab-btn.is-active {
+      background: #101820;
+      color: #ffffff;
+      border-color: #101820;
+    }
+
+    .popover-tab-panel {
+      margin-top: 0.2rem;
+    }
+
+    .popover-tab-panel[hidden] {
+      display: none;
     }
 
     /* Explainer blocks below the results table */
@@ -864,12 +903,83 @@
         <td><input class="orange-input" type="number" id="adoption_typical" value="0.75" min="0" max="1" step="0.01"></td>
         <td><input class="orange-input" type="number" id="adoption_high" value="0.9" min="0" max="1" step="0.01"></td>
       </tr>
+
+      <!-- UPDATED: Admin hours saved row with tabbed popover (Option 2) -->
       <tr>
-        <td>Admin hours saved per device per week</td>
+        <td>
+          <span class="label-with-info">
+            Admin hours saved per device per week
+            <span class="info-wrap">
+              <button
+                type="button"
+                class="info-icon-btn"
+                id="admin_hours_info_btn"
+                aria-label="Admin hours saved per device per week information"
+                aria-expanded="false"
+                aria-controls="admin_hours_info_popover"
+              >&#9432;</button>
+
+              <div class="info-popover" id="admin_hours_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">What this assumption represents</div>
+                  <p class="popover-body">
+                    Weekly time reallocated from issuing, supporting, and coordinating devices and systems after consolidating to G8.
+                  </p>
+                </div>
+
+                <div class="popover-tabs" role="tablist" aria-label="Admin hours examples by team">
+                  <button type="button" class="popover-tab-btn is-active" role="tab"
+                          aria-selected="true" aria-controls="admin_tab_ops" id="admin_tab_btn_ops">
+                    Operations
+                  </button>
+                  <button type="button" class="popover-tab-btn" role="tab"
+                          aria-selected="false" aria-controls="admin_tab_hse" id="admin_tab_btn_hse">
+                    Health and Safety
+                  </button>
+                  <button type="button" class="popover-tab-btn" role="tab"
+                          aria-selected="false" aria-controls="admin_tab_other" id="admin_tab_btn_other">
+                    Procurement / IT / Fleet
+                  </button>
+                </div>
+
+                <div class="popover-tab-panel is-active" role="tabpanel" id="admin_tab_ops" aria-labelledby="admin_tab_btn_ops">
+                  <ul>
+                    <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
+                    <li>Track fewer assets because there is one device per worker to log, store, and swap.</li>
+                    <li>Resolve shift-start issues faster because workers manage one device (missing, dead battery, wrong unit).</li>
+                    <li>Coordinate work with fewer check-ins because teams can call and confirm status from the same device.</li>
+                    <li>Review basic operational activity faster because usage and events are captured automatically.</li>
+                  </ul>
+                </div>
+
+                <div class="popover-tab-panel" role="tabpanel" id="admin_tab_hse" aria-labelledby="admin_tab_btn_hse" hidden>
+                  <ul>
+                    <li>Build audit and compliance documentation faster because readiness and safety activity are recorded automatically.</li>
+                    <li>Manage bump and calibration programs with fewer spreadsheets because device history is centralized.</li>
+                    <li>Investigate incidents faster because alerts, timestamps, and location are already linked.</li>
+                    <li>Produce leadership-ready summaries faster because trends do not require manual data pulls.</li>
+                    <li>Close the loop with fewer follow-ups because alarm, location, and voice context reduces back-and-forth.</li>
+                  </ul>
+                </div>
+
+                <div class="popover-tab-panel" role="tabpanel" id="admin_tab_other" aria-labelledby="admin_tab_btn_other" hidden>
+                  <ul>
+                    <li>Reduce purchasing effort because vendor consolidation means fewer POs, renewals, and invoices.</li>
+                    <li>Reduce IT support burden because there are fewer systems to integrate and maintain.</li>
+                    <li>Update assignments and access in one place instead of coordinating changes across multiple tools.</li>
+                    <li>Simplify troubleshooting and swap-outs because there are fewer device types and accessory workflows.</li>
+                    <li>Reconcile data faster because gas, alerts, and worker status are not stitched across systems.</li>
+                  </ul>
+                </div>
+              </div>
+            </span>
+          </span>
+        </td>
         <td><input class="orange-input" type="number" id="admin_hours_conservative" value="0.5" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="admin_hours_typical" value="1" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="admin_hours_high" value="1.5" min="0" step="0.1"></td>
       </tr>
+
       <tr>
         <td id="label_gas_savings">Calibration gas savings per device per year (CAD)</td>
         <td><input class="orange-input" type="number" id="gas_savings_conservative" value="50" min="0" step="0.01"></td>
@@ -1177,6 +1287,52 @@
     });
   }
 
+  // NEW: tabs inside a popover (Option 2)
+  function setupPopoverTabs(popoverId) {
+    var pop = document.getElementById(popoverId);
+    if (!pop) return;
+
+    var tabButtons = pop.querySelectorAll('.popover-tab-btn');
+    var panels = pop.querySelectorAll('.popover-tab-panel');
+    if (!tabButtons.length || !panels.length) return;
+
+    function activateTab(btn) {
+      var targetId = btn.getAttribute('aria-controls');
+
+      tabButtons.forEach(function (b) {
+        var active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      panels.forEach(function (p) {
+        var isTarget = p.id === targetId;
+        if (isTarget) {
+          p.removeAttribute('hidden');
+          p.classList.add('is-active');
+        } else {
+          p.setAttribute('hidden', '');
+          p.classList.remove('is-active');
+        }
+      });
+    }
+
+    tabButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        activateTab(btn);
+      });
+
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activateTab(btn);
+        }
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
 
@@ -1219,6 +1375,10 @@
     setupPopover('g8_plan_info_btn', 'g8_plan_info_popover');
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
+
+    // NEW: Admin hours popover + tabs
+    setupPopover('admin_hours_info_btn', 'admin_hours_info_popover');
+    setupPopoverTabs('admin_hours_info_popover');
 
     updateCurrencyLabels();
     recalc();
