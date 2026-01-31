@@ -858,7 +858,7 @@
       </tr>
 
       <tr>
-        <td>Adoption rate of new workflows (0–1)</td>
+        <td>Adoption rate of new workflows </td>
         <!-- Display as percent, but parsed/stored as decimal 0–1 for calculations -->
         <td><input class="orange-input" type="text" id="adoption_conservative" value="0.6" inputmode="decimal" autocomplete="off"></td>
         <td><input class="orange-input" type="text" id="adoption_typical" value="0.75" inputmode="decimal" autocomplete="off"></td>
