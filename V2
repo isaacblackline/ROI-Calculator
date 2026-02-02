@@ -126,6 +126,7 @@
       border-left: 3px solid #A6192E;
     }
 
+    /* FIX 6: merged duplicate focus rules into one */
     .inputs-grid input:focus,
     .scenario-table input:focus {
       outline: none;
@@ -251,6 +252,7 @@
       transform: translateY(-0.5px) skew(-10deg);
     }
 
+    /* FIX 2: added explicit display:none as the base state */
     .info-popover {
       position: absolute;
       top: 50%;
@@ -289,7 +291,6 @@
     .popover-section { margin-bottom: 0.55rem; }
     .popover-section:last-child { margin-bottom: 0; }
 
-    /* UPDATED: popover header/title text is Blackline red */
     .info-popover .popover-title {
       font-size: 10.75px;
       font-weight: 800;
@@ -335,7 +336,6 @@
 
     .popover-tab-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
-    /* Active tab uses Blackline red */
     .popover-tab-btn.is-active {
       background: #A6192E;
       color: #ffffff;
@@ -517,7 +517,8 @@
     <div class="section-note">Edit the fields below to reflect your deployment.</div>
 
     <div class="inputs-grid">
-      <label for="num_workers" id="label_num_workers">
+      <!-- FIX 4: removed unused id from labels throughout this section -->
+      <label for="num_workers">
         <span class="label-with-info">
           Number of devices to be replaced/purchased
           <span class="info-wrap">
@@ -539,7 +540,7 @@
       </label>
       <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
 
-      <label for="hourly_cost" id="label_hourly_cost">
+      <label for="hourly_cost">
         <span class="label-with-info">
           <span id="label_hourly_cost_text">Average hourly labour cost (CAD/hr)</span>
           <span class="info-wrap">
@@ -558,7 +559,7 @@
       </label>
       <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
 
-      <label for="cost_radio" id="label_cost_radio">
+      <label for="cost_radio">
         <span class="label-with-info">
           <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (CAD)</span>
           <span class="info-wrap">
@@ -573,7 +574,7 @@
               </div>
               <div class="popover-section">
                 <div class="popover-title">Update for customer</div>
-                <p class="popover-body">Replace with the customer’s current radio + subscription price.</p>
+                <p class="popover-body">Replace with the customer's current radio + subscription price.</p>
               </div>
             </div>
           </span>
@@ -581,7 +582,7 @@
       </label>
       <input class="green-input" type="number" id="cost_radio" value="2950" min="0" step="0.01">
 
-      <label for="cost_legacy_detector" id="label_cost_legacy_detector">
+      <label for="cost_legacy_detector">
         <span class="label-with-info">
           <span id="label_cost_legacy_detector_text">Annual price of one portable gas detector and any associated subscription (CAD)</span>
           <span class="info-wrap">
@@ -604,7 +605,7 @@
       </label>
       <input class="green-input" type="number" id="cost_legacy_detector" value="1152" min="0" step="0.01">
 
-      <label for="cost_lone_worker" id="label_cost_lone_worker">
+      <label for="cost_lone_worker">
         <span class="label-with-info">
           <span id="label_cost_lone_worker_text">Annual price of one lone worker device or app and any associated subscription (CAD)</span>
           <span class="info-wrap">
@@ -677,6 +678,7 @@
   <div class="section-card">
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
+      <!-- FIX 7: flattened these three labels — no info button, so no nesting needed -->
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
@@ -686,7 +688,7 @@
       <label for="addon_emergency_voice" id="label_addon_emergency_voice">Emergency Voice per device (annual, CAD)</label>
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
-      <label for="other_annual_costs" id="label_other_annual_costs">
+      <label for="other_annual_costs">
         <span class="label-with-info">
           Other costs
           <span class="info-wrap">
@@ -794,7 +796,8 @@
                           aria-selected="false" aria-controls="admin_week_tab_other" id="admin_week_tab_btn_other">Procurement / IT / Fleet</button>
                 </div>
 
-                <div class="popover-tab-panel is-active" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
+                <!-- FIX 5: removed is-active class from panels; hidden attribute is the sole visibility control -->
+                <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
                   <ul>
                     <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
                     <li>Track fewer assets because there is one device per worker to log, store, and swap.</li>
@@ -860,7 +863,8 @@
                           aria-selected="false" aria-controls="gas_tab_caveats" id="gas_tab_btn_caveats">Assumptions & caveats</button>
                 </div>
 
-                <div class="popover-tab-panel is-active" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
+                <!-- FIX 5: removed is-active class from panels here too -->
+                <div class="popover-tab-panel" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
                   <ul>
                     <li>Many programs use <strong>daily bump</strong> + <strong>30-day calibration</strong> because older sensors can fail without clear warning.</li>
                     <li>Newer LEL sensors (e.g., <strong>MPS</strong>) may support less frequent testing due to improved stability and self-diagnostics.</li>
@@ -882,7 +886,7 @@
                     <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
                   </div>
                   <p class="popover-body" style="margin-top:0.45rem;">
-                    If SOPs don’t change, set this value to <strong>$0</strong>.
+                    If SOPs don't change, set this value to <strong>$0</strong>.
                   </p>
                 </div>
 
@@ -898,7 +902,7 @@
           </span>
 
           <span class="tip-inline">
-            <strong>Tip:</strong> Set to <strong>$0</strong> if SOPs won’t change.
+            <strong>Tip:</strong> Set to <strong>$0</strong> if SOPs won't change.
           </span>
         </td>
 
@@ -995,7 +999,7 @@
                 <div class="popover-section">
                   <div class="popover-title">Total Year 1 G8 cost</div>
                   <p class="popover-body">
-                    Includes G8 hardware, first-year service plan, add-on features, and any one-time “Other costs” entered above.
+                    Includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.
                   </p>
                 </div>
               </div>
@@ -1150,69 +1154,69 @@
   }
 
   function recalc() {
-    var numDevices  = parseNumber('num_workers');
-    var hourlyCost  = parseNumber('hourly_cost');
-    var costRadio   = parseNumber('cost_radio');
-    var costDetector= parseNumber('cost_legacy_detector');
-    var hwCost      = parseNumber('hardware_cost');
-    var planCost    = parseNumber('subscription_cost');
-    var costLW      = parseNumber('cost_lone_worker');
+    var numDevices      = parseNumber('num_workers');
+    var hourlyCost      = parseNumber('hourly_cost');
+    var costRadio       = parseNumber('cost_radio');
+    var costDetector    = parseNumber('cost_legacy_detector');
+    var hwCost          = parseNumber('hardware_cost');
+    var planCost        = parseNumber('subscription_cost');
+    var costLW          = parseNumber('cost_lone_worker');
     var workdaysPerYear = parseNumber('workdays_per_year');
-    var weeksPerYear = parseNumber('weeks_per_year');
-    var otherCosts  = parseNumber('other_annual_costs');
+    var weeksPerYear    = parseNumber('weeks_per_year');
+    var otherCosts      = parseNumber('other_annual_costs');
 
-    var addonPTT = parseNumber('addon_ptt');
-    var addonMonitoring = parseNumber('addon_monitoring');
+    var addonPTT            = parseNumber('addon_ptt');
+    var addonMonitoring     = parseNumber('addon_monitoring');
     var addonEmergencyVoice = parseNumber('addon_emergency_voice');
 
     var scenarios = {
       conservative: {
-        minutesPerDay: parseNumber('minutes_saved_conservative'),
+        minutesPerDay:       parseNumber('minutes_saved_conservative'),
         adminMinutesPerWeek: parseNumber('admin_minutes_week_conservative'),
-        gasSavings: parseNumber('gas_savings_conservative')
+        gasSavings:          parseNumber('gas_savings_conservative')
       },
       typical: {
-        minutesPerDay: parseNumber('minutes_saved_typical'),
+        minutesPerDay:       parseNumber('minutes_saved_typical'),
         adminMinutesPerWeek: parseNumber('admin_minutes_week_typical'),
-        gasSavings: parseNumber('gas_savings_typical')
+        gasSavings:          parseNumber('gas_savings_typical')
       },
       high: {
-        minutesPerDay: parseNumber('minutes_saved_high'),
+        minutesPerDay:       parseNumber('minutes_saved_high'),
         adminMinutesPerWeek: parseNumber('admin_minutes_week_high'),
-        gasSavings: parseNumber('gas_savings_high')
+        gasSavings:          parseNumber('gas_savings_high')
       }
     };
 
-    var deviceConsolidationPerDevice = (costRadio + costDetector + costLW);
-    var deviceConsolidation = numDevices * deviceConsolidationPerDevice;
-
-    var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
+    var deviceConsolidation = numDevices * (costRadio + costDetector + costLW);
+    var totalYear1G8Cost    = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
       var s = scenarios[key];
 
       var workerTimeSavings = numDevices * (s.minutesPerDay / 60) * workdaysPerYear * hourlyCost;
-      var adminSavings = numDevices * (s.adminMinutesPerWeek / 60) * weeksPerYear * hourlyCost;
-      var gasSavings = numDevices * s.gasSavings;
+      var adminSavings      = numDevices * (s.adminMinutesPerWeek / 60) * weeksPerYear * hourlyCost;
+      var gasSavings        = numDevices * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      var roi = totalYear1G8Cost === 0 ? 0 : totalSavings / totalYear1G8Cost;
-      var payback = totalSavings === 0 ? 0 : (12 * totalYear1G8Cost / totalSavings);
+      // FIX 1: show N/A instead of misleading 0% / 0 months on division-by-zero edges
+      var roiDisplay     = totalYear1G8Cost === 0 ? 'N/A' : formatPercent(totalSavings / totalYear1G8Cost);
+      var paybackDisplay = totalSavings === 0      ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
 
-      setText('workerTime' + suffix,    formatCurrency(workerTimeSavings));
-      setText('adminSavings' + suffix,  formatCurrency(adminSavings));
-      setText('gasSavings' + suffix,    formatCurrency(gasSavings));
+      setText('workerTime'    + suffix, formatCurrency(workerTimeSavings));
+      setText('adminSavings'  + suffix, formatCurrency(adminSavings));
+      setText('gasSavings'    + suffix, formatCurrency(gasSavings));
       setText('deviceSavings' + suffix, formatCurrency(deviceConsolidation));
-      setText('totalSavings' + suffix,  formatCurrency(totalSavings));
-      setText('totalCost' + suffix,     formatCurrency(totalYear1G8Cost));
-      setText('roi' + suffix,           formatPercent(roi));
-      setText('payback' + suffix,       formatMonths(payback));
+      setText('totalSavings'  + suffix, formatCurrency(totalSavings));
+      setText('totalCost'     + suffix, formatCurrency(totalYear1G8Cost));
+      setText('roi'           + suffix, roiDisplay);
+      setText('payback'       + suffix, paybackDisplay);
     });
   }
 
+  /* ── Popover registry & helpers ── */
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1242,15 +1246,10 @@
       btn.setAttribute('aria-expanded', 'true');
     }
 
-    function togglePopover() {
-      var isHidden = pop.getAttribute('aria-hidden') !== 'false';
-      if (isHidden) openPopover();
-      else closePopover();
-    }
-
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      togglePopover();
+      var isHidden = pop.getAttribute('aria-hidden') !== 'false';
+      if (isHidden) openPopover(); else closePopover();
     });
 
     document.addEventListener('click', function (e) {
@@ -1262,12 +1261,13 @@
     });
   }
 
+  /* ── Tabbed popovers ── */
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
 
     var tabButtons = pop.querySelectorAll('.popover-tab-btn');
-    var panels = pop.querySelectorAll('.popover-tab-panel');
+    var panels     = pop.querySelectorAll('.popover-tab-panel');
     if (!tabButtons.length || !panels.length) return;
 
     function activateTab(btn) {
@@ -1279,15 +1279,10 @@
         b.setAttribute('aria-selected', active ? 'true' : 'false');
       });
 
+      // FIX 5: visibility is controlled only via hidden attribute; is-active class removed
       panels.forEach(function (p) {
-        var isTarget = p.id === targetId;
-        if (isTarget) {
-          p.removeAttribute('hidden');
-          p.classList.add('is-active');
-        } else {
-          p.setAttribute('hidden', '');
-          p.classList.remove('is-active');
-        }
+        if (p.id === targetId) p.removeAttribute('hidden');
+        else                   p.setAttribute('hidden', '');
       });
     }
 
@@ -1307,50 +1302,49 @@
     });
   }
 
+  /* ── Disclaimer toggle ── */
   function setupDisclaimerToggle(btnId, panelId) {
-    var btn = document.getElementById(btnId);
+    var btn   = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
     if (!btn || !panel) return;
 
-    function closeDisclaimer() {
-      panel.hidden = true;
-      btn.setAttribute('aria-expanded', 'false');
-    }
-
-    function openDisclaimer() {
-      closeAllPopovers(null);
-      panel.hidden = false;
-      btn.setAttribute('aria-expanded', 'true');
-    }
-
-    function toggleDisclaimer() {
-      var isOpen = !panel.hidden;
-      if (isOpen) closeDisclaimer();
-      else openDisclaimer();
-    }
-
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      toggleDisclaimer();
+      var isOpen = !panel.hidden;
+      if (isOpen) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        closeAllPopovers(null);
+        panel.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
+      }
     });
 
     document.addEventListener('click', function (e) {
-      if (!panel.contains(e.target) && e.target !== btn) closeDisclaimer();
+      if (!panel.contains(e.target) && e.target !== btn) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      }
     });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeDisclaimer();
+      if (e.key === 'Escape') {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 
+  /* ── Bootstrap ── */
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
 
     inputs.forEach(function (input) {
       if (input.id) baselineValues[input.id] = input.value;
+      // FIX 3: single 'input' listener is enough; removed redundant 'change' listener
       input.addEventListener('input', recalc);
-      input.addEventListener('change', recalc);
     });
 
     var resetBtn = document.getElementById('reset_baseline_btn');
@@ -1374,30 +1368,32 @@
       });
     }
 
-    setupPopover('currency_info_btn', 'currency_info_popover');
-    setupPopover('num_workers_info_btn', 'num_workers_info_popover');
-    setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
-    setupPopover('radio_info_btn', 'radio_info_popover');
-    setupPopover('detector_info_btn', 'detector_info_popover');
-    setupPopover('lw_info_btn', 'lw_info_popover');
-    setupPopover('g8_hw_info_btn', 'g8_hw_info_popover');
-    setupPopover('g8_plan_info_btn', 'g8_plan_info_popover');
-    setupPopover('other_costs_info_btn', 'other_costs_info_popover');
-    setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
-
+    /* wire up every popover */
+    setupPopover('currency_info_btn',           'currency_info_popover');
+    setupPopover('num_workers_info_btn',        'num_workers_info_popover');
+    setupPopover('hourly_cost_info_btn',        'hourly_cost_info_popover');
+    setupPopover('radio_info_btn',              'radio_info_popover');
+    setupPopover('detector_info_btn',           'detector_info_popover');
+    setupPopover('lw_info_btn',                 'lw_info_popover');
+    setupPopover('g8_hw_info_btn',              'g8_hw_info_popover');
+    setupPopover('g8_plan_info_btn',            'g8_plan_info_popover');
+    setupPopover('other_costs_info_btn',        'other_costs_info_popover');
+    setupPopover('minutes_saved_info_btn',      'minutes_saved_info_popover');
     setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
-    setupPopoverTabs('admin_minutes_week_info_popover');
+    setupPopover('gas_savings_info_btn',        'gas_savings_info_popover');
+    setupPopover('device_savings_info_btn',     'device_savings_info_popover');
+    setupPopover('total_cost_info_btn',         'total_cost_info_popover');
+    setupPopover('roi_info_btn',                'roi_info_popover');
+    setupPopover('payback_info_btn',            'payback_info_popover');
 
-    setupPopover('gas_savings_info_btn', 'gas_savings_info_popover');
+    /* wire up tabbed popovers */
+    setupPopoverTabs('admin_minutes_week_info_popover');
     setupPopoverTabs('gas_savings_info_popover');
 
-    setupPopover('device_savings_info_btn', 'device_savings_info_popover');
-    setupPopover('total_cost_info_btn', 'total_cost_info_popover');
-    setupPopover('roi_info_btn', 'roi_info_popover');
-    setupPopover('payback_info_btn', 'payback_info_popover');
-
+    /* disclaimer */
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
+    /* initial render */
     updateCurrencyLabels();
     recalc();
   });
