@@ -373,6 +373,44 @@
       flex-wrap: nowrap;
     }
 
+    /* Disclaimer button + panel */
+    .disclaimer-row {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .disclaimer-btn {
+      align-self: flex-start; /* change to flex-end if you want right-aligned */
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid #c5c9cf;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #101820;
+    }
+
+    .disclaimer-btn:hover {
+      background: #fbe9ec;
+      border-color: #A6192E;
+    }
+
+    .disclaimer-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(16, 24, 32, 0.18);
+      border-color: #101820;
+    }
+
+    .disclaimer-panel {
+      background: #f7f8fa;
+      border: 1px solid #e0e2e6;
+      border-radius: 4px;
+      padding: 0.6rem 0.7rem;
+    }
+
     @media (max-width: 720px) {
       .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
       .roi-brand-bar { padding: 0.75rem 1rem; margin: 0 -1rem; }
@@ -978,11 +1016,26 @@
       </tbody>
     </table>
 
-    <p class="small-text">
-      <strong>Disclaimer:</strong> This calculator provides directional estimates only. Actual results will vary based on your
-      specific operations, configuration, pricing, and SOPs. Use it to frame discussions and compare scenarios, not as a
-      guarantee of future performance.
-    </p>
+    <!-- Disclaimer button + expandable text -->
+    <div class="disclaimer-row">
+      <button
+        type="button"
+        class="disclaimer-btn"
+        id="disclaimer_btn"
+        aria-expanded="false"
+        aria-controls="disclaimer_panel"
+      >
+        Disclaimer &amp; assumptions
+      </button>
+
+      <div class="disclaimer-panel" id="disclaimer_panel" hidden>
+        <p class="small-text" style="margin:0;">
+          This calculator provides directional estimates only. Actual results will vary based on your
+          specific operations, configuration, pricing, and SOPs. Use it to frame discussions and compare scenarios, not as a
+          guarantee of future performance.
+        </p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1124,6 +1177,7 @@
     });
   }
 
+  // Registry so only one popover can be open at a time
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1173,6 +1227,7 @@
     });
   }
 
+  // Tabs inside a popover
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1218,6 +1273,44 @@
     });
   }
 
+  // Disclaimer toggle (works with popovers; closes when clicking outside)
+  function setupDisclaimerToggle(btnId, panelId) {
+    var btn = document.getElementById(btnId);
+    var panel = document.getElementById(panelId);
+    if (!btn || !panel) return;
+
+    function closeDisclaimer() {
+      panel.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    function openDisclaimer() {
+      // Close popovers so UI doesn't feel cluttered
+      closeAllPopovers(null);
+      panel.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleDisclaimer() {
+      var isOpen = !panel.hidden;
+      if (isOpen) closeDisclaimer();
+      else openDisclaimer();
+    }
+
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      toggleDisclaimer();
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!panel.contains(e.target) && e.target !== btn) closeDisclaimer();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDisclaimer();
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
@@ -1249,6 +1342,7 @@
       });
     }
 
+    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
     setupPopover('num_workers_info_btn', 'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
@@ -1260,16 +1354,22 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
+    // Admin minutes popover + tabs
     setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
     setupPopoverTabs('admin_minutes_week_info_popover');
 
+    // Gas savings popover + tabs
     setupPopover('gas_savings_info_btn', 'gas_savings_info_popover');
     setupPopoverTabs('gas_savings_info_popover');
 
+    // Results popovers
     setupPopover('device_savings_info_btn', 'device_savings_info_popover');
     setupPopover('total_cost_info_btn', 'total_cost_info_popover');
     setupPopover('roi_info_btn', 'roi_info_popover');
     setupPopover('payback_info_btn', 'payback_info_popover');
+
+    // Disclaimer button toggle
+    setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
     updateCurrencyLabels();
     recalc();
