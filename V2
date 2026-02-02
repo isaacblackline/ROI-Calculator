@@ -126,7 +126,6 @@
       border-left: 3px solid #A6192E;
     }
 
-    /* FIX 6: merged duplicate focus rules into one */
     .inputs-grid input:focus,
     .scenario-table input:focus {
       outline: none;
@@ -218,7 +217,6 @@
 
     .info-wrap { position: relative; display: inline-flex; align-items: center; }
 
-    /* Small designed info icon */
     .info-icon-btn {
       width: 16px;
       height: 16px;
@@ -252,7 +250,6 @@
       transform: translateY(-0.5px) skew(-10deg);
     }
 
-    /* FIX 2: added explicit display:none as the base state */
     .info-popover {
       position: absolute;
       top: 50%;
@@ -291,6 +288,7 @@
     .popover-section { margin-bottom: 0.55rem; }
     .popover-section:last-child { margin-bottom: 0; }
 
+    /* Popup headers (titles) in Blackline red */
     .info-popover .popover-title {
       font-size: 10.75px;
       font-weight: 800;
@@ -336,6 +334,7 @@
 
     .popover-tab-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
+    /* Active tab uses Blackline red */
     .popover-tab-btn.is-active {
       background: #A6192E;
       color: #ffffff;
@@ -361,7 +360,9 @@
       color: #333;
       margin: 0.15rem 0;
     }
+    /* Ensure bold text in the popover body stays black (not red) */
     .math-line strong { color: #101820; }
+
     .math-muted { color: #555; font-size: 10.75px; margin-top: 0.35rem; }
 
     .tip-inline {
@@ -382,7 +383,6 @@
       flex-wrap: nowrap;
     }
 
-    /* Disclaimer button + panel */
     .disclaimer-row {
       margin-top: 0.75rem;
       display: flex;
@@ -517,7 +517,6 @@
     <div class="section-note">Edit the fields below to reflect your deployment.</div>
 
     <div class="inputs-grid">
-      <!-- FIX 4: removed unused id from labels throughout this section -->
       <label for="num_workers">
         <span class="label-with-info">
           Number of devices to be replaced/purchased
@@ -678,7 +677,6 @@
   <div class="section-card">
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
-      <!-- FIX 7: flattened these three labels — no info button, so no nesting needed -->
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
@@ -796,7 +794,6 @@
                           aria-selected="false" aria-controls="admin_week_tab_other" id="admin_week_tab_btn_other">Procurement / IT / Fleet</button>
                 </div>
 
-                <!-- FIX 5: removed is-active class from panels; hidden attribute is the sole visibility control -->
                 <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
                   <ul>
                     <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
@@ -863,7 +860,6 @@
                           aria-selected="false" aria-controls="gas_tab_caveats" id="gas_tab_btn_caveats">Assumptions & caveats</button>
                 </div>
 
-                <!-- FIX 5: removed is-active class from panels here too -->
                 <div class="popover-tab-panel" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
                   <ul>
                     <li>Many programs use <strong>daily bump</strong> + <strong>30-day calibration</strong> because older sensors can fail without clear warning.</li>
@@ -1199,7 +1195,6 @@
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // FIX 1: show N/A instead of misleading 0% / 0 months on division-by-zero edges
       var roiDisplay     = totalYear1G8Cost === 0 ? 'N/A' : formatPercent(totalSavings / totalYear1G8Cost);
       var paybackDisplay = totalSavings === 0      ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
@@ -1216,7 +1211,6 @@
     });
   }
 
-  /* ── Popover registry & helpers ── */
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1261,7 +1255,6 @@
     });
   }
 
-  /* ── Tabbed popovers ── */
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1279,7 +1272,6 @@
         b.setAttribute('aria-selected', active ? 'true' : 'false');
       });
 
-      // FIX 5: visibility is controlled only via hidden attribute; is-active class removed
       panels.forEach(function (p) {
         if (p.id === targetId) p.removeAttribute('hidden');
         else                   p.setAttribute('hidden', '');
@@ -1302,7 +1294,6 @@
     });
   }
 
-  /* ── Disclaimer toggle ── */
   function setupDisclaimerToggle(btnId, panelId) {
     var btn   = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
@@ -1336,14 +1327,12 @@
     });
   }
 
-  /* ── Bootstrap ── */
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
 
     inputs.forEach(function (input) {
       if (input.id) baselineValues[input.id] = input.value;
-      // FIX 3: single 'input' listener is enough; removed redundant 'change' listener
       input.addEventListener('input', recalc);
     });
 
@@ -1368,7 +1357,6 @@
       });
     }
 
-    /* wire up every popover */
     setupPopover('currency_info_btn',           'currency_info_popover');
     setupPopover('num_workers_info_btn',        'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn',        'hourly_cost_info_popover');
@@ -1386,14 +1374,11 @@
     setupPopover('roi_info_btn',                'roi_info_popover');
     setupPopover('payback_info_btn',            'payback_info_popover');
 
-    /* wire up tabbed popovers */
     setupPopoverTabs('admin_minutes_week_info_popover');
     setupPopoverTabs('gas_savings_info_popover');
 
-    /* disclaimer */
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
-    /* initial render */
     updateCurrencyLabels();
     recalc();
   });
