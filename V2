@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>G8 ROI Calculator</title>
+
+  <!-- Heebo font (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      font-family: "Calibre", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      line-height: 1.4;
+      font-family: "Heebo", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
       color: #101820; /* Blackline Black */
     }
+
+    input, select, button, textarea { font-family: inherit; }
 
     body {
       margin: 0;
@@ -23,11 +31,10 @@
       border-radius: 4px;
       padding: 0 2rem 1.75rem 2rem;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-      border-top: 4px solid #A6192E; /* Safety Red accent bar */
+      border-top: 4px solid #A6192E;
       overflow: hidden;
     }
 
-    /* Brand bar: logo on white background */
     .roi-brand-bar {
       display: flex;
       align-items: center;
@@ -38,26 +45,21 @@
       border-bottom: 1px solid #e2e4e7;
     }
 
-    .roi-logo {
-      height: 36px;
-      width: auto;
-      display: block;
-    }
+    .roi-logo { height: 36px; width: auto; display: block; }
 
-    /* Title bar: white text on black */
     .roi-title-bar {
       margin: 0 -2rem 1.5rem -2rem;
       padding: 0.9rem 2rem;
-      background: #101820; /* Blackline Black */
+      background: #101820;
       color: #ffffff;
     }
 
     .roi-title-bar h1 {
       margin: 0;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       letter-spacing: 0.03em;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .roi-calculator p.intro {
@@ -66,12 +68,12 @@
       margin-bottom: 1.25rem;
       background: #f8f5f6;
       border-left: 4px solid #A6192E;
-      padding: 0.75rem 0.75rem;
+      padding: 0.75rem;
       border-radius: 3px;
     }
 
     .roi-calculator h2 {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       margin-top: 1.75rem;
       margin-bottom: 0.5rem;
       padding: 0.5rem 0.75rem;
@@ -80,14 +82,10 @@
       border-left: 4px solid #A6192E;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      font-weight: 700;
+      font-weight: 800;
     }
 
-    .section-note {
-      font-size: 0.85rem;
-      color: #555;
-      margin-bottom: 0.5rem;
-    }
+    .section-note { font-size: 0.85rem; color: #555; margin-bottom: 0.5rem; }
 
     .section-card {
       background: #f7f8fa;
@@ -104,7 +102,6 @@
       align-items: center;
     }
 
-    /* Label + icon wrapper */
     .label-with-info {
       display: inline-flex;
       align-items: center;
@@ -112,9 +109,7 @@
       flex-wrap: wrap;
     }
 
-    .inputs-grid label {
-      font-size: 0.9rem;
-    }
+    .inputs-grid label { font-size: 0.9rem; }
 
     .inputs-grid input {
       width: 100%;
@@ -127,10 +122,7 @@
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
     }
 
-    .inputs-grid input.green-input {
-      background: #f2f5fa;
-      border-left: 3px solid #A6192E;
-    }
+    .inputs-grid input.green-input { background: #f2f5fa; border-left: 3px solid #A6192E; }
 
     .inputs-grid input.orange-input,
     .scenario-table input.orange-input {
@@ -172,32 +164,19 @@
     }
 
     .scenario-table thead th,
-    .results-table thead th {
-      background: #fbe9ec;
-      font-weight: 600;
-    }
+    .results-table thead th { background: #fbe9ec; font-weight: 700; }
 
-    .scenario-table tbody tr:nth-child(even) {
-      background: #fafbfc;
-    }
-
-    .results-table tbody tr:nth-child(even) {
-      background: #fafafa;
-    }
+    .scenario-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .results-table tbody tr:nth-child(even) { background: #fafafa; }
 
     .results-table .highlight-row {
       background: #fdecee;
-      font-weight: 700;
+      font-weight: 800;
       border-left: 3px solid #A6192E;
     }
 
-    .small-text {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 0.75rem;
-    }
+    .small-text { font-size: 0.8rem; color: #666; margin-top: 0.75rem; }
 
-    /* Reset button styles */
     .reset-row {
       display: flex;
       align-items: center;
@@ -213,20 +192,15 @@
       background: #ffffff;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
-    #reset_baseline_btn:hover {
-      background: #fbe9ec;
-    }
+    #reset_baseline_btn:hover { background: #fbe9ec; }
 
-    .reset-help {
-      color: #555;
-    }
+    .reset-help { color: #555; }
 
-    /* Currency row styles */
     .currency-row {
       display: flex;
       align-items: center;
@@ -237,9 +211,7 @@
       position: relative;
     }
 
-    .currency-row label {
-      font-weight: 600;
-    }
+    .currency-row label { font-weight: 700; }
 
     .currency-row select {
       padding: 0.3rem 0.6rem;
@@ -249,12 +221,7 @@
       background: #ffffff;
     }
 
-    /* Info icon + popover */
-    .info-wrap {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-    }
+    .info-wrap { position: relative; display: inline-flex; align-items: center; }
 
     .info-icon-btn {
       width: 24px;
@@ -275,10 +242,7 @@
       transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .info-icon-btn:hover {
-      background: #fbe9ec;
-      border-color: #A6192E;
-    }
+    .info-icon-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
     .info-icon-btn:focus {
       outline: none;
@@ -286,14 +250,12 @@
       border-color: #101820;
     }
 
-    /* Popover */
     .info-popover {
       position: absolute;
       top: 50%;
       left: calc(100% + 10px);
-      right: auto;
       transform: translateY(-50%);
-      width: 360px;
+      width: 380px;
       max-width: calc(100vw - 48px);
       background: #ffffff;
       border: 1px solid #e0e2e6;
@@ -302,16 +264,13 @@
       padding: 0.8rem 0.9rem;
       z-index: 50;
       display: none;
-
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
       overflow: visible;
     }
 
-    .info-popover[aria-hidden="false"] {
-      display: block;
-    }
+    .info-popover[aria-hidden="false"] { display: block; }
 
     .info-popover::before {
       content: "";
@@ -326,54 +285,33 @@
       border-bottom: 1px solid #e0e2e6;
     }
 
-    /* Popover content: stacked heading + body */
-    .popover-section {
-      margin-bottom: 0.55rem;
-    }
-    .popover-section:last-child {
-      margin-bottom: 0;
-    }
+    .popover-section { margin-bottom: 0.55rem; }
+    .popover-section:last-child { margin-bottom: 0; }
 
     .info-popover .popover-title {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10.75px;
+      font-weight: 800;
       color: #101820;
       margin: 0 0 0.2rem 0;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
 
     .info-popover .popover-body {
-      font-size: 11px;
+      font-size: 10.75px;
       line-height: 1.35;
       color: #333;
       margin: 0;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
 
-    /* List styling inside popovers */
     .info-popover ul {
       margin: 0.35rem 0 0 1.1rem;
       padding: 0;
-      font-size: 11px;
+      font-size: 10.75px;
       line-height: 1.35;
       color: #333;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
 
-    .info-popover li {
-      margin-bottom: 0.25rem;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
+    .info-popover li { margin-bottom: 0.25rem; }
 
-    /* Tabs inside popovers */
     .popover-tabs {
       display: flex;
       gap: 0.35rem;
@@ -382,7 +320,7 @@
     }
 
     .popover-tab-btn {
-      font-size: 11px;
+      font-size: 10.75px;
       line-height: 1;
       padding: 0.35rem 0.5rem;
       border-radius: 999px;
@@ -390,13 +328,10 @@
       background: #ffffff;
       color: #101820;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    .popover-tab-btn:hover {
-      background: #fbe9ec;
-      border-color: #A6192E;
-    }
+    .popover-tab-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
     .popover-tab-btn.is-active {
       background: #101820;
@@ -404,53 +339,19 @@
       border-color: #101820;
     }
 
-    .popover-tab-panel {
-      margin-top: 0.2rem;
-    }
-
-    .popover-tab-panel[hidden] {
-      display: none;
-    }
+    .popover-tab-panel { margin-top: 0.2rem; }
+    .popover-tab-panel[hidden] { display: none; }
 
     @media (max-width: 720px) {
-      .roi-calculator {
-        padding: 0 1rem 1.25rem 1rem;
-      }
+      .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
+      .roi-brand-bar { padding: 0.75rem 1rem; margin: 0 -1rem; }
+      .roi-title-bar { padding: 0.9rem 1rem; margin: 0 -1rem 1.25rem -1rem; }
+      .roi-title-bar h1 { font-size: 1.25rem; }
+      .inputs-grid { grid-template-columns: minmax(0, 1fr); }
+      .scenario-table, .results-table { font-size: 0.8rem; }
+      .reset-row { flex-direction: column; align-items: flex-start; }
+      .currency-row { flex-direction: column; align-items: flex-start; }
 
-      .roi-brand-bar {
-        padding: 0.75rem 1rem;
-        margin: 0 -1rem;
-      }
-
-      .roi-title-bar {
-        padding: 0.9rem 1rem;
-        margin: 0 -1rem 1.25rem -1rem;
-      }
-
-      .roi-title-bar h1 {
-        font-size: 1.3rem;
-      }
-
-      .inputs-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .scenario-table,
-      .results-table {
-        font-size: 0.8rem;
-      }
-
-      .reset-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .currency-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      /* On mobile: fall back below so it doesn't overflow */
       .info-popover {
         top: calc(100% + 10px);
         left: 0;
@@ -472,7 +373,6 @@
 
 <body>
 <div class="roi-calculator">
-  <!-- Brand logo on white background -->
   <div class="roi-brand-bar">
     <img
       src="https://www.blacklinesafety.com/hubfs/Blacklinesafety_2021/images/Logo_color.svg"
@@ -481,7 +381,6 @@
     >
   </div>
 
-  <!-- Title bar with white text on black -->
   <div class="roi-title-bar">
     <h1>G8 ROI Calculator</h1>
   </div>
@@ -492,7 +391,6 @@
     and payback across conservative, typical, and high-value scenarios.
   </p>
 
-  <!-- Reset to baseline values -->
   <div class="reset-row">
     <button type="button" id="reset_baseline_btn">Reset to baseline values</button>
     <span class="reset-help">
@@ -500,7 +398,6 @@
     </span>
   </div>
 
-  <!-- Currency selector -->
   <div class="currency-row">
     <label for="currency_select">Currency:</label>
     <select id="currency_select">
@@ -536,13 +433,11 @@
     </span>
   </div>
 
-  <!-- Customer Inputs -->
   <h2>Customer Inputs</h2>
   <div class="section-card">
     <div class="section-note">Edit the fields below to reflect your deployment.</div>
 
     <div class="inputs-grid">
-      <!-- Number of devices: popover -->
       <label for="num_workers" id="label_num_workers">
         <span class="label-with-info">
           Number of devices to be replaced/purchased
@@ -569,7 +464,6 @@
       </label>
       <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
 
-      <!-- Average hourly labour cost: popover -->
       <label for="hourly_cost" id="label_hourly_cost">
         <span class="label-with-info">
           <span id="label_hourly_cost_text">Average hourly labour cost (CAD/hr)</span>
@@ -595,7 +489,6 @@
       </label>
       <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
 
-      <!-- Radio (Option B) -->
       <label for="cost_radio" id="label_cost_radio">
         <span class="label-with-info">
           <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (CAD)</span>
@@ -623,7 +516,6 @@
       </label>
       <input class="green-input" type="number" id="cost_radio" value="2950" min="0" step="0.01">
 
-      <!-- Portable gas detector (Option B) -->
       <label for="cost_legacy_detector" id="label_cost_legacy_detector">
         <span class="label-with-info">
           <span id="label_cost_legacy_detector_text">Annual price of one portable gas detector and any associated subscription (CAD)</span>
@@ -651,7 +543,6 @@
       </label>
       <input class="green-input" type="number" id="cost_legacy_detector" value="1152" min="0" step="0.01">
 
-      <!-- Lone worker (Option B) -->
       <label for="cost_lone_worker" id="label_cost_lone_worker">
         <span class="label-with-info">
           <span id="label_cost_lone_worker_text">Annual price of one lone worker device or app and any associated subscription (CAD)</span>
@@ -679,7 +570,6 @@
       </label>
       <input class="green-input" type="number" id="cost_lone_worker" value="700" min="0" step="0.01">
 
-      <!-- G8 hardware (Option A) -->
       <label for="hardware_cost">
         <span class="label-with-info">
           G8 hardware price per device
@@ -703,7 +593,6 @@
       </label>
       <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
 
-      <!-- G8 service plan (Option A) -->
       <label for="subscription_cost">
         <span class="label-with-info">
           G8 annual service plan price per device
@@ -734,12 +623,9 @@
     </p>
   </div>
 
-  <!-- Add-on Features / Other Costs -->
   <h2>Add-on Features/Other Costs</h2>
   <div class="section-card">
-    <div class="section-note">
-      Optional annual add-ons and other G8-related costs.
-    </div>
+    <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, CAD)</label>
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
@@ -754,7 +640,6 @@
       </label>
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
-      <!-- Other costs (with popover) -->
       <label for="other_annual_costs" id="label_other_annual_costs">
         <span class="label-with-info">
           Other costs
@@ -783,22 +668,19 @@
     </div>
   </div>
 
-  <!-- General Assumptions -->
   <h2>General Assumptions</h2>
   <div class="section-card">
-    <div class="section-note">
-      These are editable if your operation uses different values.
-    </div>
+    <div class="section-note">These are editable if your operation uses different values.</div>
     <div class="inputs-grid">
       <label for="workdays_per_year">Workdays per year</label>
       <input class="green-input" type="number" id="workdays_per_year" value="220" min="0" step="1">
 
+      <!-- Added back for weekly admin savings -->
       <label for="weeks_per_year">Weeks per year</label>
       <input class="green-input" type="number" id="weeks_per_year" value="52" min="0" step="1">
     </div>
   </div>
 
-  <!-- Scenario Assumptions -->
   <h2>Scenario Assumptions</h2>
   <div class="section-card">
     <div class="section-note">
@@ -850,45 +732,46 @@
         <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
       </tr>
 
-      <!-- Admin hours saved row with tabbed popover -->
+      <!-- UPDATED: Weekly horizon, minutes input -->
       <tr>
         <td>
           <span class="label-with-info">
-            Admin hours saved per device per week
+            Admin minutes saved per device per week
             <span class="info-wrap">
               <button
                 type="button"
                 class="info-icon-btn"
-                id="admin_hours_info_btn"
-                aria-label="Admin hours saved per device per week information"
+                id="admin_minutes_week_info_btn"
+                aria-label="Admin minutes saved per device per week information"
                 aria-expanded="false"
-                aria-controls="admin_hours_info_popover"
+                aria-controls="admin_minutes_week_info_popover"
               >&#9432;</button>
 
-              <div class="info-popover" id="admin_hours_info_popover" role="dialog" aria-hidden="true">
+              <div class="info-popover" id="admin_minutes_week_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">What this assumption represents</div>
                   <p class="popover-body">
-                    Weekly time reallocated from issuing, supporting, and coordinating devices and systems after consolidating to G8.
+                    Total admin / fleet / coordination time saved per device in a typical week after consolidating to G8.
+                    Enter this value as <strong>minutes per device per week</strong>.
                   </p>
                 </div>
 
-                <div class="popover-tabs" role="tablist" aria-label="Admin hours examples by team">
+                <div class="popover-tabs" role="tablist" aria-label="Admin time examples by team">
                   <button type="button" class="popover-tab-btn is-active" role="tab"
-                          aria-selected="true" aria-controls="admin_tab_ops" id="admin_tab_btn_ops">
+                          aria-selected="true" aria-controls="admin_week_tab_ops" id="admin_week_tab_btn_ops">
                     Operations
                   </button>
                   <button type="button" class="popover-tab-btn" role="tab"
-                          aria-selected="false" aria-controls="admin_tab_hse" id="admin_tab_btn_hse">
+                          aria-selected="false" aria-controls="admin_week_tab_hse" id="admin_week_tab_btn_hse">
                     Health and Safety
                   </button>
                   <button type="button" class="popover-tab-btn" role="tab"
-                          aria-selected="false" aria-controls="admin_tab_other" id="admin_tab_btn_other">
+                          aria-selected="false" aria-controls="admin_week_tab_other" id="admin_week_tab_btn_other">
                     Procurement / IT / Fleet
                   </button>
                 </div>
 
-                <div class="popover-tab-panel is-active" role="tabpanel" id="admin_tab_ops" aria-labelledby="admin_tab_btn_ops">
+                <div class="popover-tab-panel is-active" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
                   <ul>
                     <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
                     <li>Track fewer assets because there is one device per worker to log, store, and swap.</li>
@@ -898,7 +781,7 @@
                   </ul>
                 </div>
 
-                <div class="popover-tab-panel" role="tabpanel" id="admin_tab_hse" aria-labelledby="admin_tab_btn_hse" hidden>
+                <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_hse" aria-labelledby="admin_week_tab_btn_hse" hidden>
                   <ul>
                     <li>Build audit and compliance documentation faster because readiness and safety activity are recorded automatically.</li>
                     <li>Manage bump and calibration programs with fewer spreadsheets because device history is centralized.</li>
@@ -908,7 +791,7 @@
                   </ul>
                 </div>
 
-                <div class="popover-tab-panel" role="tabpanel" id="admin_tab_other" aria-labelledby="admin_tab_btn_other" hidden>
+                <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_other" aria-labelledby="admin_week_tab_btn_other" hidden>
                   <ul>
                     <li>Reduce purchasing effort because vendor consolidation means fewer POs, renewals, and invoices.</li>
                     <li>Reduce IT support burden because there are fewer systems to integrate and maintain.</li>
@@ -921,9 +804,11 @@
             </span>
           </span>
         </td>
-        <td><input class="orange-input" type="number" id="admin_hours_conservative" value="0.5" min="0" step="0.1"></td>
-        <td><input class="orange-input" type="number" id="admin_hours_typical" value="1" min="0" step="0.1"></td>
-        <td><input class="orange-input" type="number" id="admin_hours_high" value="1.5" min="0" step="0.1"></td>
+
+        <!-- Baselines converted from 0.5/1.0/1.5 hrs -> 30/60/90 minutes -->
+        <td><input class="orange-input" type="number" id="admin_minutes_week_conservative" value="30" min="0" step="1"></td>
+        <td><input class="orange-input" type="number" id="admin_minutes_week_typical" value="60" min="0" step="1"></td>
+        <td><input class="orange-input" type="number" id="admin_minutes_week_high" value="90" min="0" step="1"></td>
       </tr>
 
       <tr>
@@ -941,12 +826,9 @@
     </p>
   </div>
 
-  <!-- Scenario Results -->
   <h2>Scenario Results (Annual)</h2>
   <div class="section-card">
-    <div class="section-note">
-      Results are calculated automatically from the inputs and assumptions above.
-    </div>
+    <div class="section-note">Results are calculated automatically from the inputs and assumptions above.</div>
 
     <table class="results-table">
       <thead>
@@ -1106,8 +988,8 @@
     var B10 = parseNumber('hardware_cost');
     var B11 = parseNumber('subscription_cost');
     var B12 = parseNumber('cost_lone_worker');
-    var B13 = parseNumber('workdays_per_year');
-    var B14 = parseNumber('weeks_per_year');
+    var workdaysPerYear = parseNumber('workdays_per_year');
+    var weeksPerYear = parseNumber('weeks_per_year');
     var otherCosts = parseNumber('other_annual_costs');
 
     var addonPTT = parseNumber('addon_ptt');
@@ -1117,18 +999,18 @@
     var scenarios = {
       conservative: {
         minutesPerDay: parseNumber('minutes_saved_conservative'),
-        adminHours:    parseNumber('admin_hours_conservative'),
-        gasSavings:    parseNumber('gas_savings_conservative')
+        adminMinutesPerWeek: parseNumber('admin_minutes_week_conservative'),
+        gasSavings: parseNumber('gas_savings_conservative')
       },
       typical: {
         minutesPerDay: parseNumber('minutes_saved_typical'),
-        adminHours:    parseNumber('admin_hours_typical'),
-        gasSavings:    parseNumber('gas_savings_typical')
+        adminMinutesPerWeek: parseNumber('admin_minutes_week_typical'),
+        gasSavings: parseNumber('gas_savings_typical')
       },
       high: {
         minutesPerDay: parseNumber('minutes_saved_high'),
-        adminHours:    parseNumber('admin_hours_high'),
-        gasSavings:    parseNumber('gas_savings_high')
+        adminMinutesPerWeek: parseNumber('admin_minutes_week_high'),
+        gasSavings: parseNumber('gas_savings_high')
       }
     };
 
@@ -1142,8 +1024,11 @@
     Object.keys(scenarios).forEach(function (key) {
       var s = scenarios[key];
 
-      var workerTimeSavings = B6 * (s.minutesPerDay / 60) * B13 * B7;
-      var adminSavings = B6 * s.adminHours * B14 * B7;
+      var workerTimeSavings = B6 * (s.minutesPerDay / 60) * workdaysPerYear * B7;
+
+      // Weekly admin minutes -> annual hours -> cost
+      var adminSavings = B6 * (s.adminMinutesPerWeek / 60) * weeksPerYear * B7;
+
       var gasSavings = B6 * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
@@ -1164,7 +1049,6 @@
     });
   }
 
-  // Registry so only one popover can be open at a time
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1214,7 +1098,6 @@
     });
   }
 
-  // Tabs inside a popover
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1277,7 +1160,6 @@
           var el = document.getElementById(id);
           if (el) el.value = baselineValues[id];
         });
-
         recalc();
       });
     }
@@ -1292,7 +1174,6 @@
       });
     }
 
-    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
     setupPopover('num_workers_info_btn', 'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
@@ -1304,9 +1185,9 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
-    // Admin hours popover + tabs
-    setupPopover('admin_hours_info_btn', 'admin_hours_info_popover');
-    setupPopoverTabs('admin_hours_info_popover');
+    // Updated admin popover + tabs
+    setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
+    setupPopoverTabs('admin_minutes_week_info_popover');
 
     updateCurrencyLabels();
     recalc();
