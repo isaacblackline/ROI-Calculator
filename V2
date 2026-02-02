@@ -217,10 +217,10 @@
 
     .info-wrap { position: relative; display: inline-flex; align-items: center; }
 
-    /* UPDATED: Smaller (2/3 size) and “designed” italic glyph */
+    /* Small designed info icon */
     .info-icon-btn {
-      width: 16px;                 /* 2/3 of 24px */
-      height: 16px;                /* 2/3 of 24px */
+      width: 16px;
+      height: 16px;
       border-radius: 999px;
       border: 1px solid #c5c9cf;
       background: #ffffff;
@@ -245,7 +245,7 @@
     .info-icon-btn .info-glyph {
       display: block;
       line-height: 1;
-      font-size: 11px;            /* tuned for 16px button */
+      font-size: 11px;
       font-weight: 700;
       font-style: italic;
       transform: translateY(-0.5px) skew(-10deg);
@@ -334,10 +334,11 @@
 
     .popover-tab-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
+    /* UPDATED: active tab uses Blackline red (instead of black) */
     .popover-tab-btn.is-active {
-      background: #101820;
+      background: #A6192E;
       color: #ffffff;
-      border-color: #101820;
+      border-color: #A6192E;
     }
 
     .popover-tab-panel { margin-top: 0.2rem; }
@@ -1053,7 +1054,6 @@
       </tbody>
     </table>
 
-    <!-- Disclaimer button + expandable text -->
     <div class="disclaimer-row">
       <button
         type="button"
@@ -1062,13 +1062,13 @@
         aria-expanded="false"
         aria-controls="disclaimer_panel"
       >
-        Disclaimer &amp; assumptions
+        Disclaimer
       </button>
 
       <div class="disclaimer-panel" id="disclaimer_panel" hidden>
         <p class="small-text" style="margin:0;">
           This calculator provides directional estimates only. Actual results will vary based on your
-          specific operations, configuration, pricing, and SOPs. Use it to frame discussions and compare scenarios, not as a
+          specific operations, configuration, and pricing. Use it to frame discussions and compare scenarios, not as a
           guarantee of future performance.
         </p>
       </div>
@@ -1182,11 +1182,9 @@
       }
     };
 
-    // Device consolidation savings = baseline annual costs avoided (do NOT subtract G8 recurring here)
     var deviceConsolidationPerDevice = (costRadio + costDetector + costLW);
     var deviceConsolidation = numDevices * deviceConsolidationPerDevice;
 
-    // Total Year 1 G8 cost includes hardware + recurring (plan + add-ons) + other costs
     var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
@@ -1214,7 +1212,6 @@
     });
   }
 
-  // Registry so only one popover can be open at a time
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1264,7 +1261,6 @@
     });
   }
 
-  // Tabs inside a popover
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1310,7 +1306,6 @@
     });
   }
 
-  // Disclaimer toggle (works with popovers; closes when clicking outside)
   function setupDisclaimerToggle(btnId, panelId) {
     var btn = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
@@ -1322,7 +1317,6 @@
     }
 
     function openDisclaimer() {
-      // Close popovers so UI doesn't feel cluttered
       closeAllPopovers(null);
       panel.hidden = false;
       btn.setAttribute('aria-expanded', 'true');
@@ -1379,7 +1373,6 @@
       });
     }
 
-    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
     setupPopover('num_workers_info_btn', 'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
@@ -1391,21 +1384,17 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
-    // Admin minutes popover + tabs
     setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
     setupPopoverTabs('admin_minutes_week_info_popover');
 
-    // Gas savings popover + tabs
     setupPopover('gas_savings_info_btn', 'gas_savings_info_popover');
     setupPopoverTabs('gas_savings_info_popover');
 
-    // Results popovers
     setupPopover('device_savings_info_btn', 'device_savings_info_popover');
     setupPopover('total_cost_info_btn', 'total_cost_info_popover');
     setupPopover('roi_info_btn', 'roi_info_popover');
     setupPopover('payback_info_btn', 'payback_info_popover');
 
-    // Disclaimer button toggle
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
     updateCurrencyLabels();
