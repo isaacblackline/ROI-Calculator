@@ -125,13 +125,15 @@
     .inputs-grid input.green-input { background: #f2f5fa; border-left: 3px solid #A6192E; }
 
     .inputs-grid input.orange-input,
-    .scenario-table input.orange-input {
+    .scenario-table input.orange-input,
+    .scenario-table select.orange-input {
       background: #fdf3f4;
       border-left: 3px solid #A6192E;
     }
 
     .inputs-grid input:focus,
-    .scenario-table input:focus {
+    .scenario-table input:focus,
+    .scenario-table select:focus {
       outline: none;
       border-color: #101820;
       box-shadow: 0 0 0 1px rgba(16, 24, 32, 0.25);
@@ -153,6 +155,7 @@
       border: 1px solid #dde1e6;
       padding: 0.35rem 0.5rem;
       text-align: right;
+      vertical-align: top;
     }
 
     .scenario-table th:first-child,
@@ -255,7 +258,7 @@
       top: 50%;
       left: calc(100% + 10px);
       transform: translateY(-50%);
-      width: 380px;
+      width: 400px;
       max-width: calc(100vw - 48px);
       background: #ffffff;
       border: 1px solid #e0e2e6;
@@ -341,6 +344,53 @@
 
     .popover-tab-panel { margin-top: 0.2rem; }
     .popover-tab-panel[hidden] { display: none; }
+
+    /* Mini “math card” inside popovers */
+    .math-card {
+      margin-top: 0.45rem;
+      background: #f7f8fa;
+      border: 1px solid #e0e2e6;
+      border-radius: 4px;
+      padding: 0.45rem 0.55rem;
+    }
+    .math-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: 10.75px;
+      line-height: 1.35;
+      color: #333;
+      margin: 0.15rem 0;
+    }
+    .math-line strong { color: #101820; }
+    .math-muted { color: #555; font-size: 10.75px; margin-top: 0.35rem; }
+
+    .popover-inline-select {
+      margin-top: 0.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
+    .popover-inline-select label {
+      font-size: 10.75px;
+      font-weight: 800;
+      color: #101820;
+    }
+    .popover-inline-select select {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border-radius: 3px;
+      border: 1px solid #c5c9cf;
+      background: #ffffff;
+      font-size: 10.75px;
+    }
+
+    .tip-inline {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
 
     @media (max-width: 720px) {
       .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
@@ -479,9 +529,7 @@
             <div class="info-popover" id="hourly_cost_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Average hourly labor cost</div>
-                <p class="popover-body">
-                  The estimated hourly cost of a field worker, based on wages or salary.
-                </p>
+                <p class="popover-body">The estimated hourly cost of a field worker, based on wages or salary.</p>
               </div>
             </div>
           </span>
@@ -675,7 +723,6 @@
       <label for="workdays_per_year">Workdays per year</label>
       <input class="green-input" type="number" id="workdays_per_year" value="220" min="0" step="1">
 
-      <!-- Added back for weekly admin savings -->
       <label for="weeks_per_year">Weeks per year</label>
       <input class="green-input" type="number" id="weeks_per_year" value="52" min="0" step="1">
     </div>
@@ -732,7 +779,6 @@
         <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
       </tr>
 
-      <!-- UPDATED: Weekly horizon, minutes input -->
       <tr>
         <td>
           <span class="label-with-info">
@@ -804,15 +850,109 @@
             </span>
           </span>
         </td>
-
-        <!-- Baselines converted from 0.5/1.0/1.5 hrs -> 30/60/90 minutes -->
         <td><input class="orange-input" type="number" id="admin_minutes_week_conservative" value="30" min="0" step="1"></td>
         <td><input class="orange-input" type="number" id="admin_minutes_week_typical" value="60" min="0" step="1"></td>
         <td><input class="orange-input" type="number" id="admin_minutes_week_high" value="90" min="0" step="1"></td>
       </tr>
 
+      <!-- UPDATED: Calibration gas savings row with layered popover + optional SOP selector -->
       <tr>
-        <td id="label_gas_savings">Calibration gas savings per device per year (CAD)</td>
+        <td>
+          <span class="label-with-info" style="align-items:flex-start;">
+            <span id="label_gas_savings">Calibration gas savings per device per year (CAD)</span>
+
+            <span class="info-wrap">
+              <button
+                type="button"
+                class="info-icon-btn"
+                id="gas_savings_info_btn"
+                aria-label="Calibration gas savings information"
+                aria-expanded="false"
+                aria-controls="gas_savings_info_popover"
+              >&#9432;</button>
+
+              <div class="info-popover" id="gas_savings_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">Calibration gas savings (SOP-driven estimate)</div>
+                  <p class="popover-body">
+                    This is a directional estimate of how much test gas cost could be reduced if an organization updates bump / calibration practices
+                    based on newer sensor technologies and manufacturer guidance.
+                  </p>
+                </div>
+
+                <div class="popover-tabs" role="tablist" aria-label="Calibration gas savings explanation tabs">
+                  <button type="button" class="popover-tab-btn is-active" role="tab"
+                          aria-selected="true" aria-controls="gas_tab_why" id="gas_tab_btn_why">
+                    Why savings can exist
+                  </button>
+                  <button type="button" class="popover-tab-btn" role="tab"
+                          aria-selected="false" aria-controls="gas_tab_calc" id="gas_tab_btn_calc">
+                    Simple calculation
+                  </button>
+                  <button type="button" class="popover-tab-btn" role="tab"
+                          aria-selected="false" aria-controls="gas_tab_caveats" id="gas_tab_btn_caveats">
+                    Assumptions & caveats
+                  </button>
+                </div>
+
+                <!-- Tab 1 -->
+                <div class="popover-tab-panel is-active" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
+                  <ul>
+                    <li>Many programs require <strong>daily bump tests</strong> and <strong>30-day calibrations</strong> based on older sensor behavior (e.g., catalytic bead) that can fail without clear warning.</li>
+                    <li>Newer LEL sensors (e.g., <strong>MPS</strong>) may support less frequent bump / calibration due to improved stability and self-diagnostics.</li>
+                    <li>If SOPs can be updated accordingly, <strong>test gas usage can drop significantly</strong>.</li>
+                  </ul>
+
+                  <!-- Optional SOP selector -->
+                  <div class="popover-inline-select">
+                    <label for="gas_sop_selector">Show example scenario</label>
+                    <select id="gas_sop_selector">
+                      <option value="legacy" selected>Legacy SOP: daily bump + 30-day calibration</option>
+                      <option value="modern">Modern SOP: 30-day bump + 180-day calibration</option>
+                    </select>
+                  </div>
+
+                  <div class="math-card" aria-live="polite">
+                    <div class="math-line"><span><strong>Gas used (example)</strong></span><span id="gas_example_liters">~42.6 L/device/year</span></div>
+                    <div class="math-line"><span><strong>What it represents</strong></span><span id="gas_example_desc">Daily bump + 30-day calibration</span></div>
+                    <div class="math-muted">These example liters help explain the estimate. Your SOP and gas program may differ.</div>
+                  </div>
+                </div>
+
+                <!-- Tab 2 -->
+                <div class="popover-tab-panel" role="tabpanel" id="gas_tab_calc" aria-labelledby="gas_tab_btn_calc" hidden>
+                  <p class="popover-body">
+                    We estimate savings as:
+                  </p>
+
+                  <div class="math-card">
+                    <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP − Gas updated SOP) × Cost/L</span></div>
+                    <div class="math-line"><span><strong>Example</strong></span><span>(42.6 − 3.0) × 4.65 ≈ 184</span></div>
+                    <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
+                  </div>
+
+                  <p class="popover-body" style="margin-top:0.45rem;">
+                    Use this as a conversation starter. If the customer doesn’t change SOPs, set this value to <strong>$0</strong>.
+                  </p>
+                </div>
+
+                <!-- Tab 3 -->
+                <div class="popover-tab-panel" role="tabpanel" id="gas_tab_caveats" aria-labelledby="gas_tab_btn_caveats" hidden>
+                  <ul>
+                    <li>This assumes SOP changes are permitted under your program, risk policy, and sensor manufacturer guidance.</li>
+                    <li>Results vary with gas price, cylinder size, regulator flow rate, test duration, and usable volume.</li>
+                    <li>If daily bump testing remains required, or the customer doesn’t use test gas, <strong>set this to $0</strong>.</li>
+                  </ul>
+                </div>
+              </div>
+            </span>
+          </span>
+
+          <span class="tip-inline">
+            <strong>Tip:</strong> If the customer follows daily bump testing, set this to <strong>$0</strong>. If they’re open to SOP modernization, use this as a discussion starter.
+          </span>
+        </td>
+
         <td><input class="orange-input" type="number" id="gas_savings_conservative" value="50" min="0" step="0.01"></td>
         <td><input class="orange-input" type="number" id="gas_savings_typical" value="100" min="0" step="0.01"></td>
         <td><input class="orange-input" type="number" id="gas_savings_high" value="150" min="0" step="0.01"></td>
@@ -821,8 +961,8 @@
     </table>
 
     <p class="small-text">
-      Calibration gas savings assume bump testing roughly every 30&nbsp;days and calibration about every 180&nbsp;days, based on sensor manufacturer recommendations.
-      If your SOP requires daily bump tests or more frequent calibrations, set calibration gas savings to 0 or adjust the values to match your program.
+      Calibration gas savings are an optional scenario assumption. If your SOP requires daily bump tests and frequent calibrations,
+      set calibration gas savings to 0 or adjust the values to match your program.
     </p>
   </div>
 
@@ -1025,10 +1165,7 @@
       var s = scenarios[key];
 
       var workerTimeSavings = B6 * (s.minutesPerDay / 60) * workdaysPerYear * B7;
-
-      // Weekly admin minutes -> annual hours -> cost
       var adminSavings = B6 * (s.adminMinutesPerWeek / 60) * weeksPerYear * B7;
-
       var gasSavings = B6 * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
@@ -1143,6 +1280,22 @@
     });
   }
 
+  // Update the example liters/description inside the gas popover
+  function updateGasSopExample() {
+    var selector = document.getElementById('gas_sop_selector');
+    var litersEl = document.getElementById('gas_example_liters');
+    var descEl = document.getElementById('gas_example_desc');
+    if (!selector || !litersEl || !descEl) return;
+
+    if (selector.value === 'modern') {
+      litersEl.textContent = '~3.0 L/device/year';
+      descEl.textContent = '30-day bump + 180-day calibration';
+    } else {
+      litersEl.textContent = '~42.6 L/device/year';
+      descEl.textContent = 'Daily bump + 30-day calibration';
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
@@ -1174,6 +1327,7 @@
       });
     }
 
+    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
     setupPopover('num_workers_info_btn', 'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
@@ -1185,9 +1339,22 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
-    // Updated admin popover + tabs
+    // Admin popover + tabs
     setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
     setupPopoverTabs('admin_minutes_week_info_popover');
+
+    // Gas savings popover + tabs + SOP selector behavior
+    setupPopover('gas_savings_info_btn', 'gas_savings_info_popover');
+    setupPopoverTabs('gas_savings_info_popover');
+
+    var sopSelector = document.getElementById('gas_sop_selector');
+    if (sopSelector) {
+      sopSelector.addEventListener('change', function (e) {
+        e.stopPropagation();
+        updateGasSopExample();
+      });
+      updateGasSopExample();
+    }
 
     updateCurrencyLabels();
     recalc();
