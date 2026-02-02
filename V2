@@ -289,10 +289,11 @@
     .popover-section { margin-bottom: 0.55rem; }
     .popover-section:last-child { margin-bottom: 0; }
 
+    /* UPDATED: popover header/title text is Blackline red */
     .info-popover .popover-title {
       font-size: 10.75px;
       font-weight: 800;
-      color: #101820;
+      color: #A6192E;
       margin: 0 0 0.2rem 0;
     }
 
@@ -334,7 +335,7 @@
 
     .popover-tab-btn:hover { background: #fbe9ec; border-color: #A6192E; }
 
-    /* UPDATED: active tab uses Blackline red (instead of black) */
+    /* Active tab uses Blackline red */
     .popover-tab-btn.is-active {
       background: #A6192E;
       color: #ffffff;
