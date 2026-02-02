@@ -152,12 +152,9 @@
       vertical-align: top;
     }
 
-    /* Keep header first column readable */
     .scenario-table th:first-child { text-align: left; white-space: nowrap; }
-    /* Allow body first column to wrap (prevents long tips from widening the table) */
     .scenario-table td:first-child { text-align: left; white-space: normal; }
 
-    /* Results first column stays compact */
     .results-table th:first-child,
     .results-table td:first-child { text-align: left; white-space: nowrap; }
 
@@ -367,6 +364,13 @@
       overflow-wrap: anywhere;
       word-break: break-word;
       max-width: 100%;
+    }
+
+    .result-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: nowrap;
     }
 
     @media (max-width: 720px) {
@@ -862,44 +866,111 @@
         <td id="workerTime_typical"></td>
         <td id="workerTime_high"></td>
       </tr>
+
       <tr>
         <th scope="row">Admin / fleet management savings</th>
         <td id="adminSavings_conservative"></td>
         <td id="adminSavings_typical"></td>
         <td id="adminSavings_high"></td>
       </tr>
+
       <tr>
         <th scope="row">Calibration gas savings</th>
         <td id="gasSavings_conservative"></td>
         <td id="gasSavings_typical"></td>
         <td id="gasSavings_high"></td>
       </tr>
+
       <tr>
-        <th scope="row">Device consolidation savings</th>
+        <th scope="row">
+          <span class="result-label">
+            Device consolidation savings
+            <span class="info-wrap">
+              <button type="button" class="info-icon-btn" id="device_savings_info_btn"
+                      aria-label="Device consolidation savings information" aria-expanded="false" aria-controls="device_savings_info_popover">&#9432;</button>
+              <div class="info-popover" id="device_savings_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">Device consolidation savings</div>
+                  <p class="popover-body">
+                    Calculated as the combined annual cost of a radio, portable gas detector, and lone worker device that G8 replaces.
+                  </p>
+                </div>
+              </div>
+            </span>
+          </span>
+        </th>
         <td id="deviceSavings_conservative"></td>
         <td id="deviceSavings_typical"></td>
         <td id="deviceSavings_high"></td>
       </tr>
+
       <tr class="highlight-row">
         <th scope="row">Total annual savings</th>
         <td id="totalSavings_conservative"></td>
         <td id="totalSavings_typical"></td>
         <td id="totalSavings_high"></td>
       </tr>
+
       <tr>
-        <th scope="row">Total Year 1 G8 cost</th>
+        <th scope="row">
+          <span class="result-label">
+            Total Year 1 G8 cost
+            <span class="info-wrap">
+              <button type="button" class="info-icon-btn" id="total_cost_info_btn"
+                      aria-label="Total Year 1 G8 cost information" aria-expanded="false" aria-controls="total_cost_info_popover">&#9432;</button>
+              <div class="info-popover" id="total_cost_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">Total Year 1 G8 cost</div>
+                  <p class="popover-body">
+                    Includes G8 hardware, first-year service plan, add-on features, and any one-time “Other costs” entered above.
+                  </p>
+                </div>
+              </div>
+            </span>
+          </span>
+        </th>
         <td id="totalCost_conservative"></td>
         <td id="totalCost_typical"></td>
         <td id="totalCost_high"></td>
       </tr>
+
       <tr class="highlight-row">
-        <th scope="row">Year 1 ROI</th>
+        <th scope="row">
+          <span class="result-label">
+            Year 1 ROI
+            <span class="info-wrap">
+              <button type="button" class="info-icon-btn" id="roi_info_btn"
+                      aria-label="Year 1 ROI formula information" aria-expanded="false" aria-controls="roi_info_popover">&#9432;</button>
+              <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">Year 1 ROI formula</div>
+                  <p class="popover-body">Year 1 ROI = (Total annual savings) / (Total Year 1 G8 cost)</p>
+                </div>
+              </div>
+            </span>
+          </span>
+        </th>
         <td id="roi_conservative"></td>
         <td id="roi_typical"></td>
         <td id="roi_high"></td>
       </tr>
+
       <tr>
-        <th scope="row">Payback period (months)</th>
+        <th scope="row">
+          <span class="result-label">
+            Payback period (months)
+            <span class="info-wrap">
+              <button type="button" class="info-icon-btn" id="payback_info_btn"
+                      aria-label="Payback period formula information" aria-expanded="false" aria-controls="payback_info_popover">&#9432;</button>
+              <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
+                <div class="popover-section">
+                  <div class="popover-title">Payback period formula</div>
+                  <p class="popover-body">Payback period (months) = 12 × Total Year 1 G8 cost / Total annual savings</p>
+                </div>
+              </div>
+            </span>
+          </span>
+        </th>
         <td id="payback_conservative"></td>
         <td id="payback_typical"></td>
         <td id="payback_high"></td>
@@ -908,16 +979,8 @@
     </table>
 
     <p class="small-text">
-      Notes:<br>
-      • Year&nbsp;1 ROI = (Total annual savings) / (Total Year&nbsp;1 G8 cost).<br>
-      • Total Year&nbsp;1 G8 cost includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.<br>
-      • Device consolidation savings are calculated as the combined annual cost of a radio, portable gas detector, and lone worker device, minus the annual G8 service plan and add-ons (net of recurring costs).<br>
-      • Payback period (months) = 12 × Total Year&nbsp;1 G8 cost / Total annual savings.<br>
-    </p>
-
-    <p class="small-text">
       <strong>Disclaimer:</strong> This calculator provides directional estimates only. Actual results will vary based on your
-      specific operations, configuration, and adoption levels. Use it to frame discussions and compare scenarios, not as a
+      specific operations, configuration, pricing, and SOPs. Use it to frame discussions and compare scenarios, not as a
       guarantee of future performance.
     </p>
   </div>
@@ -996,16 +1059,16 @@
   }
 
   function recalc() {
-    var B6  = parseNumber('num_workers');
-    var B7  = parseNumber('hourly_cost');
-    var B8  = parseNumber('cost_radio');
-    var B9  = parseNumber('cost_legacy_detector');
-    var B10 = parseNumber('hardware_cost');
-    var B11 = parseNumber('subscription_cost');
-    var B12 = parseNumber('cost_lone_worker');
+    var numDevices  = parseNumber('num_workers');
+    var hourlyCost  = parseNumber('hourly_cost');
+    var costRadio   = parseNumber('cost_radio');
+    var costDetector= parseNumber('cost_legacy_detector');
+    var hwCost      = parseNumber('hardware_cost');
+    var planCost    = parseNumber('subscription_cost');
+    var costLW      = parseNumber('cost_lone_worker');
     var workdaysPerYear = parseNumber('workdays_per_year');
     var weeksPerYear = parseNumber('weeks_per_year');
-    var otherCosts = parseNumber('other_annual_costs');
+    var otherCosts  = parseNumber('other_annual_costs');
 
     var addonPTT = parseNumber('addon_ptt');
     var addonMonitoring = parseNumber('addon_monitoring');
@@ -1029,19 +1092,19 @@
       }
     };
 
-    var g8RecurringPerDevice = B11 + addonPTT + addonMonitoring + addonEmergencyVoice;
+    // Device consolidation savings = baseline annual costs avoided (do NOT subtract G8 recurring here)
+    var deviceConsolidationPerDevice = (costRadio + costDetector + costLW);
+    var deviceConsolidation = numDevices * deviceConsolidationPerDevice;
 
-    var deviceConsolidationPerDevice = (B8 + B9 + B12) - g8RecurringPerDevice;
-    var deviceConsolidation = B6 * deviceConsolidationPerDevice;
-
-    var totalYear1G8Cost = B6 * (B10 + B11 + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
+    // Total Year 1 G8 cost includes hardware + recurring (plan + add-ons) + other costs
+    var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
       var s = scenarios[key];
 
-      var workerTimeSavings = B6 * (s.minutesPerDay / 60) * workdaysPerYear * B7;
-      var adminSavings = B6 * (s.adminMinutesPerWeek / 60) * weeksPerYear * B7;
-      var gasSavings = B6 * s.gasSavings;
+      var workerTimeSavings = numDevices * (s.minutesPerDay / 60) * workdaysPerYear * hourlyCost;
+      var adminSavings = numDevices * (s.adminMinutesPerWeek / 60) * weeksPerYear * hourlyCost;
+      var gasSavings = numDevices * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
@@ -1061,7 +1124,6 @@
     });
   }
 
-  // Registry so only one popover can be open at a time
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1111,7 +1173,6 @@
     });
   }
 
-  // Tabs inside a popover
   function setupPopoverTabs(popoverId) {
     var pop = document.getElementById(popoverId);
     if (!pop) return;
@@ -1188,7 +1249,6 @@
       });
     }
 
-    // Popovers
     setupPopover('currency_info_btn', 'currency_info_popover');
     setupPopover('num_workers_info_btn', 'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn', 'hourly_cost_info_popover');
@@ -1200,13 +1260,16 @@
     setupPopover('other_costs_info_btn', 'other_costs_info_popover');
     setupPopover('minutes_saved_info_btn', 'minutes_saved_info_popover');
 
-    // Admin popover + tabs
     setupPopover('admin_minutes_week_info_btn', 'admin_minutes_week_info_popover');
     setupPopoverTabs('admin_minutes_week_info_popover');
 
-    // Gas popover + tabs
     setupPopover('gas_savings_info_btn', 'gas_savings_info_popover');
     setupPopoverTabs('gas_savings_info_popover');
+
+    setupPopover('device_savings_info_btn', 'device_savings_info_popover');
+    setupPopover('total_cost_info_btn', 'total_cost_info_popover');
+    setupPopover('roi_info_btn', 'roi_info_popover');
+    setupPopover('payback_info_btn', 'payback_info_popover');
 
     updateCurrencyLabels();
     recalc();
