@@ -217,9 +217,10 @@
 
     .info-wrap { position: relative; display: inline-flex; align-items: center; }
 
+    /* UPDATED: Smaller (2/3 size) and “designed” italic glyph */
     .info-icon-btn {
-      width: 24px;
-      height: 24px;
+      width: 16px;                 /* 2/3 of 24px */
+      height: 16px;                /* 2/3 of 24px */
       border-radius: 999px;
       border: 1px solid #c5c9cf;
       background: #ffffff;
@@ -229,9 +230,6 @@
       justify-content: center;
       cursor: pointer;
       padding: 0;
-      line-height: 1;
-      font-weight: 800;
-      font-size: 0.9rem;
       user-select: none;
       transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     }
@@ -242,6 +240,15 @@
       outline: none;
       box-shadow: 0 0 0 2px rgba(16, 24, 32, 0.18);
       border-color: #101820;
+    }
+
+    .info-icon-btn .info-glyph {
+      display: block;
+      line-height: 1;
+      font-size: 11px;            /* tuned for 16px button */
+      font-weight: 700;
+      font-style: italic;
+      transform: translateY(-0.5px) skew(-10deg);
     }
 
     .info-popover {
@@ -382,7 +389,7 @@
     }
 
     .disclaimer-btn {
-      align-self: flex-start; /* change to flex-end if you want right-aligned */
+      align-self: flex-start;
       padding: 0.35rem 0.65rem;
       border-radius: 999px;
       border: 1px solid #c5c9cf;
@@ -486,7 +493,7 @@
         aria-expanded="false"
         aria-controls="currency_info_popover"
       >
-        &#9432;
+        <span class="info-glyph" aria-hidden="true">i</span>
       </button>
 
       <div class="info-popover" id="currency_info_popover" role="dialog" aria-hidden="true">
@@ -513,7 +520,9 @@
           Number of devices to be replaced/purchased
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="num_workers_info_btn"
-                    aria-label="Number of devices information" aria-expanded="false" aria-controls="num_workers_info_popover">&#9432;</button>
+                    aria-label="Number of devices information" aria-expanded="false" aria-controls="num_workers_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="num_workers_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Number of devices to be replaced or purchased</div>
@@ -533,7 +542,9 @@
           <span id="label_hourly_cost_text">Average hourly labour cost (CAD/hr)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="hourly_cost_info_btn"
-                    aria-label="Average hourly labour cost information" aria-expanded="false" aria-controls="hourly_cost_info_popover">&#9432;</button>
+                    aria-label="Average hourly labour cost information" aria-expanded="false" aria-controls="hourly_cost_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="hourly_cost_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Average hourly labor cost</div>
@@ -550,7 +561,9 @@
           <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="radio_info_btn"
-                    aria-label="Radio pricing information" aria-expanded="false" aria-controls="radio_info_popover">&#9432;</button>
+                    aria-label="Radio pricing information" aria-expanded="false" aria-controls="radio_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline</div>
@@ -571,7 +584,9 @@
           <span id="label_cost_legacy_detector_text">Annual price of one portable gas detector and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="detector_info_btn"
-                    aria-label="Portable gas detector pricing information" aria-expanded="false" aria-controls="detector_info_popover">&#9432;</button>
+                    aria-label="Portable gas detector pricing information" aria-expanded="false" aria-controls="detector_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline</div>
@@ -592,7 +607,9 @@
           <span id="label_cost_lone_worker_text">Annual price of one lone worker device or app and any associated subscription (CAD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="lw_info_btn"
-                    aria-label="Lone worker pricing information" aria-expanded="false" aria-controls="lw_info_popover">&#9432;</button>
+                    aria-label="Lone worker pricing information" aria-expanded="false" aria-controls="lw_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline</div>
@@ -613,7 +630,9 @@
           G8 hardware price per device
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="g8_hw_info_btn"
-                    aria-label="G8 hardware configuration information" aria-expanded="false" aria-controls="g8_hw_info_popover">&#9432;</button>
+                    aria-label="G8 hardware configuration information" aria-expanded="false" aria-controls="g8_hw_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="g8_hw_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Pricing guidance</div>
@@ -630,7 +649,9 @@
           G8 annual service plan price per device
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="g8_plan_info_btn"
-                    aria-label="G8 service plan information" aria-expanded="false" aria-controls="g8_plan_info_popover">&#9432;</button>
+                    aria-label="G8 service plan information" aria-expanded="false" aria-controls="g8_plan_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="g8_plan_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Pricing guidance</div>
@@ -668,7 +689,9 @@
           Other costs
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="other_costs_info_btn"
-                    aria-label="Other costs information" aria-expanded="false" aria-controls="other_costs_info_popover">&#9432;</button>
+                    aria-label="Other costs information" aria-expanded="false" aria-controls="other_costs_info_popover">
+              <span class="info-glyph" aria-hidden="true">i</span>
+            </button>
             <div class="info-popover" id="other_costs_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Other costs</div>
@@ -716,7 +739,9 @@
             Minutes saved per worker per day
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="minutes_saved_info_btn"
-                      aria-label="Minutes saved per worker per day information" aria-expanded="false" aria-controls="minutes_saved_info_popover">&#9432;</button>
+                      aria-label="Minutes saved per worker per day information" aria-expanded="false" aria-controls="minutes_saved_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
               <div class="info-popover" id="minutes_saved_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">This is how much time G8 can save workers through:</div>
@@ -745,7 +770,9 @@
             Admin minutes saved per device per week
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="admin_minutes_week_info_btn"
-                      aria-label="Admin minutes saved per device per week information" aria-expanded="false" aria-controls="admin_minutes_week_info_popover">&#9432;</button>
+                      aria-label="Admin minutes saved per device per week information" aria-expanded="false" aria-controls="admin_minutes_week_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
 
               <div class="info-popover" id="admin_minutes_week_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
@@ -810,7 +837,9 @@
 
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="gas_savings_info_btn"
-                      aria-label="Calibration gas savings information" aria-expanded="false" aria-controls="gas_savings_info_popover">&#9432;</button>
+                      aria-label="Calibration gas savings information" aria-expanded="false" aria-controls="gas_savings_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
 
               <div class="info-popover" id="gas_savings_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
@@ -925,7 +954,9 @@
             Device consolidation savings
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="device_savings_info_btn"
-                      aria-label="Device consolidation savings information" aria-expanded="false" aria-controls="device_savings_info_popover">&#9432;</button>
+                      aria-label="Device consolidation savings information" aria-expanded="false" aria-controls="device_savings_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
               <div class="info-popover" id="device_savings_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Device consolidation savings</div>
@@ -955,7 +986,9 @@
             Total Year 1 G8 cost
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="total_cost_info_btn"
-                      aria-label="Total Year 1 G8 cost information" aria-expanded="false" aria-controls="total_cost_info_popover">&#9432;</button>
+                      aria-label="Total Year 1 G8 cost information" aria-expanded="false" aria-controls="total_cost_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
               <div class="info-popover" id="total_cost_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Total Year 1 G8 cost</div>
@@ -978,7 +1011,9 @@
             Year 1 ROI
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="roi_info_btn"
-                      aria-label="Year 1 ROI formula information" aria-expanded="false" aria-controls="roi_info_popover">&#9432;</button>
+                      aria-label="Year 1 ROI formula information" aria-expanded="false" aria-controls="roi_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
               <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Year 1 ROI formula</div>
@@ -999,7 +1034,9 @@
             Payback period (months)
             <span class="info-wrap">
               <button type="button" class="info-icon-btn" id="payback_info_btn"
-                      aria-label="Payback period formula information" aria-expanded="false" aria-controls="payback_info_popover">&#9432;</button>
+                      aria-label="Payback period formula information" aria-expanded="false" aria-controls="payback_info_popover">
+                <span class="info-glyph" aria-hidden="true">i</span>
+              </button>
               <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Payback period formula</div>
