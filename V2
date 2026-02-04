@@ -668,7 +668,7 @@
       </label>
       <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
 
-      <!-- Baseline competitor/legacy costs (do NOT auto-update by currency per your instruction) -->
+      <!-- Baseline competitor/legacy costs (NOW: FX applies only if user hasn't overridden) -->
       <label for="cost_radio">
         <span class="label-with-info">
           <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (USD)</span>
@@ -1357,8 +1357,6 @@
 
   /* ─────────────────────────────────────────────────────────────
      G8 pricing by currency (ONLY these 5 fields auto-update)
-     - USD values are captured from the current baseline on load
-     - Provided table is applied for AUD/CAD/EUR/GBP
      ───────────────────────────────────────────────────────────── */
   var g8PricingByCurrency = {
     AUD: { hardware_cost: 1200, subscription_cost: 984, addon_ptt: 576, addon_monitoring: 864, addon_emergency_voice: 744 },
@@ -1402,6 +1400,85 @@
     setValue('addon_monitoring', cfg.addon_monitoring);
     setValue('addon_emergency_voice', cfg.addon_emergency_voice);
   }
+
+  /* ─────────────────────────────────────────────────────────────
+     NEW: Baseline competitor FX (ONLY applies to baseline values)
+     - Applies to: cost_radio, cost_legacy_detector, cost_lone_worker
+     - Uses provided USD->X rates
+     - Rounds UP to next increment (default = 10 to match your example 88.5 -> 90)
+     - If user manually edits these fields, FX will never be applied again until Reset
+     ───────────────────────────────────────────────────────────── */
+
+  // IMPORTANT: Your text said "next 100" but your example is "next 10".
+  // To round up to the next 100 instead, change this constant to 100.
+  var FX_ROUNDING_INCREMENT = 10;
+
+  var baselineFxRatesFromUsd = {
+    USD: 1,
+    AUD: 1.40,
+    CAD: 1.37,
+    GBP: 0.72,
+    EUR: 0.85
+  };
+
+  var competitorUsdBaseline = null;
+
+  var competitorUserOverridden = {
+    cost_radio: false,
+    cost_legacy_detector: false,
+    cost_lone_worker: false
+  };
+
+  function ceilToIncrement(value, increment) {
+    if (!isFinite(value) || value <= 0) return 0;
+    increment = (isFinite(increment) && increment > 0) ? increment : 1;
+    return Math.ceil(value / increment) * increment;
+  }
+
+  function captureCompetitorUsdBaselineOnce() {
+    if (competitorUsdBaseline) return;
+    competitorUsdBaseline = {
+      cost_radio: parseNumber('cost_radio'),
+      cost_legacy_detector: parseNumber('cost_legacy_detector'),
+      cost_lone_worker: parseNumber('cost_lone_worker')
+    };
+  }
+
+  function applyCompetitorBaselineFxForCurrency(code) {
+    captureCompetitorUsdBaselineOnce();
+
+    var rate = baselineFxRatesFromUsd[code];
+    if (!rate) rate = 1;
+
+    Object.keys(competitorUserOverridden).forEach(function (fieldId) {
+      if (competitorUserOverridden[fieldId]) return; // do not touch user-entered values
+
+      var usdBase = competitorUsdBaseline ? competitorUsdBaseline[fieldId] : 0;
+
+      if (code === 'USD') {
+        setValue(fieldId, usdBase);
+        return;
+      }
+
+      var converted = usdBase * rate;
+      var roundedUp = ceilToIncrement(converted, FX_ROUNDING_INCREMENT);
+      setValue(fieldId, roundedUp);
+    });
+  }
+
+  function markCompetitorOverride(fieldId) {
+    if (competitorUserOverridden.hasOwnProperty(fieldId)) {
+      competitorUserOverridden[fieldId] = true;
+    }
+  }
+
+  function resetCompetitorOverrides() {
+    Object.keys(competitorUserOverridden).forEach(function (k) {
+      competitorUserOverridden[k] = false;
+    });
+  }
+
+  /* ───────────────────────────────────────────────────────────── */
 
   function setSliderValue(sliderId, valueId) {
     var slider = document.getElementById(sliderId);
@@ -1463,7 +1540,7 @@
       (costLW       * pctReplaceLW)
     );
 
-    // Total Year 1 G8 cost (auto-updated per currency for G8 costs only)
+    // Total Year 1 G8 cost
     var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
@@ -1475,7 +1552,7 @@
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // NEW: Net ROI = (Savings - Cost) / Cost
+      // Net ROI
       var roiDisplay = totalYear1G8Cost === 0
         ? 'N/A'
         : formatPercent((totalSavings - totalYear1G8Cost) / totalYear1G8Cost);
@@ -1540,7 +1617,7 @@
     });
   }
 
-  /* ── Tabs (works for any container id, not just popovers) ── */
+  /* ── Tabs ── */
   function setupPopoverTabs(containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -1580,7 +1657,7 @@
     });
   }
 
-  /* ── Inline details toggles (Option 2 for Admin + Gas) ── */
+  /* ── Inline details toggles ── */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1593,7 +1670,6 @@
     function openRow() {
       row.hidden = false;
       openBtn.setAttribute('aria-expanded', 'true');
-      // close the popover if it exists
       if (pop && popBtn) {
         pop.setAttribute('aria-hidden', 'true');
         popBtn.setAttribute('aria-expanded', 'false');
@@ -1670,7 +1746,6 @@
 
   /* ── Bootstrap ── */
   document.addEventListener('DOMContentLoaded', function () {
-    // Capture baseline values (for reset)
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
 
@@ -1682,8 +1757,19 @@
       }
     });
 
-    // Capture USD baseline for G8 pricing fields (so switching back to USD restores these)
+    // Capture USD baselines
     captureUsdBaselineOnce();
+    captureCompetitorUsdBaselineOnce();
+
+    // NEW: If user edits competitor fields, mark as overridden (no FX auto-adjust)
+    ['cost_radio', 'cost_legacy_detector', 'cost_lone_worker'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener('input', function () {
+        markCompetitorOverride(id);
+      });
+    });
 
     // Reset button
     var resetBtn = document.getElementById('reset_baseline_btn');
@@ -1694,6 +1780,9 @@
           if (el) el.value = baselineValues[id];
         });
 
+        // Reset competitor overrides so baseline FX can apply again
+        resetCompetitorOverrides();
+
         // re-sync slider pills + fills
         setSliderValue('pct_replace_radio', 'pct_replace_radio_value');
         setSliderValue('pct_replace_detector', 'pct_replace_detector_value');
@@ -1702,8 +1791,9 @@
         setSliderFill('pct_replace_detector');
         setSliderFill('pct_replace_lw');
 
-        // If currency is not USD, re-apply currency-specific G8 pricing (as per your requirement)
+        // Re-apply currency-based pricing rules
         applyG8PricingForCurrency(currentCurrency);
+        applyCompetitorBaselineFxForCurrency(currentCurrency);
 
         recalc();
       });
@@ -1714,19 +1804,17 @@
     if (currencySelect) {
       currentCurrency = currencySelect.value || 'USD';
 
-      // Apply G8 pricing for the initial currency selection (USD keeps baseline; others snap to table)
       applyG8PricingForCurrency(currentCurrency);
+      applyCompetitorBaselineFxForCurrency(currentCurrency);
 
       currencySelect.addEventListener('change', function () {
         currentCurrency = this.value || 'USD';
 
-        // Update labels
         updateCurrencyLabels();
 
-        // Auto-update ONLY the G8 costs to the table values for that currency
         applyG8PricingForCurrency(currentCurrency);
+        applyCompetitorBaselineFxForCurrency(currentCurrency);
 
-        // Recalc after changes
         recalc();
       });
     }
@@ -1756,23 +1844,18 @@
     setupPopover('roi_info_btn',                  'roi_info_popover');
     setupPopover('payback_info_btn',              'payback_info_popover');
 
-    /* OPTION 2: tabs now live in inline details panels */
     setupPopoverTabs('admin_details_panel');
     setupPopoverTabs('gas_details_panel');
 
-    /* OPTION 2: inline details toggles */
     setupInlineDetails('admin_details_open_btn', 'admin_details_close_btn', 'admin_details_row', 'admin_minutes_week_info_popover', 'admin_minutes_week_info_btn');
     setupInlineDetails('gas_details_open_btn',   'gas_details_close_btn',   'gas_details_row',   'gas_savings_info_popover',        'gas_savings_info_btn');
 
-    /* disclaimer */
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
-    /* sliders */
     setupSlider('pct_replace_radio', 'pct_replace_radio_value');
     setupSlider('pct_replace_detector', 'pct_replace_detector_value');
     setupSlider('pct_replace_lw', 'pct_replace_lw_value');
 
-    /* initial render */
     updateCurrencyLabels();
     recalc();
   });
