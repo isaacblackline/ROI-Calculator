@@ -922,8 +922,19 @@
               </button>
               <div class="info-popover" id="minutes_saved_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
-                  <div class="popover-title">Minutes saved per day</div>
-                  <p class="popover-body">Time saved by simplifying daily workflows with one connected device instead of multiple tools.</p>
+                  <div class="popover-title">What this represents</div>
+                  <p class="popover-body">
+                    This is how much time G8 can save workers through:
+                  </p>
+                  <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                    <li>Faster start and end of shift with one device instead of three.</li>
+                    <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+                    <li>Faster check-ins and status updates on a single device.</li>
+                  </ul>
+
+                  <button type="button" class="details-link-btn" id="minutes_details_open_btn" aria-expanded="false" aria-controls="minutes_details_row">
+                    View details
+                  </button>
                 </div>
               </div>
             </span>
@@ -932,6 +943,28 @@
         <td><input class="orange-input" type="number" id="minutes_saved_conservative" value="5" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
         <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
+      </tr>
+
+      <!-- inline details row for Minutes saved -->
+      <tr id="minutes_details_row" class="details-row" hidden>
+        <td colspan="4">
+          <div class="details-card" id="minutes_details_panel">
+            <div class="details-header">
+              <h3 class="details-title">Minutes saved details</h3>
+              <button type="button" class="details-close-btn" id="minutes_details_close_btn">Hide details</button>
+            </div>
+
+            <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+              <li>Faster start and end of shift with one device instead of three.</li>
+              <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+              <li>Faster check-ins and status updates on a single device.</li>
+              <li>Less time spent switching between different systems for gas, location, and alerts.</li>
+              <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
+              <li>Fewer device issues because workers only need to manage one device.</li>
+              <li>Less walking to find people or equipment because workers can call from the device.</li>
+            </ul>
+          </div>
+        </td>
       </tr>
 
       <!-- Admin minutes row -->
@@ -1606,7 +1639,7 @@
     });
   }
 
-  /* ── Inline details toggles (Option 2 for Admin + Gas) ── */
+  /* ── Inline details toggles (Option 2 for Admin + Gas + Minutes) ── */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1787,6 +1820,7 @@
     setupPopoverTabs('gas_details_panel');
 
     /* OPTION 2: inline details toggles */
+    setupInlineDetails('minutes_details_open_btn', 'minutes_details_close_btn', 'minutes_details_row', 'minutes_saved_info_popover', 'minutes_saved_info_btn');
     setupInlineDetails('admin_details_open_btn', 'admin_details_close_btn', 'admin_details_row', 'admin_minutes_week_info_popover', 'admin_minutes_week_info_btn');
     setupInlineDetails('gas_details_open_btn',   'gas_details_close_btn',   'gas_details_row',   'gas_savings_info_popover',        'gas_savings_info_btn');
 
