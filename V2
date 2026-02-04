@@ -493,6 +493,40 @@
     .popover-tab-panel { margin-top: 0.2rem; }
     .popover-tab-panel[hidden] { display: none; }
 
+    /* ── Smart popover positioning helpers ── */
+    .info-popover.is-flip-left {
+      left: auto;
+      right: calc(100% + 10px);
+    }
+
+    .info-popover.is-flip-left::before {
+      left: auto;
+      right: -7px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      border-left: none;
+      border-bottom: none;
+      border-right: 1px solid #e0e2e6;
+      border-top: 1px solid #e0e2e6;
+    }
+
+    .info-popover.is-below {
+      top: calc(100% + 10px);
+      left: 0;
+      right: auto;
+      transform: none;
+    }
+
+    .info-popover.is-below::before {
+      left: 10px;
+      top: -7px;
+      transform: rotate(45deg);
+      border-left: 1px solid #e0e2e6;
+      border-bottom: none;
+      border-top: 1px solid #e0e2e6;
+      border-right: none;
+    }
+
     @media (max-width: 720px) {
       .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
       .roi-brand-bar { padding: 0.75rem 1rem; margin: 0 -1rem; }
@@ -647,6 +681,7 @@
           </span>
         </span>
       </label>
+      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
 
       <label for="subscription_cost">
@@ -666,12 +701,13 @@
           </span>
         </span>
       </label>
+      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
 
-      <!-- Baseline competitor/legacy costs (NOW: FX applies only if user hasn't overridden) -->
+      <!-- Baseline competitor/legacy costs (do NOT auto-update by currency per your instruction) -->
       <label for="cost_radio">
         <span class="label-with-info">
-          <span id="label_cost_radio_text">Annual price of one radio and any associated subscription (USD)</span>
+          <span id="label_cost_radio_text">Price of One Radio + Subscription cost (USD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="radio_info_btn"
                     aria-label="Radio pricing information" aria-expanded="false" aria-controls="radio_info_popover">
@@ -679,12 +715,8 @@
             </button>
             <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
-                <div class="popover-title">Baseline</div>
-                <p class="popover-body">Motorola DP4801 EX</p>
-              </div>
-              <div class="popover-section">
-                <div class="popover-title">Update for customer</div>
-                <p class="popover-body">Replace with the customer's current radio + subscription price.</p>
+                <div class="popover-title">Baseline device cost</div>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their radio + subscription.</p>
               </div>
             </div>
           </span>
@@ -694,7 +726,7 @@
 
       <label for="cost_legacy_detector">
         <span class="label-with-info">
-          <span id="label_cost_legacy_detector_text">Annual price of one portable gas detector and any associated subscription (USD)</span>
+          <span id="label_cost_legacy_detector_text">Price of One Portable Gas Detector + Subscription cost (USD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="detector_info_btn"
                     aria-label="Portable gas detector pricing information" aria-expanded="false" aria-controls="detector_info_popover">
@@ -702,12 +734,8 @@
             </button>
             <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
-                <div class="popover-title">Baseline</div>
-                <p class="popover-body">MSA Altair io4 + Complete Service Plan</p>
-              </div>
-              <div class="popover-section">
-                <div class="popover-title">Update for customer</div>
-                <p class="popover-body">Change the price here to reflect the customer's gas detector.</p>
+                <div class="popover-title">Baseline device cost</div>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their portable gas detector + subscription.</p>
               </div>
             </div>
           </span>
@@ -717,7 +745,7 @@
 
       <label for="cost_lone_worker">
         <span class="label-with-info">
-          <span id="label_cost_lone_worker_text">Annual price of one lone worker device or app and any associated subscription (USD)</span>
+          <span id="label_cost_lone_worker_text">Price of One Lone Worker Device/App + Subscription cost (USD)</span>
           <span class="info-wrap">
             <button type="button" class="info-icon-btn" id="lw_info_btn"
                     aria-label="Lone worker pricing information" aria-expanded="false" aria-controls="lw_info_popover">
@@ -725,12 +753,8 @@
             </button>
             <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
-                <div class="popover-title">Baseline</div>
-                <p class="popover-body">Twig Neo</p>
-              </div>
-              <div class="popover-section">
-                <div class="popover-title">Update for customer</div>
-                <p class="popover-body">Change the price to reflect the customer's lone worker device or app.</p>
+                <div class="popover-title">Baseline device cost</div>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their lone worker device/app + subscription.</p>
               </div>
             </div>
           </span>
@@ -827,12 +851,15 @@
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, USD)</label>
+      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
       <label for="addon_monitoring" id="label_addon_monitoring">Blackline Safety Monitoring (24/7 by expert team) per device (annual, USD)</label>
+      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_monitoring" value="276" min="0" step="0.01">
 
       <label for="addon_emergency_voice" id="label_addon_emergency_voice">Emergency Voice per device (annual, USD)</label>
+      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
       <label for="other_annual_costs">
@@ -1016,7 +1043,7 @@
                 <div class="popover-section">
                   <div class="popover-title">Tip</div>
                   <p class="popover-body">
-                    Set to <strong><span class="currency-zero" id="gas_zero_popover_1">$0</span></strong> if SOPs won’t change.
+                    Set to <strong>$0</strong> if SOPs won’t change.
                   </p>
                   <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
                     View details
@@ -1027,7 +1054,7 @@
           </span>
 
           <span class="small-text" style="margin-top:0.25rem; display:block;">
-            Tip: Set to <span class="currency-zero" id="gas_zero_tip_1">$0</span> if SOPs won't change.
+            Tip: Set to $0 if SOPs won't change.
           </span>
         </td>
 
@@ -1073,10 +1100,10 @@
               <div class="math-card">
                 <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP − Gas updated SOP) × Cost/L</span></div>
                 <div class="math-line"><span><strong>Example</strong></span><span>(42.6 − 3.0) × 4.65 ≈ 184</span></div>
-                <div class="math-line"><span><strong>Result</strong></span><span>≈ <span id="gas_example_currency_184">$184</span> per device per year</span></div>
+                <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
               </div>
               <p class="popover-body" style="margin-top:0.6rem;">
-                If SOPs don't change, set this value to <strong><span class="currency-zero" id="gas_zero_popover_2">$0</span></strong>.
+                If SOPs don't change, set this value to <strong>$0</strong>.
               </p>
             </div>
 
@@ -1084,7 +1111,7 @@
               <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
                 <li>Assumes SOP changes are permitted under your program, risk policy, and manufacturer guidance.</li>
                 <li>Varies with gas price, cylinder size, regulator flow rate, test duration, and usable volume.</li>
-                <li>If daily bump testing remains required, <strong>set this to <span class="currency-zero" id="gas_zero_caveat_1">$0</span></strong>.</li>
+                <li>If daily bump testing remains required, <strong>set this to $0</strong>.</li>
               </ul>
             </div>
           </div>
@@ -1204,7 +1231,7 @@
               <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Year 1 ROI formula</div>
-                  <p class="popover-body">Year 1 ROI = (Total annual savings − Total Year 1 G8 cost) / (Total Year 1 G8 cost)</p>
+                  <p class="popover-body">Year 1 ROI = (Total annual savings) / (Total Year 1 G8 cost)</p>
                 </div>
               </div>
             </span>
@@ -1253,9 +1280,7 @@
 
       <div class="disclaimer-panel" id="disclaimer_panel" hidden>
         <p class="small-text" style="margin:0;">
-          This calculator provides directional estimates only. Actual results will vary based on your
-          specific operations, configuration, and pricing. Use it to frame discussions and compare scenarios, not as a
-          guarantee of future performance.
+          This calculator provides directional estimates only. Actual results will vary based on the customers specific operations, configuration, and pricing.
         </p>
       </div>
     </div>
@@ -1280,20 +1305,6 @@
     return currencyInfoMap[currentCurrency] || currencyInfoMap.USD;
   }
 
-  function updateZeroTips() {
-    var info = getCurrencyInfo();
-    var zeroText = (info.symbol || '$') + '0';
-
-    var nodes = document.querySelectorAll('.currency-zero');
-    nodes.forEach(function (node) {
-      node.textContent = zeroText;
-    });
-
-    // Update the hard-coded example currency token (184) inside Gas details
-    var ex184 = document.getElementById('gas_example_currency_184');
-    if (ex184) ex184.textContent = (info.symbol || '$') + '184';
-  }
-
   function updateCurrencyLabels() {
     var code = currentCurrency;
 
@@ -1301,13 +1312,13 @@
     if (hourlyText) hourlyText.textContent = 'Average hourly labour cost (' + code + '/hr)';
 
     var radioText = document.getElementById('label_cost_radio_text');
-    if (radioText) radioText.textContent = 'Annual price of one radio and any associated subscription (' + code + ')';
+    if (radioText) radioText.textContent = 'Price of One Radio + Subscription cost (' + code + ')';
 
     var detectorText = document.getElementById('label_cost_legacy_detector_text');
-    if (detectorText) detectorText.textContent = 'Annual price of one portable gas detector and any associated subscription (' + code + ')';
+    if (detectorText) detectorText.textContent = 'Price of One Portable Gas Detector + Subscription cost (' + code + ')';
 
     var lwText = document.getElementById('label_cost_lone_worker_text');
-    if (lwText) lwText.textContent = 'Annual price of one lone worker device or app and any associated subscription (' + code + ')';
+    if (lwText) lwText.textContent = 'Price of One Lone Worker Device/App + Subscription cost (' + code + ')';
 
     var label = document.getElementById('label_gas_savings');
     if (label) label.textContent = 'Calibration gas savings per device per year (' + code + ')';
@@ -1320,8 +1331,6 @@
 
     label = document.getElementById('label_addon_emergency_voice');
     if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
-
-    updateZeroTips();
   }
 
   function parseNumber(id) {
@@ -1357,6 +1366,8 @@
 
   /* ─────────────────────────────────────────────────────────────
      G8 pricing by currency (ONLY these 5 fields auto-update)
+     - USD values are captured from the current baseline on load
+     - Provided table is applied for AUD/CAD/EUR/GBP
      ───────────────────────────────────────────────────────────── */
   var g8PricingByCurrency = {
     AUD: { hardware_cost: 1200, subscription_cost: 984, addon_ptt: 576, addon_monitoring: 864, addon_emergency_voice: 744 },
@@ -1400,85 +1411,6 @@
     setValue('addon_monitoring', cfg.addon_monitoring);
     setValue('addon_emergency_voice', cfg.addon_emergency_voice);
   }
-
-  /* ─────────────────────────────────────────────────────────────
-     NEW: Baseline competitor FX (ONLY applies to baseline values)
-     - Applies to: cost_radio, cost_legacy_detector, cost_lone_worker
-     - Uses provided USD->X rates
-     - Rounds UP to next increment (default = 10 to match your example 88.5 -> 90)
-     - If user manually edits these fields, FX will never be applied again until Reset
-     ───────────────────────────────────────────────────────────── */
-
-  // IMPORTANT: Your text said "next 100" but your example is "next 10".
-  // To round up to the next 100 instead, change this constant to 100.
-  var FX_ROUNDING_INCREMENT = 10;
-
-  var baselineFxRatesFromUsd = {
-    USD: 1,
-    AUD: 1.40,
-    CAD: 1.37,
-    GBP: 0.72,
-    EUR: 0.85
-  };
-
-  var competitorUsdBaseline = null;
-
-  var competitorUserOverridden = {
-    cost_radio: false,
-    cost_legacy_detector: false,
-    cost_lone_worker: false
-  };
-
-  function ceilToIncrement(value, increment) {
-    if (!isFinite(value) || value <= 0) return 0;
-    increment = (isFinite(increment) && increment > 0) ? increment : 1;
-    return Math.ceil(value / increment) * increment;
-  }
-
-  function captureCompetitorUsdBaselineOnce() {
-    if (competitorUsdBaseline) return;
-    competitorUsdBaseline = {
-      cost_radio: parseNumber('cost_radio'),
-      cost_legacy_detector: parseNumber('cost_legacy_detector'),
-      cost_lone_worker: parseNumber('cost_lone_worker')
-    };
-  }
-
-  function applyCompetitorBaselineFxForCurrency(code) {
-    captureCompetitorUsdBaselineOnce();
-
-    var rate = baselineFxRatesFromUsd[code];
-    if (!rate) rate = 1;
-
-    Object.keys(competitorUserOverridden).forEach(function (fieldId) {
-      if (competitorUserOverridden[fieldId]) return; // do not touch user-entered values
-
-      var usdBase = competitorUsdBaseline ? competitorUsdBaseline[fieldId] : 0;
-
-      if (code === 'USD') {
-        setValue(fieldId, usdBase);
-        return;
-      }
-
-      var converted = usdBase * rate;
-      var roundedUp = ceilToIncrement(converted, FX_ROUNDING_INCREMENT);
-      setValue(fieldId, roundedUp);
-    });
-  }
-
-  function markCompetitorOverride(fieldId) {
-    if (competitorUserOverridden.hasOwnProperty(fieldId)) {
-      competitorUserOverridden[fieldId] = true;
-    }
-  }
-
-  function resetCompetitorOverrides() {
-    Object.keys(competitorUserOverridden).forEach(function (k) {
-      competitorUserOverridden[k] = false;
-    });
-  }
-
-  /* ───────────────────────────────────────────────────────────── */
 
   function setSliderValue(sliderId, valueId) {
     var slider = document.getElementById(sliderId);
@@ -1540,7 +1472,7 @@
       (costLW       * pctReplaceLW)
     );
 
-    // Total Year 1 G8 cost
+    // Total Year 1 G8 cost (auto-updated per currency for G8 costs only)
     var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
@@ -1552,12 +1484,9 @@
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // Net ROI
-      var roiDisplay = totalYear1G8Cost === 0
-        ? 'N/A'
-        : formatPercent((totalSavings - totalYear1G8Cost) / totalYear1G8Cost);
-
-      var paybackDisplay = totalSavings === 0 ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
+      // show N/A instead of misleading 0% / 0 months on division-by-zero edges
+      var roiDisplay     = totalYear1G8Cost === 0 ? 'N/A' : formatPercent(totalSavings / totalYear1G8Cost);
+      var paybackDisplay = totalSavings === 0      ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
 
@@ -1598,8 +1527,28 @@
 
     function openPopover() {
       closeAllPopovers(pop);
+
+      // reset any previous positioning states
+      pop.classList.remove('is-flip-left', 'is-below');
+
       pop.setAttribute('aria-hidden', 'false');
       btn.setAttribute('aria-expanded', 'true');
+
+      // After display, measure and reposition if needed
+      var rect = pop.getBoundingClientRect();
+      var padding = 16;
+
+      // If it overflows the right edge, flip to the left
+      if (rect.right > (window.innerWidth - padding)) {
+        pop.classList.add('is-flip-left');
+        rect = pop.getBoundingClientRect();
+      }
+
+      // If still awkward or near bottom edge, drop below
+      if (rect.bottom > (window.innerHeight - padding)) {
+        pop.classList.add('is-below');
+        // If it's also flipped left, keep it flipped; below just overrides top/transform
+      }
     }
 
     btn.addEventListener('click', function (e) {
@@ -1617,7 +1566,7 @@
     });
   }
 
-  /* ── Tabs ── */
+  /* ── Tabs (works for any container id, not just popovers) ── */
   function setupPopoverTabs(containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -1657,7 +1606,7 @@
     });
   }
 
-  /* ── Inline details toggles ── */
+  /* ── Inline details toggles (Option 2 for Admin + Gas) ── */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1670,6 +1619,7 @@
     function openRow() {
       row.hidden = false;
       openBtn.setAttribute('aria-expanded', 'true');
+      // close the popover if it exists
       if (pop && popBtn) {
         pop.setAttribute('aria-hidden', 'true');
         popBtn.setAttribute('aria-expanded', 'false');
@@ -1746,6 +1696,7 @@
 
   /* ── Bootstrap ── */
   document.addEventListener('DOMContentLoaded', function () {
+    // Capture baseline values (for reset)
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
 
@@ -1757,19 +1708,8 @@
       }
     });
 
-    // Capture USD baselines
+    // Capture USD baseline for G8 pricing fields (so switching back to USD restores these)
     captureUsdBaselineOnce();
-    captureCompetitorUsdBaselineOnce();
-
-    // NEW: If user edits competitor fields, mark as overridden (no FX auto-adjust)
-    ['cost_radio', 'cost_legacy_detector', 'cost_lone_worker'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (!el) return;
-
-      el.addEventListener('input', function () {
-        markCompetitorOverride(id);
-      });
-    });
 
     // Reset button
     var resetBtn = document.getElementById('reset_baseline_btn');
@@ -1780,9 +1720,6 @@
           if (el) el.value = baselineValues[id];
         });
 
-        // Reset competitor overrides so baseline FX can apply again
-        resetCompetitorOverrides();
-
         // re-sync slider pills + fills
         setSliderValue('pct_replace_radio', 'pct_replace_radio_value');
         setSliderValue('pct_replace_detector', 'pct_replace_detector_value');
@@ -1791,9 +1728,8 @@
         setSliderFill('pct_replace_detector');
         setSliderFill('pct_replace_lw');
 
-        // Re-apply currency-based pricing rules
+        // If currency is not USD, re-apply currency-specific G8 pricing (as per your requirement)
         applyG8PricingForCurrency(currentCurrency);
-        applyCompetitorBaselineFxForCurrency(currentCurrency);
 
         recalc();
       });
@@ -1804,17 +1740,19 @@
     if (currencySelect) {
       currentCurrency = currencySelect.value || 'USD';
 
+      // Apply G8 pricing for the initial currency selection (USD keeps baseline; others snap to table)
       applyG8PricingForCurrency(currentCurrency);
-      applyCompetitorBaselineFxForCurrency(currentCurrency);
 
       currencySelect.addEventListener('change', function () {
         currentCurrency = this.value || 'USD';
 
+        // Update labels
         updateCurrencyLabels();
 
+        // Auto-update ONLY the G8 costs to the table values for that currency
         applyG8PricingForCurrency(currentCurrency);
-        applyCompetitorBaselineFxForCurrency(currentCurrency);
 
+        // Recalc after changes
         recalc();
       });
     }
@@ -1844,18 +1782,23 @@
     setupPopover('roi_info_btn',                  'roi_info_popover');
     setupPopover('payback_info_btn',              'payback_info_popover');
 
+    /* OPTION 2: tabs now live in inline details panels */
     setupPopoverTabs('admin_details_panel');
     setupPopoverTabs('gas_details_panel');
 
+    /* OPTION 2: inline details toggles */
     setupInlineDetails('admin_details_open_btn', 'admin_details_close_btn', 'admin_details_row', 'admin_minutes_week_info_popover', 'admin_minutes_week_info_btn');
     setupInlineDetails('gas_details_open_btn',   'gas_details_close_btn',   'gas_details_row',   'gas_savings_info_popover',        'gas_savings_info_btn');
 
+    /* disclaimer */
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
+    /* sliders */
     setupSlider('pct_replace_radio', 'pct_replace_radio_value');
     setupSlider('pct_replace_detector', 'pct_replace_detector_value');
     setupSlider('pct_replace_lw', 'pct_replace_lw_value');
 
+    /* initial render */
     updateCurrencyLabels();
     recalc();
   });
