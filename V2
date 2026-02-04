@@ -527,6 +527,20 @@
       border-right: none;
     }
 
+    /* Simple warning banner (non-blocking) */
+    .warning-banner {
+      display: none;
+      margin: 0 0 1rem 0;
+      background: #fff7e8;
+      border: 1px solid #f1d2a3;
+      border-left: 4px solid #d97706;
+      border-radius: 4px;
+      padding: 0.6rem 0.75rem;
+      color: #7a4a00;
+      font-size: 0.9rem;
+    }
+    .warning-banner[aria-hidden="false"] { display: block; }
+
     @media (max-width: 720px) {
       .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
       .roi-brand-bar { padding: 0.75rem 1rem; margin: 0 -1rem; }
@@ -578,6 +592,9 @@
     Enter a few values to start. Every field is flexible and can be changed anytime. We'll show savings, Year&nbsp;1 ROI,
     and payback across conservative, typical, and high-value scenarios.
   </p>
+
+  <!-- Non-blocking warning (only shows when key inputs are 0) -->
+  <div class="warning-banner" id="warning_banner" aria-hidden="true"></div>
 
   <div class="reset-row">
     <button type="button" id="reset_baseline_btn">Reset to baseline values</button>
@@ -663,7 +680,7 @@
       </label>
       <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
 
-      <!-- G8 pricing first (these will auto-update when currency changes) -->
+      <!-- G8 pricing first (these will auto-update when currency changes, but now preserve user edits per currency) -->
       <label for="hardware_cost">
         <span class="label-with-info">
           G8 hardware price per device
@@ -681,7 +698,6 @@
           </span>
         </span>
       </label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
 
       <label for="subscription_cost">
@@ -701,10 +717,9 @@
           </span>
         </span>
       </label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
 
-      <!-- Baseline competitor/legacy costs (do NOT auto-update by currency per your instruction) -->
+      <!-- Baseline competitor/legacy costs (these should NOT auto-update by currency) -->
       <label for="cost_radio">
         <span class="label-with-info">
           <span id="label_cost_radio_text">Price of One Radio + Subscription cost (USD)</span>
@@ -762,7 +777,7 @@
       </label>
       <input class="green-input" type="number" id="cost_lone_worker" value="700" min="0" step="0.01">
 
-      <!-- Sliders (baseline = 60%, step=5%) -->
+      <!-- Sliders -->
       <label for="pct_replace_radio">
         <span class="label-with-info">
           Radio replacement coverage (%)
@@ -851,15 +866,12 @@
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
       <label for="addon_monitoring" id="label_addon_monitoring">Blackline Safety Monitoring (24/7 by expert team) per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_monitoring" value="276" min="0" step="0.01">
 
       <label for="addon_emergency_voice" id="label_addon_emergency_voice">Emergency Voice per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
       <label for="other_annual_costs">
@@ -1264,8 +1276,7 @@
               <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Year 1 ROI formula</div>
-                  <!-- UPDATED (scope): net ROI formula -->
-                  <p class="popover-body">Year 1 ROI = (Total annual savings − Total Year 1 G8 cost) / (Total Year 1 G8 cost)</p>
+                  <p class="popover-body">Year 1 ROI = (Total annual savings − Total Year 1 G8 cost) / Total Year 1 G8 cost</p>
                 </div>
               </div>
             </span>
@@ -1288,8 +1299,7 @@
               <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Payback period formula</div>
-                  <!-- UPDATED (scope): net payback formula consistent with net ROI -->
-                  <p class="popover-body">Payback period (months) = 12 × Total Year 1 G8 cost / (Total annual savings − Total Year 1 G8 cost)</p>
+                  <p class="popover-body">Payback period (months) = 12 × Total Year 1 G8 cost / Total annual savings</p>
                 </div>
               </div>
             </span>
@@ -1325,6 +1335,18 @@
 <script>
 (function () {
   'use strict';
+
+  /* ─────────────────────────────────────────────────────────────
+     Key changes implemented (within scope):
+     1) NET ROI: (Savings - Cost) / Cost + popover updated
+     2) Payback: standard payback 12 * Cost / Savings + popover updated
+     3) Currency switching: preserve user-edited G8 pricing per currency (no data loss)
+     4) Reset: true baseline captured from initial DOM (before any currency application)
+     5) Input safety: clamp non-negative fields in JS
+     6) Popover positioning: measure inside requestAnimationFrame
+     7) Slider perf: light debounce on slider-driven recalcs
+     NOTE: Admin savings logic left as originally labeled (per device per week) to avoid scope expansion.
+     ───────────────────────────────────────────────────────────── */
 
   var currentCurrency = 'USD';
 
@@ -1376,6 +1398,11 @@
     return isNaN(n) ? 0 : n;
   }
 
+  function clampNonNeg(n) {
+    n = (typeof n === 'number' && isFinite(n)) ? n : 0;
+    return Math.max(0, n);
+  }
+
   function setValue(id, value) {
     var el = document.getElementById(id);
     if (el) el.value = value;
@@ -1401,50 +1428,75 @@
 
   /* ─────────────────────────────────────────────────────────────
      G8 pricing by currency (ONLY these 5 fields auto-update)
-     - USD values are captured from the current baseline on load
-     - Provided table is applied for AUD/CAD/EUR/GBP
+     Now with per-currency preservation of user edits:
+       - If the user edits CAD G8 values, switching away and back keeps them.
+       - If a currency has never been visited, we seed from your table (or USD baseline for USD).
      ───────────────────────────────────────────────────────────── */
-  var g8PricingByCurrency = {
+  var g8PricingSeed = {
+    USD: null, // seeded from initial DOM on load
     AUD: { hardware_cost: 1200, subscription_cost: 984, addon_ptt: 576, addon_monitoring: 864, addon_emergency_voice: 744 },
     CAD: { hardware_cost: 1117, subscription_cost: 768, addon_ptt: 456, addon_monitoring: 552, addon_emergency_voice: 600 },
     EUR: { hardware_cost:  789, subscription_cost: 648, addon_ptt: 312, addon_monitoring: 408, addon_emergency_voice: 432 },
     GBP: { hardware_cost:  596, subscription_cost: 576, addon_ptt: 264, addon_monitoring: 312, addon_emergency_voice: 360 }
   };
-  var g8UsdBaseline = null;
 
-  function captureUsdBaselineOnce() {
-    if (g8UsdBaseline) return;
-    g8UsdBaseline = {
-      hardware_cost: parseNumber('hardware_cost'),
-      subscription_cost: parseNumber('subscription_cost'),
-      addon_ptt: parseNumber('addon_ptt'),
-      addon_monitoring: parseNumber('addon_monitoring'),
-      addon_emergency_voice: parseNumber('addon_emergency_voice')
+  var g8ValuesByCurrency = {}; // { USD: {...}, CAD: {...}, ... }
+  var g8FieldIds = ['hardware_cost', 'subscription_cost', 'addon_ptt', 'addon_monitoring', 'addon_emergency_voice'];
+
+  function readG8Fields() {
+    return {
+      hardware_cost: clampNonNeg(parseNumber('hardware_cost')),
+      subscription_cost: clampNonNeg(parseNumber('subscription_cost')),
+      addon_ptt: clampNonNeg(parseNumber('addon_ptt')),
+      addon_monitoring: clampNonNeg(parseNumber('addon_monitoring')),
+      addon_emergency_voice: clampNonNeg(parseNumber('addon_emergency_voice'))
     };
   }
 
-  function applyG8PricingForCurrency(code) {
-    captureUsdBaselineOnce();
+  function writeG8Fields(values) {
+    if (!values) return;
+    setValue('hardware_cost', values.hardware_cost);
+    setValue('subscription_cost', values.subscription_cost);
+    setValue('addon_ptt', values.addon_ptt);
+    setValue('addon_monitoring', values.addon_monitoring);
+    setValue('addon_emergency_voice', values.addon_emergency_voice);
+  }
+
+  function ensureG8CurrencySeeded(code) {
+    if (g8ValuesByCurrency[code]) return;
 
     if (code === 'USD') {
-      if (g8UsdBaseline) {
-        setValue('hardware_cost', g8UsdBaseline.hardware_cost);
-        setValue('subscription_cost', g8UsdBaseline.subscription_cost);
-        setValue('addon_ptt', g8UsdBaseline.addon_ptt);
-        setValue('addon_monitoring', g8UsdBaseline.addon_monitoring);
-        setValue('addon_emergency_voice', g8UsdBaseline.addon_emergency_voice);
+      // USD is seeded from initial DOM baseline
+      if (g8PricingSeed.USD) {
+        g8ValuesByCurrency.USD = Object.assign({}, g8PricingSeed.USD);
+      } else {
+        // fallback (shouldn't happen)
+        g8ValuesByCurrency.USD = readG8Fields();
       }
       return;
     }
 
-    var cfg = g8PricingByCurrency[code];
-    if (!cfg) return;
+    var seed = g8PricingSeed[code];
+    if (seed) g8ValuesByCurrency[code] = Object.assign({}, seed);
+    else      g8ValuesByCurrency[code] = readG8Fields();
+  }
 
-    setValue('hardware_cost', cfg.hardware_cost);
-    setValue('subscription_cost', cfg.subscription_cost);
-    setValue('addon_ptt', cfg.addon_ptt);
-    setValue('addon_monitoring', cfg.addon_monitoring);
-    setValue('addon_emergency_voice', cfg.addon_emergency_voice);
+  function persistCurrentG8ForCurrency(code) {
+    g8ValuesByCurrency[code] = readG8Fields();
+  }
+
+  function switchCurrency(nextCode) {
+    // Save current currency's user edits before switching
+    persistCurrentG8ForCurrency(currentCurrency);
+
+    // Ensure next currency has values
+    ensureG8CurrencySeeded(nextCode);
+
+    // Apply next currency values to ONLY G8 fields
+    writeG8Fields(g8ValuesByCurrency[nextCode]);
+
+    currentCurrency = nextCode;
+    updateCurrencyLabels();
   }
 
   function setSliderValue(sliderId, valueId) {
@@ -1462,74 +1514,100 @@
     slider.style.setProperty('--pct', v + '%');
   }
 
+  /* Light debounce for slider-driven recalcs */
+  var recalcTimer = null;
+  function debouncedRecalc() {
+    if (recalcTimer) clearTimeout(recalcTimer);
+    recalcTimer = setTimeout(recalc, 40);
+  }
+
+  function setWarning(message) {
+    var banner = document.getElementById('warning_banner');
+    if (!banner) return;
+    if (!message) {
+      banner.textContent = '';
+      banner.setAttribute('aria-hidden', 'true');
+    } else {
+      banner.textContent = message;
+      banner.setAttribute('aria-hidden', 'false');
+    }
+  }
+
   function recalc() {
-    var numDevices      = parseNumber('num_workers');
-    var hourlyCost      = parseNumber('hourly_cost');
-    var costRadio       = parseNumber('cost_radio');
-    var costDetector    = parseNumber('cost_legacy_detector');
-    var hwCost          = parseNumber('hardware_cost');
-    var planCost        = parseNumber('subscription_cost');
-    var costLW          = parseNumber('cost_lone_worker');
-    var workdaysPerYear = parseNumber('workdays_per_year');
-    var weeksPerYear    = parseNumber('weeks_per_year');
-    var otherCosts      = parseNumber('other_annual_costs');
+    // clamp all “must not be negative” numeric fields
+    var numDevices      = clampNonNeg(parseNumber('num_workers'));
+    var hourlyCost      = clampNonNeg(parseNumber('hourly_cost'));
+    var costRadio       = clampNonNeg(parseNumber('cost_radio'));
+    var costDetector    = clampNonNeg(parseNumber('cost_legacy_detector'));
+    var hwCost          = clampNonNeg(parseNumber('hardware_cost'));
+    var planCost        = clampNonNeg(parseNumber('subscription_cost'));
+    var costLW          = clampNonNeg(parseNumber('cost_lone_worker'));
+    var workdaysPerYear = clampNonNeg(parseNumber('workdays_per_year'));
+    var weeksPerYear    = clampNonNeg(parseNumber('weeks_per_year'));
+    var otherCosts      = clampNonNeg(parseNumber('other_annual_costs'));
 
-    var addonPTT            = parseNumber('addon_ptt');
-    var addonMonitoring     = parseNumber('addon_monitoring');
-    var addonEmergencyVoice = parseNumber('addon_emergency_voice');
+    var addonPTT            = clampNonNeg(parseNumber('addon_ptt'));
+    var addonMonitoring     = clampNonNeg(parseNumber('addon_monitoring'));
+    var addonEmergencyVoice = clampNonNeg(parseNumber('addon_emergency_voice'));
 
-    var pctReplaceRadio    = Math.max(0, Math.min(100, parseNumber('pct_replace_radio'))) / 100;
-    var pctReplaceDetector = Math.max(0, Math.min(100, parseNumber('pct_replace_detector'))) / 100;
-    var pctReplaceLW       = Math.max(0, Math.min(100, parseNumber('pct_replace_lw'))) / 100;
+    var pctReplaceRadio    = Math.max(0, Math.min(100, clampNonNeg(parseNumber('pct_replace_radio')))) / 100;
+    var pctReplaceDetector = Math.max(0, Math.min(100, clampNonNeg(parseNumber('pct_replace_detector')))) / 100;
+    var pctReplaceLW       = Math.max(0, Math.min(100, clampNonNeg(parseNumber('pct_replace_lw')))) / 100;
 
     var scenarios = {
       conservative: {
-        minutesPerDay:       parseNumber('minutes_saved_conservative'),
-        adminMinutesPerWeek: parseNumber('admin_minutes_week_conservative'),
-        gasSavings:          parseNumber('gas_savings_conservative')
+        minutesPerDay:       clampNonNeg(parseNumber('minutes_saved_conservative')),
+        adminMinutesPerWeek: clampNonNeg(parseNumber('admin_minutes_week_conservative')),
+        gasSavings:          clampNonNeg(parseNumber('gas_savings_conservative'))
       },
       typical: {
-        minutesPerDay:       parseNumber('minutes_saved_typical'),
-        adminMinutesPerWeek: parseNumber('admin_minutes_week_typical'),
-        gasSavings:          parseNumber('gas_savings_typical')
+        minutesPerDay:       clampNonNeg(parseNumber('minutes_saved_typical')),
+        adminMinutesPerWeek: clampNonNeg(parseNumber('admin_minutes_week_typical')),
+        gasSavings:          clampNonNeg(parseNumber('gas_savings_typical'))
       },
       high: {
-        minutesPerDay:       parseNumber('minutes_saved_high'),
-        adminMinutesPerWeek: parseNumber('admin_minutes_week_high'),
-        gasSavings:          parseNumber('gas_savings_high')
+        minutesPerDay:       clampNonNeg(parseNumber('minutes_saved_high')),
+        adminMinutesPerWeek: clampNonNeg(parseNumber('admin_minutes_week_high')),
+        gasSavings:          clampNonNeg(parseNumber('gas_savings_high'))
       }
     };
 
-    // Coverage-adjusted consolidation savings
+    // Non-blocking warnings for common “0” edge cases
+    var warnings = [];
+    if (numDevices === 0) warnings.push('Number of devices is 0 (savings and costs will show as $0).');
+    if (hourlyCost === 0) warnings.push('Hourly labour cost is 0 (time-based savings will show as $0).');
+    if (workdaysPerYear === 0) warnings.push('Workdays per year is 0 (worker time savings will show as $0).');
+    if (weeksPerYear === 0) warnings.push('Weeks per year is 0 (admin savings will show as $0).');
+    setWarning(warnings.length ? warnings.join(' ') : '');
+
+    // Coverage-adjusted consolidation savings (annual)
     var deviceConsolidation = numDevices * (
       (costRadio    * pctReplaceRadio) +
       (costDetector * pctReplaceDetector) +
       (costLW       * pctReplaceLW)
     );
 
-    // Total Year 1 G8 cost (auto-updated per currency for G8 costs only)
+    // Total Year 1 G8 cost
     var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
       var s = scenarios[key];
 
       var workerTimeSavings = numDevices * (s.minutesPerDay / 60) * workdaysPerYear * hourlyCost;
+
+      // NOTE: kept as originally labeled: "per device per week" => multiply by numDevices
       var adminSavings      = numDevices * (s.adminMinutesPerWeek / 60) * weeksPerYear * hourlyCost;
+
       var gasSavings        = numDevices * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // UPDATED (scope): Net ROI + net payback
-      var netAnnualSavings = totalSavings - totalYear1G8Cost;
+      // NET ROI (finance-style)
+      var netGain = totalSavings - totalYear1G8Cost;
+      var roiDisplay = (totalYear1G8Cost === 0) ? 'N/A' : formatPercent(netGain / totalYear1G8Cost);
 
-      // show N/A instead of misleading % / months on division-by-zero or non-payback cases
-      var roiDisplay = (totalYear1G8Cost === 0)
-        ? 'N/A'
-        : formatPercent(netAnnualSavings / totalYear1G8Cost);
-
-      var paybackDisplay = (netAnnualSavings <= 0)
-        ? 'N/A'
-        : formatMonths(12 * totalYear1G8Cost / netAnnualSavings);
+      // Standard payback (months): investment / annual savings
+      var paybackDisplay = (totalSavings <= 0) ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
 
@@ -1577,21 +1655,22 @@
       pop.setAttribute('aria-hidden', 'false');
       btn.setAttribute('aria-expanded', 'true');
 
-      // After display, measure and reposition if needed
-      var rect = pop.getBoundingClientRect();
-      var padding = 16;
+      // measure after reflow (prevents stale rects)
+      requestAnimationFrame(function () {
+        var rect = pop.getBoundingClientRect();
+        var padding = 16;
 
-      // If it overflows the right edge, flip to the left
-      if (rect.right > (window.innerWidth - padding)) {
-        pop.classList.add('is-flip-left');
-        rect = pop.getBoundingClientRect();
-      }
+        // If it overflows the right edge, flip to the left
+        if (rect.right > (window.innerWidth - padding)) {
+          pop.classList.add('is-flip-left');
+          rect = pop.getBoundingClientRect();
+        }
 
-      // If still awkward or near bottom edge, drop below
-      if (rect.bottom > (window.innerHeight - padding)) {
-        pop.classList.add('is-below');
-        // If it's also flipped left, keep it flipped; below just overrides top/transform
-      }
+        // If near bottom edge, drop below
+        if (rect.bottom > (window.innerHeight - padding)) {
+          pop.classList.add('is-below');
+        }
+      });
     }
 
     btn.addEventListener('click', function (e) {
@@ -1609,7 +1688,7 @@
     });
   }
 
-  /* ── Tabs (works for any container id, not just popovers) ── */
+  /* ── Tabs (works for any container id) ── */
   function setupPopoverTabs(containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -1649,7 +1728,7 @@
     });
   }
 
-  /* ── Inline details toggles (Option 2 for Admin + Gas + Minutes) ── */
+  /* ── Inline details toggles ── */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1733,37 +1812,59 @@
     slider.addEventListener('input', function () {
       setSliderValue(sliderId, valueId);
       setSliderFill(sliderId);
-      recalc();
+      debouncedRecalc();
     });
   }
 
   /* ── Bootstrap ── */
   document.addEventListener('DOMContentLoaded', function () {
-    // Capture baseline values (for reset)
+    // 1) Capture true baseline values BEFORE doing any currency application
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
-
     inputs.forEach(function (input) {
       if (input.id) baselineValues[input.id] = input.value;
+    });
 
+    // 2) Seed USD G8 pricing from baseline DOM values (true baseline)
+    g8PricingSeed.USD = {
+      hardware_cost: clampNonNeg(parseFloat(baselineValues.hardware_cost || '0')),
+      subscription_cost: clampNonNeg(parseFloat(baselineValues.subscription_cost || '0')),
+      addon_ptt: clampNonNeg(parseFloat(baselineValues.addon_ptt || '0')),
+      addon_monitoring: clampNonNeg(parseFloat(baselineValues.addon_monitoring || '0')),
+      addon_emergency_voice: clampNonNeg(parseFloat(baselineValues.addon_emergency_voice || '0'))
+    };
+    ensureG8CurrencySeeded('USD');
+
+    // 3) Wire non-range inputs to recalc
+    inputs.forEach(function (input) {
       if (input.type !== 'range') {
         input.addEventListener('input', recalc);
       }
     });
 
-    // Capture USD baseline for G8 pricing fields (so switching back to USD restores these)
-    captureUsdBaselineOnce();
-
-    // Reset button
+    // Reset button (resets ALL inputs to baseline, then re-applies G8 currency values for current currency)
     var resetBtn = document.getElementById('reset_baseline_btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
+        // Reset all inputs to initial baseline
         Object.keys(baselineValues).forEach(function (id) {
           var el = document.getElementById(id);
           if (el) el.value = baselineValues[id];
         });
 
-        // re-sync slider pills + fills
+        // Reset currency selector to baseline (USD) and G8 values to USD baseline
+        var currencySelect = document.getElementById('currency_select');
+        if (currencySelect) {
+          currencySelect.value = 'USD';
+        }
+
+        // Clear any stored per-currency user edits and reseed
+        g8ValuesByCurrency = {};
+        ensureG8CurrencySeeded('USD');
+        currentCurrency = 'USD';
+        writeG8Fields(g8ValuesByCurrency.USD);
+
+        // Re-sync slider pills + fills
         setSliderValue('pct_replace_radio', 'pct_replace_radio_value');
         setSliderValue('pct_replace_detector', 'pct_replace_detector_value');
         setSliderValue('pct_replace_lw', 'pct_replace_lw_value');
@@ -1771,9 +1872,7 @@
         setSliderFill('pct_replace_detector');
         setSliderFill('pct_replace_lw');
 
-        // If currency is not USD, re-apply currency-specific G8 pricing (as per your requirement)
-        applyG8PricingForCurrency(currentCurrency);
-
+        updateCurrencyLabels();
         recalc();
       });
     }
@@ -1781,21 +1880,17 @@
     // Currency selector
     var currencySelect = document.getElementById('currency_select');
     if (currencySelect) {
+      // Start from whatever is selected in DOM (default USD)
       currentCurrency = currencySelect.value || 'USD';
 
-      // Apply G8 pricing for the initial currency selection (USD keeps baseline; others snap to table)
-      applyG8PricingForCurrency(currentCurrency);
+      // Ensure current currency is seeded, then write fields (keeps baseline for USD)
+      ensureG8CurrencySeeded(currentCurrency);
+      writeG8Fields(g8ValuesByCurrency[currentCurrency]);
 
       currencySelect.addEventListener('change', function () {
-        currentCurrency = this.value || 'USD';
-
-        // Update labels
-        updateCurrencyLabels();
-
-        // Auto-update ONLY the G8 costs to the table values for that currency
-        applyG8PricingForCurrency(currentCurrency);
-
-        // Recalc after changes
+        var next = this.value || 'USD';
+        if (next === currentCurrency) return;
+        switchCurrency(next);
         recalc();
       });
     }
@@ -1825,11 +1920,11 @@
     setupPopover('roi_info_btn',                  'roi_info_popover');
     setupPopover('payback_info_btn',              'payback_info_popover');
 
-    /* OPTION 2: tabs now live in inline details panels */
+    /* tabs in inline details panels */
     setupPopoverTabs('admin_details_panel');
     setupPopoverTabs('gas_details_panel');
 
-    /* OPTION 2: inline details toggles */
+    /* inline details toggles */
     setupInlineDetails('minutes_details_open_btn', 'minutes_details_close_btn', 'minutes_details_row', 'minutes_saved_info_popover', 'minutes_saved_info_btn');
     setupInlineDetails('admin_details_open_btn', 'admin_details_close_btn', 'admin_details_row', 'admin_minutes_week_info_popover', 'admin_minutes_week_info_btn');
     setupInlineDetails('gas_details_open_btn',   'gas_details_close_btn',   'gas_details_row',   'gas_savings_info_popover',        'gas_savings_info_btn');
