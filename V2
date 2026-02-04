@@ -1021,7 +1021,7 @@
                 <div class="popover-section">
                   <div class="popover-title">Tip</div>
                   <p class="popover-body">
-                    Set to <strong>$0</strong> if SOPs won’t change.
+                    Set to <strong><span class="currency-zero" id="gas_zero_popover_1">$0</span></strong> if SOPs won’t change.
                   </p>
                   <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
                     View details
@@ -1032,7 +1032,7 @@
           </span>
 
           <span class="small-text" style="margin-top:0.25rem; display:block;">
-            Tip: Set to $0 if SOPs won't change.
+            Tip: Set to <span class="currency-zero" id="gas_zero_tip_1">$0</span> if SOPs won't change.
           </span>
         </td>
 
@@ -1081,7 +1081,7 @@
                 <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
               </div>
               <p class="popover-body" style="margin-top:0.6rem;">
-                If SOPs don't change, set this value to <strong>$0</strong>.
+                If SOPs don't change, set this value to <strong><span class="currency-zero" id="gas_zero_popover_2">$0</span></strong>.
               </p>
             </div>
 
@@ -1285,6 +1285,15 @@
     return currencyInfoMap[currentCurrency] || currencyInfoMap.USD;
   }
 
+  function updateZeroTips() {
+    var info = getCurrencyInfo();
+    var zeroText = (info.symbol || '$') + '0';
+    var nodes = document.querySelectorAll('.currency-zero');
+    nodes.forEach(function (node) {
+      node.textContent = zeroText;
+    });
+  }
+
   function updateCurrencyLabels() {
     var code = currentCurrency;
 
@@ -1311,6 +1320,8 @@
 
     label = document.getElementById('label_addon_emergency_voice');
     if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
+
+    updateZeroTips();
   }
 
   function parseNumber(id) {
