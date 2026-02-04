@@ -1204,7 +1204,7 @@
               <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Year 1 ROI formula</div>
-                  <p class="popover-body">Year 1 ROI = (Total annual savings) / (Total Year 1 G8 cost)</p>
+                  <p class="popover-body">Year 1 ROI = (Total annual savings − Total Year 1 G8 cost) / (Total Year 1 G8 cost)</p>
                 </div>
               </div>
             </span>
@@ -1475,9 +1475,12 @@
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // show N/A instead of misleading 0% / 0 months on division-by-zero edges
-      var roiDisplay     = totalYear1G8Cost === 0 ? 'N/A' : formatPercent(totalSavings / totalYear1G8Cost);
-      var paybackDisplay = totalSavings === 0      ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
+      // NEW: Net ROI = (Savings - Cost) / Cost
+      var roiDisplay = totalYear1G8Cost === 0
+        ? 'N/A'
+        : formatPercent((totalSavings - totalYear1G8Cost) / totalYear1G8Cost);
+
+      var paybackDisplay = totalSavings === 0 ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
 
