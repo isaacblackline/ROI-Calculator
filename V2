@@ -647,7 +647,6 @@
           </span>
         </span>
       </label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
 
       <label for="subscription_cost">
@@ -667,7 +666,6 @@
           </span>
         </span>
       </label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
 
       <!-- Baseline competitor/legacy costs (do NOT auto-update by currency per your instruction) -->
@@ -829,15 +827,12 @@
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
 
       <label for="addon_monitoring" id="label_addon_monitoring">Blackline Safety Monitoring (24/7 by expert team) per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_monitoring" value="276" min="0" step="0.01">
 
       <label for="addon_emergency_voice" id="label_addon_emergency_voice">Emergency Voice per device (annual, USD)</label>
-      <!-- USD baseline value (kept as your existing baseline) -->
       <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
       <label for="other_annual_costs">
@@ -1078,7 +1073,7 @@
               <div class="math-card">
                 <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP − Gas updated SOP) × Cost/L</span></div>
                 <div class="math-line"><span><strong>Example</strong></span><span>(42.6 − 3.0) × 4.65 ≈ 184</span></div>
-                <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
+                <div class="math-line"><span><strong>Result</strong></span><span>≈ <span id="gas_example_currency_184">$184</span> per device per year</span></div>
               </div>
               <p class="popover-body" style="margin-top:0.6rem;">
                 If SOPs don't change, set this value to <strong><span class="currency-zero" id="gas_zero_popover_2">$0</span></strong>.
@@ -1089,7 +1084,7 @@
               <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
                 <li>Assumes SOP changes are permitted under your program, risk policy, and manufacturer guidance.</li>
                 <li>Varies with gas price, cylinder size, regulator flow rate, test duration, and usable volume.</li>
-                <li>If daily bump testing remains required, <strong>set this to $0</strong>.</li>
+                <li>If daily bump testing remains required, <strong>set this to <span class="currency-zero" id="gas_zero_caveat_1">$0</span></strong>.</li>
               </ul>
             </div>
           </div>
@@ -1288,10 +1283,15 @@
   function updateZeroTips() {
     var info = getCurrencyInfo();
     var zeroText = (info.symbol || '$') + '0';
+
     var nodes = document.querySelectorAll('.currency-zero');
     nodes.forEach(function (node) {
       node.textContent = zeroText;
     });
+
+    // Update the hard-coded example currency token (184) inside Gas details
+    var ex184 = document.getElementById('gas_example_currency_184');
+    if (ex184) ex184.textContent = (info.symbol || '$') + '184';
   }
 
   function updateCurrencyLabels() {
