@@ -719,7 +719,7 @@
       </label>
       <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
 
-      <!-- Baseline competitor/legacy costs (these should NOT auto-update by currency) -->
+      <!-- Baseline competitor/legacy costs -->
       <label for="cost_radio">
         <span class="label-with-info">
           <span id="label_cost_radio_text">Price of One Radio + Subscription cost (USD)</span>
@@ -1485,6 +1485,55 @@
     g8ValuesByCurrency[code] = readG8Fields();
   }
 
+  /* ─────────────────────────────────────────────────────────────
+     NEW (requested): Apply fixed USD->currency exchange to legacy
+     baseline fields ONLY if user has not edited them.
+     Always convert from original USD baseline (no compounding).
+     Fields:
+       - cost_radio
+       - cost_legacy_detector
+       - cost_lone_worker
+     Rates:
+       USD->CAD 1.37, USD->AUD 1.44, USD->GBP 0.74, USD->EUR 0.85
+     ───────────────────────────────────────────────────────────── */
+  var legacyExchangeFactor = {
+    USD: 1,
+    CAD: 1.37,
+    AUD: 1.44,
+    GBP: 0.74,
+    EUR: 0.85
+  };
+
+  var legacyBaselineUSD = {
+    cost_radio: 0,
+    cost_legacy_detector: 0,
+    cost_lone_worker: 0
+  };
+
+  var legacyTouched = {
+    cost_radio: false,
+    cost_legacy_detector: false,
+    cost_lone_worker: false
+  };
+
+  function round2(n) {
+    return Math.round(n * 100) / 100;
+  }
+
+  function applyLegacyExchangeIfUntouched(nextCode) {
+    var factor = legacyExchangeFactor[nextCode] || 1;
+
+    if (!legacyTouched.cost_radio) {
+      setValue('cost_radio', round2(legacyBaselineUSD.cost_radio * factor));
+    }
+    if (!legacyTouched.cost_legacy_detector) {
+      setValue('cost_legacy_detector', round2(legacyBaselineUSD.cost_legacy_detector * factor));
+    }
+    if (!legacyTouched.cost_lone_worker) {
+      setValue('cost_lone_worker', round2(legacyBaselineUSD.cost_lone_worker * factor));
+    }
+  }
+
   function switchCurrency(nextCode) {
     // Save current currency's user edits before switching
     persistCurrentG8ForCurrency(currentCurrency);
@@ -1494,6 +1543,9 @@
 
     // Apply next currency values to ONLY G8 fields
     writeG8Fields(g8ValuesByCurrency[nextCode]);
+
+    // Apply legacy exchange factors (only for untouched legacy baseline fields)
+    applyLegacyExchangeIfUntouched(nextCode);
 
     currentCurrency = nextCode;
     updateCurrencyLabels();
@@ -1835,6 +1887,20 @@
     };
     ensureG8CurrencySeeded('USD');
 
+    // 2b) NEW: Capture original USD baselines for legacy fields (true baseline)
+    legacyBaselineUSD.cost_radio = clampNonNeg(parseFloat(baselineValues.cost_radio || '0'));
+    legacyBaselineUSD.cost_legacy_detector = clampNonNeg(parseFloat(baselineValues.cost_legacy_detector || '0'));
+    legacyBaselineUSD.cost_lone_worker = clampNonNeg(parseFloat(baselineValues.cost_lone_worker || '0'));
+
+    // 2c) NEW: Mark legacy fields as "touched" if user edits them (then stop auto FX)
+    ['cost_radio', 'cost_legacy_detector', 'cost_lone_worker'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function () {
+        legacyTouched[id] = true;
+      });
+    });
+
     // 3) Wire non-range inputs to recalc
     inputs.forEach(function (input) {
       if (input.type !== 'range') {
@@ -1864,6 +1930,14 @@
         currentCurrency = 'USD';
         writeG8Fields(g8ValuesByCurrency.USD);
 
+        // NEW: Reset legacy touched flags, and restore legacy USD baselines
+        legacyTouched.cost_radio = false;
+        legacyTouched.cost_legacy_detector = false;
+        legacyTouched.cost_lone_worker = false;
+        setValue('cost_radio', legacyBaselineUSD.cost_radio);
+        setValue('cost_legacy_detector', legacyBaselineUSD.cost_legacy_detector);
+        setValue('cost_lone_worker', legacyBaselineUSD.cost_lone_worker);
+
         // Re-sync slider pills + fills
         setSliderValue('pct_replace_radio', 'pct_replace_radio_value');
         setSliderValue('pct_replace_detector', 'pct_replace_detector_value');
@@ -1886,6 +1960,10 @@
       // Ensure current currency is seeded, then write fields (keeps baseline for USD)
       ensureG8CurrencySeeded(currentCurrency);
       writeG8Fields(g8ValuesByCurrency[currentCurrency]);
+
+      // NEW: Apply legacy FX on load for non-USD initial currencies (if any),
+      // but only if the user hasn't touched those fields (they haven't yet).
+      applyLegacyExchangeIfUntouched(currentCurrency);
 
       currencySelect.addEventListener('change', function () {
         var next = this.value || 'USD';
