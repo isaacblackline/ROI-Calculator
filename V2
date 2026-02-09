@@ -629,7 +629,7 @@
         <div class="popover-section">
           <div class="popover-title">Pricing guidance</div>
           <p class="popover-body">
-            Always pull G8 pricing from the price list based on the customer’s configuration, and enter the applicable full-year values into the fields below.
+            Always pull G8 pricing from the price list based on the customer&#8217;s configuration, and enter the applicable full-year values into the fields below.
           </p>
         </div>
       </div>
@@ -731,7 +731,7 @@
             <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their radio + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their radio + subscription.</p>
               </div>
             </div>
           </span>
@@ -750,7 +750,7 @@
             <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their portable gas detector + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their portable gas detector + subscription.</p>
               </div>
             </div>
           </span>
@@ -769,7 +769,7 @@
             <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer’s annual cost for their lone worker device/app + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their lone worker device/app + subscription.</p>
               </div>
             </div>
           </span>
@@ -1000,7 +1000,7 @@
                 <div class="popover-section">
                   <div class="popover-title">How to use it</div>
                   <p class="popover-body">
-                    Enter this as <strong>minutes per device per week</strong>. Use conservative values if you’re unsure.
+                    Enter this as <strong>minutes per device per week</strong>. Use conservative values if you&#8217;re unsure.
                   </p>
                   <button type="button" class="details-link-btn" id="admin_details_open_btn" aria-expanded="false" aria-controls="admin_details_row">
                     View details
@@ -1088,7 +1088,7 @@
                 <div class="popover-section">
                   <div class="popover-title">Tip</div>
                   <p class="popover-body">
-                    Set to <strong>$0</strong> if SOPs won’t change.
+                    Set to <strong>$0</strong> if SOPs won&#8217;t change.
                   </p>
                   <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
                     View details
