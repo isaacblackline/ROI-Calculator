@@ -1,5 +1,8 @@
+
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
 <head>
   <meta charset="UTF-8">
   <title>G8 ROI Calculator</title>
@@ -138,7 +141,7 @@
       background-color: #ffffff;
     }
 
-    /* ───────── Slider UI: filled track follows the thumb (brand red) ───────── */
+    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€ Slider UI: filled track follows the thumb (brand red) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .slider-wrap {
       width: 100%;
       display: flex;
@@ -493,7 +496,7 @@
     .popover-tab-panel { margin-top: 0.2rem; }
     .popover-tab-panel[hidden] { display: none; }
 
-    /* ── Smart popover positioning helpers ── */
+    /* â”€â”€ Smart popover positioning helpers â”€â”€ */
     .info-popover.is-flip-left {
       left: auto;
       right: calc(100% + 10px);
@@ -571,6 +574,8 @@
       }
     }
   </style>
+
+<!--[if gte mso 9]><![endif]-->
 </head>
 
 <body>
@@ -629,7 +634,7 @@
         <div class="popover-section">
           <div class="popover-title">Pricing guidance</div>
           <p class="popover-body">
-            Always pull G8 pricing from the price list based on the customer&#8217;s configuration, and enter the applicable full-year values into the fields below.
+            Always pull G8 pricing from the price list based on the customer's configuration, and enter the applicable full-year values into the fields below.
           </p>
         </div>
       </div>
@@ -731,7 +736,7 @@
             <div class="info-popover" id="radio_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their radio + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer's annual cost for their radio + subscription.</p>
               </div>
             </div>
           </span>
@@ -750,7 +755,7 @@
             <div class="info-popover" id="detector_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their portable gas detector + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer's annual cost for their portable gas detector + subscription.</p>
               </div>
             </div>
           </span>
@@ -769,7 +774,7 @@
             <div class="info-popover" id="lw_info_popover" role="dialog" aria-hidden="true">
               <div class="popover-section">
                 <div class="popover-title">Baseline device cost</div>
-                <p class="popover-body">Baseline uses an average market price. Replace with the customer&#8217;s annual cost for their lone worker device/app + subscription.</p>
+                <p class="popover-body">Baseline uses an average market price. Replace with the customer's annual cost for their lone worker device/app + subscription.</p>
               </div>
             </div>
           </span>
@@ -1000,7 +1005,7 @@
                 <div class="popover-section">
                   <div class="popover-title">How to use it</div>
                   <p class="popover-body">
-                    Enter this as <strong>minutes per device per week</strong>. Use conservative values if you&#8217;re unsure.
+                    Enter this as <strong>minutes per device per week</strong>. Use conservative values if you're unsure.
                   </p>
                   <button type="button" class="details-link-btn" id="admin_details_open_btn" aria-expanded="false" aria-controls="admin_details_row">
                     View details
@@ -1088,7 +1093,7 @@
                 <div class="popover-section">
                   <div class="popover-title">Tip</div>
                   <p class="popover-body">
-                    Set to <strong>$0</strong> if SOPs won&#8217;t change.
+                    Set to <strong>$0</strong> if SOPs won't change.
                   </p>
                   <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
                     View details
@@ -1143,9 +1148,9 @@
             <div class="popover-tab-panel" role="tabpanel" id="gas_tab_calc" aria-labelledby="gas_tab_btn_calc" hidden>
               <p class="popover-body">We estimate savings as:</p>
               <div class="math-card">
-                <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP − Gas updated SOP) × Cost/L</span></div>
-                <div class="math-line"><span><strong>Example</strong></span><span>(42.6 − 3.0) × 4.65 ≈ 184</span></div>
-                <div class="math-line"><span><strong>Result</strong></span><span>≈ $184 per device per year</span></div>
+                <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP &#x2212; Gas updated SOP) &#x00D7; Cost/L</span></div>
+                <div class="math-line"><span><strong>Example</strong></span><span>(42.6 &#x2212; 3.0) &#x00D7; 4.65 &#x2248; 184</span></div>
+                <div class="math-line"><span><strong>Result</strong></span><span>&#x2248; $184 per device per year</span></div>
               </div>
               <p class="popover-body" style="margin-top:0.6rem;">
                 If SOPs don't change, set this value to <strong>$0</strong>.
@@ -1276,7 +1281,7 @@
               <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Year 1 ROI formula</div>
-                  <p class="popover-body">Year 1 ROI = (Total annual savings − Total Year 1 G8 cost) / Total Year 1 G8 cost</p>
+                  <p class="popover-body">Year 1 ROI = (Total annual savings &#x2212; Total Year 1 G8 cost) / Total Year 1 G8 cost</p>
                 </div>
               </div>
             </span>
@@ -1299,7 +1304,7 @@
               <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
                 <div class="popover-section">
                   <div class="popover-title">Payback period formula</div>
-                  <p class="popover-body">Payback period (months) = 12 × Total Year 1 G8 cost / Total annual savings</p>
+                  <p class="popover-body">Payback period (months) = 12 &#x00D7; Total Year 1 G8 cost / Total annual savings</p>
                 </div>
               </div>
             </span>
@@ -1336,7 +1341,7 @@
 (function () {
   'use strict';
 
-  /* ─────────────────────────────────────────────────────────────
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
      Key changes implemented (within scope):
      1) NET ROI: (Savings - Cost) / Cost + popover updated
      2) Payback: standard payback 12 * Cost / Savings + popover updated
@@ -1346,26 +1351,26 @@
      6) Popover positioning: measure inside requestAnimationFrame
      7) Slider perf: light debounce on slider-driven recalcs
      NOTE: Admin savings logic left as originally labeled (per device per week) to avoid scope expansion.
-     ───────────────────────────────────────────────────────────── */
+     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   var currentCurrency = 'USD';
 
   var currencyInfoMap = {
-    USD: { code: 'USD', symbol: '$' },
-    CAD: { code: 'CAD', symbol: '$' },
-    EUR: { code: 'EUR', symbol: '€' },
-    GBP: { code: 'GBP', symbol: '£' },
-    AUD: { code: 'AUD', symbol: '$' }
-  };
+  USD: { code: 'USD', symbol: '\u0024' },   // $
+  CAD: { code: 'CAD', symbol: '\u0024' },   // $
+  EUR: { code: 'EUR', symbol: '\u20AC' },   // â‚¬
+  GBP: { code: 'GBP', symbol: '\u00A3' },   // Â£
+  AUD: { code: 'AUD', symbol: '\u0024' }    // $
+};
 
   function getCurrencyInfo() {
     return currencyInfoMap[currentCurrency] || currencyInfoMap.USD;
   }
 
-  /* ─────────────────────────────────────────────────────────────
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
      NEW: ensure explanatory/help text never shows the wrong symbol
      (no FX conversion; symbol swap only)
-     ───────────────────────────────────────────────────────────── */
+     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function updateExplanatoryCurrencySymbols() {
     var info = getCurrencyInfo();
     var sym = info.symbol;
@@ -1388,9 +1393,9 @@
         if (!t) continue;
 
         // Replace any hard-coded currency symbols in explanatory text
-        if (/[£€$]/.test(t)) {
-          node.nodeValue = t.replace(/[£€$]/g, sym);
-        }
+        if (/[\u00A3\u20AC\u0024]/.test(t)) {
+  node.nodeValue = t.replace(/[\u00A3\u20AC\u0024]/g, sym);
+}
       }
     });
   }
@@ -1462,14 +1467,14 @@
     if (el) el.textContent = text;
   }
 
-  /* ─────────────────────────────────────────────────────────────
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
      Legacy competitor/benchmark fields FX (from original USD baseline):
        - cost_radio
        - cost_legacy_detector
        - cost_lone_worker
      Apply FX on currency switch ONLY if user has not manually edited the field.
      FX values are rounded UP to the next 10.
-     ───────────────────────────────────────────────────────────── */
+     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var legacyFxFromUsd = { USD: 1, CAD: 1.37, AUD: 1.44, GBP: 0.74, EUR: 0.85 };
   var legacyBaselineUSD = { cost_radio: 0, cost_legacy_detector: 0, cost_lone_worker: 0 };
   var legacyTouched = { cost_radio: false, cost_legacy_detector: false, cost_lone_worker: false };
@@ -1495,12 +1500,12 @@
     }
   }
 
-  /* ─────────────────────────────────────────────────────────────
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
      G8 pricing by currency (ONLY these 5 fields auto-update)
      Now with per-currency preservation of user edits:
        - If the user edits CAD G8 values, switching away and back keeps them.
        - If a currency has never been visited, we seed from your table (or USD baseline for USD).
-     ───────────────────────────────────────────────────────────── */
+     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var g8PricingSeed = {
     USD: null, // seeded from initial DOM on load
     AUD: { hardware_cost: 1200, subscription_cost: 984, addon_ptt: 576, addon_monitoring: 864, addon_emergency_voice: 744 },
@@ -1606,7 +1611,7 @@
   }
 
   function recalc() {
-    // clamp all “must not be negative” numeric fields
+    // clamp all â€œmust not be negativeâ€ numeric fields
     var numDevices      = clampNonNeg(parseNumber('num_workers'));
     var hourlyCost      = clampNonNeg(parseNumber('hourly_cost'));
     var costRadio       = clampNonNeg(parseNumber('cost_radio'));
@@ -1644,7 +1649,7 @@
       }
     };
 
-    // Non-blocking warnings for common “0” edge cases
+    // Non-blocking warnings for common â€œ0â€ edge cases
     var warnings = [];
     if (numDevices === 0) warnings.push('Number of devices is 0 (savings and costs will show as $0).');
     if (hourlyCost === 0) warnings.push('Hourly labour cost is 0 (time-based savings will show as $0).');
@@ -1694,7 +1699,7 @@
     });
   }
 
-  /* ── Popover registry & helpers ── */
+  /* â”€â”€ Popover registry & helpers â”€â”€ */
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1760,7 +1765,7 @@
     });
   }
 
-  /* ── Tabs (works for any container id) ── */
+  /* â”€â”€ Tabs (works for any container id) â”€â”€ */
   function setupPopoverTabs(containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -1800,7 +1805,7 @@
     });
   }
 
-  /* ── Inline details toggles ── */
+  /* â”€â”€ Inline details toggles â”€â”€ */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1840,7 +1845,7 @@
     });
   }
 
-  /* ── Disclaimer toggle ── */
+  /* â”€â”€ Disclaimer toggle â”€â”€ */
   function setupDisclaimerToggle(btnId, panelId) {
     var btn   = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
@@ -1888,7 +1893,7 @@
     });
   }
 
-  /* ── Bootstrap ── */
+  /* â”€â”€ Bootstrap â”€â”€ */
   document.addEventListener('DOMContentLoaded', function () {
     // 1) Capture true baseline values BEFORE doing any currency application
     var baselineValues = {};
