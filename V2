@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
@@ -289,6 +288,53 @@
 
     #reset_baseline_btn:hover { background: #fbe9ec; }
     .reset-help { color: #555; }
+
+    /* Playbook link row (subtle, internal-facing) */
+    .playbook-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .playbook-icon-link {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid #c5c9cf;
+      background: #ffffff;
+      color: #101820;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      user-select: none;
+      text-decoration: none;
+      transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      opacity: 0.75; /* subtle for customer-facing UI */
+    }
+
+    .playbook-icon-link:hover {
+      background: #fbe9ec;
+      border-color: var(--bl-red);
+      opacity: 1;
+    }
+
+    .playbook-icon-link:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(16, 24, 32, 0.18);
+      border-color: #101820;
+      opacity: 1;
+    }
+
+    .playbook-icon-link .playbook-glyph {
+      display: block;
+      line-height: 1;
+      font-size: 11px;
+      font-weight: 800;
+      transform: translateY(-0.5px);
+    }
 
     .currency-row {
       display: flex;
@@ -601,6 +647,19 @@
   <!-- Non-blocking warning (only shows when key inputs are 0) -->
   <div class="warning-banner" id="warning_banner" aria-hidden="true"></div>
 
+  <div class="playbook-row">
+    <a
+      class="playbook-icon-link"
+      href="https://blacklinegps.sharepoint.com/:w:/r/sites/ProductCentral/G8/ROI%20Calculator/G8%20ROI%20Calculator%20Playbook.docx?d=w02ca35d742c14c42b5e4924743e8460b&csf=1&web=1&e=xFsoya"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open ROI calculator playbook"
+      title="ROI calculator playbook"
+    >
+      <span class="playbook-glyph" aria-hidden="true">P</span>
+    </a>
+  </div>
+
   <div class="reset-row">
     <button type="button" id="reset_baseline_btn">Reset to baseline values</button>
     <span class="reset-help">
@@ -866,7 +925,7 @@
   </div>
 
   <!-- Add-on Features / Other Costs -->
-  <h2>Add-on Features/Other Costs</h2>
+  <h2>Blackline Safety Add-on Features/Other Costs</h2>
   <div class="section-card">
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
@@ -901,7 +960,7 @@
   </div>
 
   <!-- General Assumptions -->
-  <h2>General Assumptions</h2>
+  <h2>Work Calendar Assumptions</h2>
   <div class="section-card">
     <div class="section-note">These are editable if your operation uses different values.</div>
     <div class="inputs-grid">
