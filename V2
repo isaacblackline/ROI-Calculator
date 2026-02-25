@@ -6,6 +6,9 @@
   <meta charset="UTF-8">
   <title>G8 ROI Calculator</title>
 
+  <!-- ✅ Mobile viewport (fixes scaling/positioning on phones) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
   <!-- Heebo font (Google Fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,7 +143,7 @@
       background-color: #ffffff;
     }
 
-    /* â”€â”€â”€â”€â”€â”€â”€â”€â”€ Slider UI: filled track follows the thumb (brand red) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* Slider UI */
     .slider-wrap {
       width: 100%;
       display: flex;
@@ -542,7 +545,7 @@
     .popover-tab-panel { margin-top: 0.2rem; }
     .popover-tab-panel[hidden] { display: none; }
 
-    /* â”€â”€ Smart popover positioning helpers â”€â”€ */
+    /* Smart popover positioning helpers */
     .info-popover.is-flip-left {
       left: auto;
       right: calc(100% + 10px);
@@ -590,6 +593,28 @@
     }
     .warning-banner[aria-hidden="false"] { display: block; }
 
+    /* ✅ Table scroll wrapper (mobile-safe tables) */
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #e0e2e6;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .table-scroll table {
+      min-width: 640px;
+    }
+
+    /* ✅ Popover backdrop (mobile bottom-sheet popovers) */
+    .popover-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 40;
+    }
+
     @media (max-width: 720px) {
       .roi-calculator { padding: 0 1rem 1.25rem 1rem; }
       .roi-brand-bar { padding: 0.75rem 1rem; margin: 0 -1rem; }
@@ -602,22 +627,35 @@
       .slider-wrap { gap: 0.6rem; }
       .slider-value-pill { min-width: 60px; }
 
-      .info-popover {
-        top: calc(100% + 10px);
-        left: 0;
-        transform: none;
-        width: 100%;
-        max-width: 100%;
+      /* ✅ Prevent iOS zoom-on-focus + make inputs easier on phones */
+      .inputs-grid input[type="number"] {
+        font-size: 16px;
+        padding: 0.6rem 0.55rem;
       }
 
-      .info-popover::before {
-        left: 10px;
-        top: -7px;
-        transform: rotate(45deg);
-        border-left: 1px solid #e0e2e6;
-        border-bottom: none;
-        border-top: 1px solid #e0e2e6;
+      /* ✅ Larger tap target for info button */
+      .info-icon-btn {
+        width: 28px;
+        height: 28px;
       }
+
+      /* ✅ Mobile popovers as a bottom sheet (stable on iOS/Android) */
+      .info-popover {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        top: auto;
+        transform: none;
+        width: auto;
+        max-width: none;
+        max-height: 70vh;
+        z-index: 50;
+        border-radius: 12px;
+        padding: 0.9rem 0.95rem;
+      }
+
+      .info-popover::before { display: none; }
     }
   </style>
 
@@ -625,6 +663,10 @@
 </head>
 
 <body>
+
+<!-- ✅ Backdrop for mobile popover bottom-sheet -->
+<div class="popover-backdrop" id="popover_backdrop" hidden></div>
+
 <div class="roi-calculator">
   <div class="roi-brand-bar">
     <img
@@ -723,7 +765,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="num_workers" value="100" min="0" step="1">
+      <input class="green-input" type="number" inputmode="decimal" id="num_workers" value="100" min="0" step="1">
 
       <label for="hourly_cost">
         <span class="label-with-info">
@@ -742,7 +784,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="hourly_cost" value="55" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="hourly_cost" value="55" min="0" step="0.01">
 
       <!-- G8 pricing first (these will auto-update when currency changes, but now preserve user edits per currency) -->
       <label for="hardware_cost">
@@ -762,7 +804,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="hardware_cost" value="994" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="hardware_cost" value="994" min="0" step="0.01">
 
       <label for="subscription_cost">
         <span class="label-with-info">
@@ -781,7 +823,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="subscription_cost" value="384" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="subscription_cost" value="384" min="0" step="0.01">
 
       <!-- Baseline competitor/legacy costs (these should NOT auto-update by currency) -->
       <label for="cost_radio">
@@ -801,7 +843,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="cost_radio" value="2950" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="cost_radio" value="2950" min="0" step="0.01">
 
       <label for="cost_legacy_detector">
         <span class="label-with-info">
@@ -820,7 +862,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="cost_legacy_detector" value="1150" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="cost_legacy_detector" value="1150" min="0" step="0.01">
 
       <label for="cost_lone_worker">
         <span class="label-with-info">
@@ -839,7 +881,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="cost_lone_worker" value="700" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="cost_lone_worker" value="700" min="0" step="0.01">
 
       <!-- Sliders -->
       <label for="pct_replace_radio">
@@ -930,13 +972,13 @@
     <div class="section-note">Optional annual add-ons and other G8-related costs.</div>
     <div class="inputs-grid">
       <label for="addon_ptt" id="label_addon_ptt">Push-to-Talk add-on per device (annual, USD)</label>
-      <input class="green-input" type="number" id="addon_ptt" value="228" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="addon_ptt" value="228" min="0" step="0.01">
 
       <label for="addon_monitoring" id="label_addon_monitoring">Blackline Safety Monitoring (24/7 by expert team) per device (annual, USD)</label>
-      <input class="green-input" type="number" id="addon_monitoring" value="276" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="addon_monitoring" value="276" min="0" step="0.01">
 
       <label for="addon_emergency_voice" id="label_addon_emergency_voice">Emergency Voice per device (annual, USD)</label>
-      <input class="green-input" type="number" id="addon_emergency_voice" value="300" min="0" step="0.01">
+      <input class="green-input" type="number" inputmode="decimal" id="addon_emergency_voice" value="300" min="0" step="0.01">
 
       <label for="other_annual_costs">
         <span class="label-with-info">
@@ -955,7 +997,7 @@
           </span>
         </span>
       </label>
-      <input class="green-input" type="number" id="other_annual_costs" value="0" min="0" step="1">
+      <input class="green-input" type="number" inputmode="decimal" id="other_annual_costs" value="0" min="0" step="1">
     </div>
   </div>
 
@@ -965,10 +1007,10 @@
     <div class="section-note">These are editable if your operation uses different values.</div>
     <div class="inputs-grid">
       <label for="workdays_per_year">Workdays per year</label>
-      <input class="green-input" type="number" id="workdays_per_year" value="220" min="0" step="1">
+      <input class="green-input" type="number" inputmode="decimal" id="workdays_per_year" value="220" min="0" step="1">
 
       <label for="weeks_per_year">Weeks per year</label>
-      <input class="green-input" type="number" id="weeks_per_year" value="52" min="0" step="1">
+      <input class="green-input" type="number" inputmode="decimal" id="weeks_per_year" value="52" min="0" step="1">
     </div>
   </div>
 
@@ -977,258 +1019,261 @@
   <div class="section-card">
     <div class="section-note">Adjust the assumptions (right-hand columns) to reflect conservative, typical, and high-value outcomes.</div>
 
-    <table class="scenario-table">
-      <thead>
-      <tr>
-        <th>Assumption</th>
-        <th>Conservative</th>
-        <th>Typical</th>
-        <th>High-Value</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td>
-          <span class="label-with-info">
-            Minutes saved per worker per day
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="minutes_saved_info_btn"
-                      aria-label="Minutes saved per worker per day information" aria-expanded="false" aria-controls="minutes_saved_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-              <div class="info-popover" id="minutes_saved_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">What this represents</div>
-                  <p class="popover-body">
-                    This is how much time G8 can save workers through:
-                  </p>
-                  <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                    <li>Faster start and end of shift with one device instead of three.</li>
-                    <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
-                    <li>Faster check-ins and status updates on a single device.</li>
-                  </ul>
+    <!-- ✅ Mobile-safe table wrapper -->
+    <div class="table-scroll">
+      <table class="scenario-table">
+        <thead>
+        <tr>
+          <th>Assumption</th>
+          <th>Conservative</th>
+          <th>Typical</th>
+          <th>High-Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>
+            <span class="label-with-info">
+              Minutes saved per worker per day
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="minutes_saved_info_btn"
+                        aria-label="Minutes saved per worker per day information" aria-expanded="false" aria-controls="minutes_saved_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+                <div class="info-popover" id="minutes_saved_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">What this represents</div>
+                    <p class="popover-body">
+                      This is how much time G8 can save workers through:
+                    </p>
+                    <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                      <li>Faster start and end of shift with one device instead of three.</li>
+                      <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+                      <li>Faster check-ins and status updates on a single device.</li>
+                    </ul>
 
-                  <button type="button" class="details-link-btn" id="minutes_details_open_btn" aria-expanded="false" aria-controls="minutes_details_row">
-                    View details
-                  </button>
+                    <button type="button" class="details-link-btn" id="minutes_details_open_btn" aria-expanded="false" aria-controls="minutes_details_row">
+                      View details
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </span>
             </span>
-          </span>
-        </td>
-        <td><input class="orange-input" type="number" id="minutes_saved_conservative" value="5" min="0" step="0.1"></td>
-        <td><input class="orange-input" type="number" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
-        <td><input class="orange-input" type="number" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
-      </tr>
+          </td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="minutes_saved_conservative" value="5" min="0" step="0.1"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="minutes_saved_typical" value="10" min="0" step="0.1"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="minutes_saved_high" value="15" min="0" step="0.1"></td>
+        </tr>
 
-      <!-- inline details row for Minutes saved -->
-      <tr id="minutes_details_row" class="details-row" hidden>
-        <td colspan="4">
-          <div class="details-card" id="minutes_details_panel">
-            <div class="details-header">
-              <h3 class="details-title">Minutes saved details</h3>
-              <button type="button" class="details-close-btn" id="minutes_details_close_btn">Hide details</button>
-            </div>
-
-            <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-              <li>Faster start and end of shift with one device instead of three.</li>
-              <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
-              <li>Faster check-ins and status updates on a single device.</li>
-              <li>Less time spent switching between different systems for gas, location, and alerts.</li>
-              <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
-              <li>Fewer device issues because workers only need to manage one device.</li>
-              <li>Less walking to find people or equipment because workers can call from the device.</li>
-            </ul>
-          </div>
-        </td>
-      </tr>
-
-      <!-- Admin minutes row -->
-      <tr>
-        <td>
-          <span class="label-with-info">
-            Admin minutes saved per device per week
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="admin_minutes_week_info_btn"
-                      aria-label="Admin minutes saved per device per week information" aria-expanded="false" aria-controls="admin_minutes_week_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-
-              <div class="info-popover" id="admin_minutes_week_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">What this represents</div>
-                  <p class="popover-body">
-                    Total admin / fleet / coordination time saved per device in a typical week after consolidating to G8.
-                  </p>
-                </div>
-                <div class="popover-section">
-                  <div class="popover-title">How to use it</div>
-                  <p class="popover-body">
-                    Enter this as <strong>minutes per device per week</strong>. Use conservative values if you're unsure.
-                  </p>
-                  <button type="button" class="details-link-btn" id="admin_details_open_btn" aria-expanded="false" aria-controls="admin_details_row">
-                    View details
-                  </button>
-                </div>
+        <!-- inline details row for Minutes saved -->
+        <tr id="minutes_details_row" class="details-row" hidden>
+          <td colspan="4">
+            <div class="details-card" id="minutes_details_panel">
+              <div class="details-header">
+                <h3 class="details-title">Minutes saved details</h3>
+                <button type="button" class="details-close-btn" id="minutes_details_close_btn">Hide details</button>
               </div>
+
+              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                <li>Faster start and end of shift with one device instead of three.</li>
+                <li>Faster communication using one device for gas alarms, SOS, and voice.</li>
+                <li>Faster check-ins and status updates on a single device.</li>
+                <li>Less time spent switching between different systems for gas, location, and alerts.</li>
+                <li>Quicker response in emergencies with alarm, location, and voice in one place.</li>
+                <li>Fewer device issues because workers only need to manage one device.</li>
+                <li>Less walking to find people or equipment because workers can call from the device.</li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Admin minutes row -->
+        <tr>
+          <td>
+            <span class="label-with-info">
+              Admin minutes saved per device per week
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="admin_minutes_week_info_btn"
+                        aria-label="Admin minutes saved per device per week information" aria-expanded="false" aria-controls="admin_minutes_week_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+
+                <div class="info-popover" id="admin_minutes_week_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">What this represents</div>
+                    <p class="popover-body">
+                      Total admin / fleet / coordination time saved per device in a typical week after consolidating to G8.
+                    </p>
+                  </div>
+                  <div class="popover-section">
+                    <div class="popover-title">How to use it</div>
+                    <p class="popover-body">
+                      Enter this as <strong>minutes per device per week</strong>. Use conservative values if you're unsure.
+                    </p>
+                    <button type="button" class="details-link-btn" id="admin_details_open_btn" aria-expanded="false" aria-controls="admin_details_row">
+                      View details
+                    </button>
+                  </div>
+                </div>
+              </span>
             </span>
-          </span>
-        </td>
-        <td><input class="orange-input" type="number" id="admin_minutes_week_conservative" value="30" min="0" step="1"></td>
-        <td><input class="orange-input" type="number" id="admin_minutes_week_typical" value="60" min="0" step="1"></td>
-        <td><input class="orange-input" type="number" id="admin_minutes_week_high" value="90" min="0" step="1"></td>
-      </tr>
+          </td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="admin_minutes_week_conservative" value="30" min="0" step="1"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="admin_minutes_week_typical" value="60" min="0" step="1"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="admin_minutes_week_high" value="90" min="0" step="1"></td>
+        </tr>
 
-      <!-- inline details row for Admin minutes -->
-      <tr id="admin_details_row" class="details-row" hidden>
-        <td colspan="4">
-          <div class="details-card" id="admin_details_panel">
-            <div class="details-header">
-              <h3 class="details-title">Admin minutes details</h3>
-              <button type="button" class="details-close-btn" id="admin_details_close_btn">Hide details</button>
-            </div>
-
-            <div class="popover-tabs" role="tablist" aria-label="Admin time examples by team">
-              <button type="button" class="popover-tab-btn is-active" role="tab"
-                      aria-selected="true" aria-controls="admin_week_tab_ops" id="admin_week_tab_btn_ops">Operations</button>
-              <button type="button" class="popover-tab-btn" role="tab"
-                      aria-selected="false" aria-controls="admin_week_tab_hse" id="admin_week_tab_btn_hse">Health and Safety</button>
-              <button type="button" class="popover-tab-btn" role="tab"
-                      aria-selected="false" aria-controls="admin_week_tab_other" id="admin_week_tab_btn_other">Procurement / IT / Fleet</button>
-            </div>
-
-            <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
-              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
-                <li>Track fewer assets because there is one device per worker to log, store, and swap.</li>
-                <li>Resolve shift-start issues faster because workers manage one device (missing, dead battery, wrong unit).</li>
-                <li>Coordinate work with fewer check-ins because teams can call and confirm status from the same device.</li>
-                <li>Review basic operational activity faster because usage and events are captured automatically.</li>
-              </ul>
-            </div>
-
-            <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_hse" aria-labelledby="admin_week_tab_btn_hse" hidden>
-              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                <li>Build audit and compliance documentation faster because readiness and safety activity are recorded automatically.</li>
-                <li>Manage bump and calibration programs with fewer spreadsheets because device history is centralized.</li>
-                <li>Investigate incidents faster because alerts, timestamps, and location are already linked.</li>
-                <li>Produce leadership-ready summaries faster because trends do not require manual data pulls.</li>
-                <li>Close the loop with fewer follow-ups because alarm, location, and voice context reduces back-and-forth.</li>
-              </ul>
-            </div>
-
-            <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_other" aria-labelledby="admin_week_tab_btn_other" hidden>
-              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                <li>Reduce purchasing effort because vendor consolidation means fewer POs, renewals, and invoices.</li>
-                <li>Reduce IT support burden because there are fewer systems to integrate and maintain.</li>
-                <li>Update assignments and access in one place instead of coordinating changes across multiple tools.</li>
-                <li>Simplify troubleshooting and swap-outs because there are fewer device types and accessory workflows.</li>
-                <li>Reconcile data faster because gas, alerts, and worker status are not stitched across systems.</li>
-              </ul>
-            </div>
-          </div>
-        </td>
-      </tr>
-
-      <!-- Gas savings row -->
-      <tr>
-        <td>
-          <span class="label-with-info" style="align-items:flex-start;">
-            <span id="label_gas_savings">Calibration gas savings per device per year (USD)</span>
-
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="gas_savings_info_btn"
-                      aria-label="Calibration gas savings information" aria-expanded="false" aria-controls="gas_savings_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-
-              <div class="info-popover" id="gas_savings_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">Calibration gas savings</div>
-                  <p class="popover-body">
-                    Directional estimate of test gas cost reduction if SOPs can be updated based on newer sensor technologies and guidance.
-                  </p>
-                </div>
-                <div class="popover-section">
-                  <div class="popover-title">Tip</div>
-                  <p class="popover-body">
-                    Set to <strong>$0</strong> if SOPs won't change.
-                  </p>
-                  <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
-                    View details
-                  </button>
-                </div>
+        <!-- inline details row for Admin minutes -->
+        <tr id="admin_details_row" class="details-row" hidden>
+          <td colspan="4">
+            <div class="details-card" id="admin_details_panel">
+              <div class="details-header">
+                <h3 class="details-title">Admin minutes details</h3>
+                <button type="button" class="details-close-btn" id="admin_details_close_btn">Hide details</button>
               </div>
+
+              <div class="popover-tabs" role="tablist" aria-label="Admin time examples by team">
+                <button type="button" class="popover-tab-btn is-active" role="tab"
+                        aria-selected="true" aria-controls="admin_week_tab_ops" id="admin_week_tab_btn_ops">Operations</button>
+                <button type="button" class="popover-tab-btn" role="tab"
+                        aria-selected="false" aria-controls="admin_week_tab_hse" id="admin_week_tab_btn_hse">Health and Safety</button>
+                <button type="button" class="popover-tab-btn" role="tab"
+                        aria-selected="false" aria-controls="admin_week_tab_other" id="admin_week_tab_btn_other">Procurement / IT / Fleet</button>
+              </div>
+
+              <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_ops" aria-labelledby="admin_week_tab_btn_ops">
+                <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                  <li>Assign and reassign gear faster because one device covers gas, PTT, and lone worker.</li>
+                  <li>Track fewer assets because there is one device per worker to log, store, and swap.</li>
+                  <li>Resolve shift-start issues faster because workers manage one device (missing, dead battery, wrong unit).</li>
+                  <li>Coordinate work with fewer check-ins because teams can call and confirm status from the same device.</li>
+                  <li>Review basic operational activity faster because usage and events are captured automatically.</li>
+                </ul>
+              </div>
+
+              <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_hse" aria-labelledby="admin_week_tab_btn_hse" hidden>
+                <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                  <li>Build audit and compliance documentation faster because readiness and safety activity are recorded automatically.</li>
+                  <li>Manage bump and calibration programs with fewer spreadsheets because device history is centralized.</li>
+                  <li>Investigate incidents faster because alerts, timestamps, and location are already linked.</li>
+                  <li>Produce leadership-ready summaries faster because trends do not require manual data pulls.</li>
+                  <li>Close the loop with fewer follow-ups because alarm, location, and voice context reduces back-and-forth.</li>
+                </ul>
+              </div>
+
+              <div class="popover-tab-panel" role="tabpanel" id="admin_week_tab_other" aria-labelledby="admin_week_tab_btn_other" hidden>
+                <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                  <li>Reduce purchasing effort because vendor consolidation means fewer POs, renewals, and invoices.</li>
+                  <li>Reduce IT support burden because there are fewer systems to integrate and maintain.</li>
+                  <li>Update assignments and access in one place instead of coordinating changes across multiple tools.</li>
+                  <li>Simplify troubleshooting and swap-outs because there are fewer device types and accessory workflows.</li>
+                  <li>Reconcile data faster because gas, alerts, and worker status are not stitched across systems.</li>
+                </ul>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Gas savings row -->
+        <tr>
+          <td>
+            <span class="label-with-info" style="align-items:flex-start;">
+              <span id="label_gas_savings">Calibration gas savings per device per year (USD)</span>
+
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="gas_savings_info_btn"
+                        aria-label="Calibration gas savings information" aria-expanded="false" aria-controls="gas_savings_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+
+                <div class="info-popover" id="gas_savings_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">Calibration gas savings</div>
+                    <p class="popover-body">
+                      Directional estimate of test gas cost reduction if SOPs can be updated based on newer sensor technologies and guidance.
+                    </p>
+                  </div>
+                  <div class="popover-section">
+                    <div class="popover-title">Tip</div>
+                    <p class="popover-body">
+                      Set to <strong>$0</strong> if SOPs won't change.
+                    </p>
+                    <button type="button" class="details-link-btn" id="gas_details_open_btn" aria-expanded="false" aria-controls="gas_details_row">
+                      View details
+                    </button>
+                  </div>
+                </div>
+              </span>
             </span>
-          </span>
 
-          <span class="small-text" style="margin-top:0.25rem; display:block;">
-            Tip: Set to $0 if SOPs won't change.
-          </span>
-        </td>
+            <span class="small-text" style="margin-top:0.25rem; display:block;">
+              Tip: Set to $0 if SOPs won't change.
+            </span>
+          </td>
 
-        <td><input class="orange-input" type="number" id="gas_savings_conservative" value="50" min="0" step="0.01"></td>
-        <td><input class="orange-input" type="number" id="gas_savings_typical" value="100" min="0" step="0.01"></td>
-        <td><input class="orange-input" type="number" id="gas_savings_high" value="150" min="0" step="0.01"></td>
-      </tr>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="gas_savings_conservative" value="50" min="0" step="0.01"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="gas_savings_typical" value="100" min="0" step="0.01"></td>
+          <td><input class="orange-input" type="number" inputmode="decimal" id="gas_savings_high" value="150" min="0" step="0.01"></td>
+        </tr>
 
-      <!-- inline details row for Gas savings -->
-      <tr id="gas_details_row" class="details-row" hidden>
-        <td colspan="4">
-          <div class="details-card" id="gas_details_panel">
-            <div class="details-header">
-              <h3 class="details-title">Calibration gas savings details</h3>
-              <button type="button" class="details-close-btn" id="gas_details_close_btn">Hide details</button>
-            </div>
+        <!-- inline details row for Gas savings -->
+        <tr id="gas_details_row" class="details-row" hidden>
+          <td colspan="4">
+            <div class="details-card" id="gas_details_panel">
+              <div class="details-header">
+                <h3 class="details-title">Calibration gas savings details</h3>
+                <button type="button" class="details-close-btn" id="gas_details_close_btn">Hide details</button>
+              </div>
 
-            <div class="popover-tabs" role="tablist" aria-label="Calibration gas savings explanation tabs">
-              <button type="button" class="popover-tab-btn is-active" role="tab"
-                      aria-selected="true" aria-controls="gas_tab_why" id="gas_tab_btn_why">Why savings can exist</button>
-              <button type="button" class="popover-tab-btn" role="tab"
-                      aria-selected="false" aria-controls="gas_tab_calc" id="gas_tab_btn_calc">Simple calculation</button>
-              <button type="button" class="popover-tab-btn" role="tab"
-                      aria-selected="false" aria-controls="gas_tab_caveats" id="gas_tab_btn_caveats">Assumptions & caveats</button>
-            </div>
+              <div class="popover-tabs" role="tablist" aria-label="Calibration gas savings explanation tabs">
+                <button type="button" class="popover-tab-btn is-active" role="tab"
+                        aria-selected="true" aria-controls="gas_tab_why" id="gas_tab_btn_why">Why savings can exist</button>
+                <button type="button" class="popover-tab-btn" role="tab"
+                        aria-selected="false" aria-controls="gas_tab_calc" id="gas_tab_btn_calc">Simple calculation</button>
+                <button type="button" class="popover-tab-btn" role="tab"
+                        aria-selected="false" aria-controls="gas_tab_caveats" id="gas_tab_btn_caveats">Assumptions & caveats</button>
+              </div>
 
-            <div class="popover-tab-panel" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
-              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                <li>Many programs use <strong>daily bump</strong> + <strong>30-day calibration</strong> because older sensors can fail without clear warning.</li>
-                <li>Newer LEL sensors (e.g., <strong>MPS</strong>) may support less frequent testing due to improved stability and self-diagnostics.</li>
-                <li>If SOPs can be updated, <strong>test gas usage can drop significantly</strong>.</li>
-              </ul>
+              <div class="popover-tab-panel" role="tabpanel" id="gas_tab_why" aria-labelledby="gas_tab_btn_why">
+                <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                  <li>Many programs use <strong>daily bump</strong> + <strong>30-day calibration</strong> because older sensors can fail without clear warning.</li>
+                  <li>Newer LEL sensors (e.g., <strong>MPS</strong>) may support less frequent testing due to improved stability and self-diagnostics.</li>
+                  <li>If SOPs can be updated, <strong>test gas usage can drop significantly</strong>.</li>
+                </ul>
 
-              <div class="math-card">
-                <div class="math-line"><span><strong>Legacy SOP (example)</strong></span><span>~42.6 L/device/year</span></div>
-                <div class="math-line"><span><strong>Modern SOP (example)</strong></span><span>~3.0 L/device/year</span></div>
-                <div class="math-muted">Liters shown are examples to explain the estimate. Your program may differ.</div>
+                <div class="math-card">
+                  <div class="math-line"><span><strong>Legacy SOP (example)</strong></span><span>~42.6 L/device/year</span></div>
+                  <div class="math-line"><span><strong>Modern SOP (example)</strong></span><span>~3.0 L/device/year</span></div>
+                  <div class="math-muted">Liters shown are examples to explain the estimate. Your program may differ.</div>
+                </div>
+              </div>
+
+              <div class="popover-tab-panel" role="tabpanel" id="gas_tab_calc" aria-labelledby="gas_tab_btn_calc" hidden>
+                <p class="popover-body">We estimate savings as:</p>
+                <div class="math-card">
+                  <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP &#x2212; Gas updated SOP) &#x00D7; Cost/L</span></div>
+                  <div class="math-line"><span><strong>Example</strong></span><span>(42.6 &#x2212; 3.0) &#x00D7; 4.65 &#x2248; 184</span></div>
+                  <div class="math-line"><span><strong>Result</strong></span><span>&#x2248; $184 per device per year</span></div>
+                </div>
+                <p class="popover-body" style="margin-top:0.6rem;">
+                  If SOPs don't change, set this value to <strong>$0</strong>.
+                </p>
+              </div>
+
+              <div class="popover-tab-panel" role="tabpanel" id="gas_tab_caveats" aria-labelledby="gas_tab_btn_caveats" hidden>
+                <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
+                  <li>Assumes SOP changes are permitted under your program, risk policy, and manufacturer guidance.</li>
+                  <li>Varies with gas price, cylinder size, regulator flow rate, test duration, and usable volume.</li>
+                  <li>If daily bump testing remains required, <strong>set this to $0</strong>.</li>
+                </ul>
               </div>
             </div>
+          </td>
+        </tr>
 
-            <div class="popover-tab-panel" role="tabpanel" id="gas_tab_calc" aria-labelledby="gas_tab_btn_calc" hidden>
-              <p class="popover-body">We estimate savings as:</p>
-              <div class="math-card">
-                <div class="math-line"><span><strong>Savings</strong></span><span>(Gas old SOP &#x2212; Gas updated SOP) &#x00D7; Cost/L</span></div>
-                <div class="math-line"><span><strong>Example</strong></span><span>(42.6 &#x2212; 3.0) &#x00D7; 4.65 &#x2248; 184</span></div>
-                <div class="math-line"><span><strong>Result</strong></span><span>&#x2248; $184 per device per year</span></div>
-              </div>
-              <p class="popover-body" style="margin-top:0.6rem;">
-                If SOPs don't change, set this value to <strong>$0</strong>.
-              </p>
-            </div>
-
-            <div class="popover-tab-panel" role="tabpanel" id="gas_tab_caveats" aria-labelledby="gas_tab_btn_caveats" hidden>
-              <ul style="margin:0.45rem 0 0 1.15rem; padding:0; font-size:0.9rem; line-height:1.45; color:#333;">
-                <li>Assumes SOP changes are permitted under your program, risk policy, and manufacturer guidance.</li>
-                <li>Varies with gas price, cylinder size, regulator flow rate, test duration, and usable volume.</li>
-                <li>If daily bump testing remains required, <strong>set this to $0</strong>.</li>
-              </ul>
-            </div>
-          </div>
-        </td>
-      </tr>
-
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
 
     <p class="small-text">
       Calibration gas savings are optional. If SOPs require daily bump tests and frequent calibrations, set this to 0 or adjust to match the program.
@@ -1240,141 +1285,144 @@
   <div class="section-card">
     <div class="section-note">Results are calculated automatically from the inputs and assumptions above.</div>
 
-    <table class="results-table">
-      <thead>
-      <tr>
-        <th></th>
-        <th>Conservative</th>
-        <th>Typical</th>
-        <th>High-Value</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <th scope="row">Worker time savings value</th>
-        <td id="workerTime_conservative"></td>
-        <td id="workerTime_typical"></td>
-        <td id="workerTime_high"></td>
-      </tr>
+    <!-- ✅ Mobile-safe table wrapper -->
+    <div class="table-scroll">
+      <table class="results-table">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Conservative</th>
+          <th>Typical</th>
+          <th>High-Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <th scope="row">Worker time savings value</th>
+          <td id="workerTime_conservative"></td>
+          <td id="workerTime_typical"></td>
+          <td id="workerTime_high"></td>
+        </tr>
 
-      <tr>
-        <th scope="row">Admin / fleet management savings</th>
-        <td id="adminSavings_conservative"></td>
-        <td id="adminSavings_typical"></td>
-        <td id="adminSavings_high"></td>
-      </tr>
+        <tr>
+          <th scope="row">Admin / fleet management savings</th>
+          <td id="adminSavings_conservative"></td>
+          <td id="adminSavings_typical"></td>
+          <td id="adminSavings_high"></td>
+        </tr>
 
-      <tr>
-        <th scope="row">Calibration gas savings</th>
-        <td id="gasSavings_conservative"></td>
-        <td id="gasSavings_typical"></td>
-        <td id="gasSavings_high"></td>
-      </tr>
+        <tr>
+          <th scope="row">Calibration gas savings</th>
+          <td id="gasSavings_conservative"></td>
+          <td id="gasSavings_typical"></td>
+          <td id="gasSavings_high"></td>
+        </tr>
 
-      <tr>
-        <th scope="row">
-          <span class="label-with-info">
-            Device consolidation savings
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="device_savings_info_btn"
-                      aria-label="Device consolidation savings information" aria-expanded="false" aria-controls="device_savings_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-              <div class="info-popover" id="device_savings_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">Device consolidation savings</div>
-                  <p class="popover-body">
-                    Calculated using the radio, portable gas detector, and lone worker coverage sliders above.
-                  </p>
+        <tr>
+          <th scope="row">
+            <span class="label-with-info">
+              Device consolidation savings
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="device_savings_info_btn"
+                        aria-label="Device consolidation savings information" aria-expanded="false" aria-controls="device_savings_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+                <div class="info-popover" id="device_savings_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">Device consolidation savings</div>
+                    <p class="popover-body">
+                      Calculated using the radio, portable gas detector, and lone worker coverage sliders above.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </span>
             </span>
-          </span>
-        </th>
-        <td id="deviceSavings_conservative"></td>
-        <td id="deviceSavings_typical"></td>
-        <td id="deviceSavings_high"></td>
-      </tr>
+          </th>
+          <td id="deviceSavings_conservative"></td>
+          <td id="deviceSavings_typical"></td>
+          <td id="deviceSavings_high"></td>
+        </tr>
 
-      <tr class="highlight-row">
-        <th scope="row">Total annual savings</th>
-        <td id="totalSavings_conservative"></td>
-        <td id="totalSavings_typical"></td>
-        <td id="totalSavings_high"></td>
-      </tr>
+        <tr class="highlight-row">
+          <th scope="row">Total annual savings</th>
+          <td id="totalSavings_conservative"></td>
+          <td id="totalSavings_typical"></td>
+          <td id="totalSavings_high"></td>
+        </tr>
 
-      <tr>
-        <th scope="row">
-          <span class="label-with-info">
-            Total Year 1 G8 cost
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="total_cost_info_btn"
-                      aria-label="Total Year 1 G8 cost information" aria-expanded="false" aria-controls="total_cost_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-              <div class="info-popover" id="total_cost_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">Total Year 1 G8 cost</div>
-                  <p class="popover-body">
-                    Includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.
-                  </p>
+        <tr>
+          <th scope="row">
+            <span class="label-with-info">
+              Total Year 1 G8 cost
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="total_cost_info_btn"
+                        aria-label="Total Year 1 G8 cost information" aria-expanded="false" aria-controls="total_cost_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+                <div class="info-popover" id="total_cost_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">Total Year 1 G8 cost</div>
+                    <p class="popover-body">
+                      Includes G8 hardware, first-year service plan, add-on features, and any one-time "Other costs" entered above.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </span>
             </span>
-          </span>
-        </th>
-        <td id="totalCost_conservative"></td>
-        <td id="totalCost_typical"></td>
-        <td id="totalCost_high"></td>
-      </tr>
+          </th>
+          <td id="totalCost_conservative"></td>
+          <td id="totalCost_typical"></td>
+          <td id="totalCost_high"></td>
+        </tr>
 
-      <tr class="highlight-row">
-        <th scope="row">
-          <span class="label-with-info">
-            Year 1 ROI
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="roi_info_btn"
-                      aria-label="Year 1 ROI formula information" aria-expanded="false" aria-controls="roi_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-              <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">Year 1 ROI formula</div>
-                  <p class="popover-body">Year 1 ROI = (Total annual savings &#x2212; Total Year 1 G8 cost) / Total Year 1 G8 cost</p>
+        <tr class="highlight-row">
+          <th scope="row">
+            <span class="label-with-info">
+              Year 1 ROI
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="roi_info_btn"
+                        aria-label="Year 1 ROI formula information" aria-expanded="false" aria-controls="roi_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+                <div class="info-popover" id="roi_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">Year 1 ROI formula</div>
+                    <p class="popover-body">Year 1 ROI = (Total annual savings &#x2212; Total Year 1 G8 cost) / Total Year 1 G8 cost</p>
+                  </div>
                 </div>
-              </div>
+              </span>
             </span>
-          </span>
-        </th>
-        <td id="roi_conservative"></td>
-        <td id="roi_typical"></td>
-        <td id="roi_high"></td>
-      </tr>
+          </th>
+          <td id="roi_conservative"></td>
+          <td id="roi_typical"></td>
+          <td id="roi_high"></td>
+        </tr>
 
-      <tr>
-        <th scope="row">
-          <span class="label-with-info">
-            Payback period (months)
-            <span class="info-wrap">
-              <button type="button" class="info-icon-btn" id="payback_info_btn"
-                      aria-label="Payback period formula information" aria-expanded="false" aria-controls="payback_info_popover">
-                <span class="info-glyph" aria-hidden="true">i</span>
-              </button>
-              <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
-                <div class="popover-section">
-                  <div class="popover-title">Payback period formula</div>
-                  <p class="popover-body">Payback period (months) = 12 &#x00D7; Total Year 1 G8 cost / Total annual savings</p>
+        <tr>
+          <th scope="row">
+            <span class="label-with-info">
+              Payback period (months)
+              <span class="info-wrap">
+                <button type="button" class="info-icon-btn" id="payback_info_btn"
+                        aria-label="Payback period formula information" aria-expanded="false" aria-controls="payback_info_popover">
+                  <span class="info-glyph" aria-hidden="true">i</span>
+                </button>
+                <div class="info-popover" id="payback_info_popover" role="dialog" aria-hidden="true">
+                  <div class="popover-section">
+                    <div class="popover-title">Payback period formula</div>
+                    <p class="popover-body">Payback period (months) = 12 &#x00D7; Total Year 1 G8 cost / Total annual savings</p>
+                  </div>
                 </div>
-              </div>
+              </span>
             </span>
-          </span>
-        </th>
-        <td id="payback_conservative"></td>
-        <td id="payback_typical"></td>
-        <td id="payback_high"></td>
-      </tr>
-      </tbody>
-    </table>
+          </th>
+          <td id="payback_conservative"></td>
+          <td id="payback_typical"></td>
+          <td id="payback_high"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div class="disclaimer-row">
       <button
@@ -1400,36 +1448,32 @@
 (function () {
   'use strict';
 
-  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     Key changes implemented (within scope):
-     1) NET ROI: (Savings - Cost) / Cost + popover updated
-     2) Payback: standard payback 12 * Cost / Savings + popover updated
-     3) Currency switching: preserve user-edited G8 pricing per currency (no data loss)
-     4) Reset: true baseline captured from initial DOM (before any currency application)
-     5) Input safety: clamp non-negative fields in JS
-     6) Popover positioning: measure inside requestAnimationFrame
-     7) Slider perf: light debounce on slider-driven recalcs
-     NOTE: Admin savings logic left as originally labeled (per device per week) to avoid scope expansion.
-     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-
   var currentCurrency = 'USD';
 
   var currencyInfoMap = {
-  USD: { code: 'USD', symbol: '\u0024' },   // $
-  CAD: { code: 'CAD', symbol: '\u0024' },   // $
-  EUR: { code: 'EUR', symbol: '\u20AC' },   // â‚¬
-  GBP: { code: 'GBP', symbol: '\u00A3' },   // Â£
-  AUD: { code: 'AUD', symbol: '\u0024' }    // $
-};
+    USD: { code: 'USD', symbol: '\u0024' },   // $
+    CAD: { code: 'CAD', symbol: '\u0024' },   // $
+    EUR: { code: 'EUR', symbol: '\u20AC' },   // €
+    GBP: { code: 'GBP', symbol: '\u00A3' },   // £
+    AUD: { code: 'AUD', symbol: '\u0024' }    // $
+  };
 
   function getCurrencyInfo() {
     return currencyInfoMap[currentCurrency] || currencyInfoMap.USD;
   }
 
-  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     NEW: ensure explanatory/help text never shows the wrong symbol
-     (no FX conversion; symbol swap only)
-     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ✅ Helper: determine “mobile layout” (keeps behavior consistent with CSS breakpoint) */
+  function isMobile() {
+    return window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  }
+
+  /* ✅ Backdrop helpers (for mobile popover bottom sheet) */
+  function showBackdrop(show) {
+    var backdrop = document.getElementById('popover_backdrop');
+    if (!backdrop) return;
+    backdrop.hidden = !show;
+  }
+
   function updateExplanatoryCurrencySymbols() {
     var info = getCurrencyInfo();
     var sym = info.symbol;
@@ -1453,8 +1497,8 @@
 
         // Replace any hard-coded currency symbols in explanatory text
         if (/[\u00A3\u20AC\u0024]/.test(t)) {
-  node.nodeValue = t.replace(/[\u00A3\u20AC\u0024]/g, sym);
-}
+          node.nodeValue = t.replace(/[\u00A3\u20AC\u0024]/g, sym);
+        }
       }
     });
   }
@@ -1486,7 +1530,6 @@
     label = document.getElementById('label_addon_emergency_voice');
     if (label) label.textContent = 'Emergency Voice per device (annual, ' + code + ')';
 
-    // NEW: update all tooltip/explanation/popover currency symbols
     updateExplanatoryCurrencySymbols();
   }
 
@@ -1526,14 +1569,6 @@
     if (el) el.textContent = text;
   }
 
-  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     Legacy competitor/benchmark fields FX (from original USD baseline):
-       - cost_radio
-       - cost_legacy_detector
-       - cost_lone_worker
-     Apply FX on currency switch ONLY if user has not manually edited the field.
-     FX values are rounded UP to the next 10.
-     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var legacyFxFromUsd = { USD: 1, CAD: 1.37, AUD: 1.44, GBP: 0.74, EUR: 0.85 };
   var legacyBaselineUSD = { cost_radio: 0, cost_legacy_detector: 0, cost_lone_worker: 0 };
   var legacyTouched = { cost_radio: false, cost_legacy_detector: false, cost_lone_worker: false };
@@ -1559,12 +1594,6 @@
     }
   }
 
-  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-     G8 pricing by currency (ONLY these 5 fields auto-update)
-     Now with per-currency preservation of user edits:
-       - If the user edits CAD G8 values, switching away and back keeps them.
-       - If a currency has never been visited, we seed from your table (or USD baseline for USD).
-     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   var g8PricingSeed = {
     USD: null, // seeded from initial DOM on load
     AUD: { hardware_cost: 1200, subscription_cost: 984, addon_ptt: 576, addon_monitoring: 864, addon_emergency_voice: 744 },
@@ -1574,7 +1603,6 @@
   };
 
   var g8ValuesByCurrency = {}; // { USD: {...}, CAD: {...}, ... }
-  var g8FieldIds = ['hardware_cost', 'subscription_cost', 'addon_ptt', 'addon_monitoring', 'addon_emergency_voice'];
 
   function readG8Fields() {
     return {
@@ -1599,11 +1627,9 @@
     if (g8ValuesByCurrency[code]) return;
 
     if (code === 'USD') {
-      // USD is seeded from initial DOM baseline
       if (g8PricingSeed.USD) {
         g8ValuesByCurrency.USD = Object.assign({}, g8PricingSeed.USD);
       } else {
-        // fallback (shouldn't happen)
         g8ValuesByCurrency.USD = readG8Fields();
       }
       return;
@@ -1619,16 +1645,9 @@
   }
 
   function switchCurrency(nextCode) {
-    // Save current currency's user edits before switching
     persistCurrentG8ForCurrency(currentCurrency);
-
-    // Ensure next currency has values
     ensureG8CurrencySeeded(nextCode);
-
-    // Apply next currency values to ONLY G8 fields
     writeG8Fields(g8ValuesByCurrency[nextCode]);
-
-    // Apply FX to legacy fields (from original USD baseline) ONLY if user hasn't edited them
     applyLegacyFxForCurrency(nextCode);
 
     currentCurrency = nextCode;
@@ -1650,7 +1669,6 @@
     slider.style.setProperty('--pct', v + '%');
   }
 
-  /* Light debounce for slider-driven recalcs */
   var recalcTimer = null;
   function debouncedRecalc() {
     if (recalcTimer) clearTimeout(recalcTimer);
@@ -1670,7 +1688,6 @@
   }
 
   function recalc() {
-    // clamp all â€œmust not be negativeâ€ numeric fields
     var numDevices      = clampNonNeg(parseNumber('num_workers'));
     var hourlyCost      = clampNonNeg(parseNumber('hourly_cost'));
     var costRadio       = clampNonNeg(parseNumber('cost_radio'));
@@ -1708,7 +1725,6 @@
       }
     };
 
-    // Non-blocking warnings for common â€œ0â€ edge cases
     var warnings = [];
     if (numDevices === 0) warnings.push('Number of devices is 0 (savings and costs will show as $0).');
     if (hourlyCost === 0) warnings.push('Hourly labour cost is 0 (time-based savings will show as $0).');
@@ -1716,14 +1732,12 @@
     if (weeksPerYear === 0) warnings.push('Weeks per year is 0 (admin savings will show as $0).');
     setWarning(warnings.length ? warnings.join(' ') : '');
 
-    // Coverage-adjusted consolidation savings (annual)
     var deviceConsolidation = numDevices * (
       (costRadio    * pctReplaceRadio) +
       (costDetector * pctReplaceDetector) +
       (costLW       * pctReplaceLW)
     );
 
-    // Total Year 1 G8 cost
     var totalYear1G8Cost = numDevices * (hwCost + planCost + addonPTT + addonMonitoring + addonEmergencyVoice) + otherCosts;
 
     Object.keys(scenarios).forEach(function (key) {
@@ -1731,18 +1745,15 @@
 
       var workerTimeSavings = numDevices * (s.minutesPerDay / 60) * workdaysPerYear * hourlyCost;
 
-      // NOTE: kept as originally labeled: "per device per week" => multiply by numDevices
       var adminSavings      = numDevices * (s.adminMinutesPerWeek / 60) * weeksPerYear * hourlyCost;
 
       var gasSavings        = numDevices * s.gasSavings;
 
       var totalSavings = workerTimeSavings + adminSavings + gasSavings + deviceConsolidation;
 
-      // NET ROI (finance-style)
       var netGain = totalSavings - totalYear1G8Cost;
       var roiDisplay = (totalYear1G8Cost === 0) ? 'N/A' : formatPercent(netGain / totalYear1G8Cost);
 
-      // Standard payback (months): investment / annual savings
       var paybackDisplay = (totalSavings <= 0) ? 'N/A' : formatMonths(12 * totalYear1G8Cost / totalSavings);
 
       var suffix = '_' + key;
@@ -1758,7 +1769,6 @@
     });
   }
 
-  /* â”€â”€ Popover registry & helpers â”€â”€ */
   var popoverRegistry = [];
 
   function closeAllPopovers(exceptPopoverEl) {
@@ -1780,29 +1790,31 @@
     function closePopover() {
       pop.setAttribute('aria-hidden', 'true');
       btn.setAttribute('aria-expanded', 'false');
+      showBackdrop(false);
     }
 
     function openPopover() {
       closeAllPopovers(pop);
 
-      // reset any previous positioning states
       pop.classList.remove('is-flip-left', 'is-below');
 
       pop.setAttribute('aria-hidden', 'false');
       btn.setAttribute('aria-expanded', 'true');
 
-      // measure after reflow (prevents stale rects)
+      if (isMobile()) {
+        showBackdrop(true);
+        return; // ✅ no positioning logic on mobile (bottom sheet CSS handles it)
+      }
+
       requestAnimationFrame(function () {
         var rect = pop.getBoundingClientRect();
         var padding = 16;
 
-        // If it overflows the right edge, flip to the left
         if (rect.right > (window.innerWidth - padding)) {
           pop.classList.add('is-flip-left');
           rect = pop.getBoundingClientRect();
         }
 
-        // If near bottom edge, drop below
         if (rect.bottom > (window.innerHeight - padding)) {
           pop.classList.add('is-below');
         }
@@ -1822,9 +1834,15 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closePopover();
     });
+
+    var backdrop = document.getElementById('popover_backdrop');
+    if (backdrop) {
+      backdrop.addEventListener('click', function () {
+        closePopover();
+      });
+    }
   }
 
-  /* â”€â”€ Tabs (works for any container id) â”€â”€ */
   function setupPopoverTabs(containerId) {
     var container = document.getElementById(containerId);
     if (!container) return;
@@ -1864,7 +1882,6 @@
     });
   }
 
-  /* â”€â”€ Inline details toggles â”€â”€ */
   function setupInlineDetails(openBtnId, closeBtnId, rowId, popoverId, popoverBtnId) {
     var openBtn  = document.getElementById(openBtnId);
     var closeBtn = document.getElementById(closeBtnId);
@@ -1877,10 +1894,10 @@
     function openRow() {
       row.hidden = false;
       openBtn.setAttribute('aria-expanded', 'true');
-      // close the popover if it exists
       if (pop && popBtn) {
         pop.setAttribute('aria-hidden', 'true');
         popBtn.setAttribute('aria-expanded', 'false');
+        showBackdrop(false);
       }
       row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
@@ -1904,7 +1921,6 @@
     });
   }
 
-  /* â”€â”€ Disclaimer toggle â”€â”€ */
   function setupDisclaimerToggle(btnId, panelId) {
     var btn   = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
@@ -1918,6 +1934,7 @@
         btn.setAttribute('aria-expanded', 'false');
       } else {
         closeAllPopovers(null);
+        showBackdrop(false);
         panel.hidden = false;
         btn.setAttribute('aria-expanded', 'true');
       }
@@ -1952,23 +1969,19 @@
     });
   }
 
-  /* â”€â”€ Bootstrap â”€â”€ */
   document.addEventListener('DOMContentLoaded', function () {
-    // 1) Capture true baseline values BEFORE doing any currency application
     var baselineValues = {};
     var inputs = document.querySelectorAll('input');
     inputs.forEach(function (input) {
       if (input.id) baselineValues[input.id] = input.value;
     });
 
-    // Baseline USD values for legacy competitor fields
     legacyBaselineUSD = {
       cost_radio: clampNonNeg(parseFloat(baselineValues.cost_radio || '0')),
       cost_legacy_detector: clampNonNeg(parseFloat(baselineValues.cost_legacy_detector || '0')),
       cost_lone_worker: clampNonNeg(parseFloat(baselineValues.cost_lone_worker || '0'))
     };
 
-    // Mark legacy fields as "touched" if user edits them (prevents FX overwrite)
     var legacyIds = ['cost_radio', 'cost_legacy_detector', 'cost_lone_worker'];
     legacyIds.forEach(function (id) {
       var el = document.getElementById(id);
@@ -1978,7 +1991,6 @@
       });
     });
 
-    // 2) Seed USD G8 pricing from baseline DOM values (true baseline)
     g8PricingSeed.USD = {
       hardware_cost: clampNonNeg(parseFloat(baselineValues.hardware_cost || '0')),
       subscription_cost: clampNonNeg(parseFloat(baselineValues.subscription_cost || '0')),
@@ -1988,42 +2000,34 @@
     };
     ensureG8CurrencySeeded('USD');
 
-    // 3) Wire non-range inputs to recalc
     inputs.forEach(function (input) {
       if (input.type !== 'range') {
         input.addEventListener('input', recalc);
       }
     });
 
-    // Reset button (resets ALL inputs to baseline, keeps selected currency, then re-applies currency logic)
     var resetBtn = document.getElementById('reset_baseline_btn');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
-        // Keep currently selected currency (do NOT force USD)
         var currencySelect = document.getElementById('currency_select');
         var keepCurrency = (currencySelect && currencySelect.value) ? currencySelect.value : currentCurrency;
 
-        // Reset all inputs to initial baseline
         Object.keys(baselineValues).forEach(function (id) {
           var el = document.getElementById(id);
           if (el) el.value = baselineValues[id];
         });
 
-        // Reset legacy touched flags so FX can apply again post-reset
         legacyTouched.cost_radio = false;
         legacyTouched.cost_legacy_detector = false;
         legacyTouched.cost_lone_worker = false;
 
-        // Clear any stored per-currency user edits and reseed USD
         g8ValuesByCurrency = {};
         ensureG8CurrencySeeded('USD');
 
-        // Apply kept currency context (includes G8 per-currency values + legacy FX if untouched)
         currentCurrency = 'USD';
         if (currencySelect) currencySelect.value = keepCurrency;
         switchCurrency(keepCurrency);
 
-        // Re-sync slider pills + fills
         setSliderValue('pct_replace_radio', 'pct_replace_radio_value');
         setSliderValue('pct_replace_detector', 'pct_replace_detector_value');
         setSliderValue('pct_replace_lw', 'pct_replace_lw_value');
@@ -2036,17 +2040,13 @@
       });
     }
 
-    // Currency selector
     var currencySelect = document.getElementById('currency_select');
     if (currencySelect) {
-      // Start from whatever is selected in DOM (default USD)
       currentCurrency = currencySelect.value || 'USD';
 
-      // Ensure current currency is seeded, then write fields (keeps baseline for USD)
       ensureG8CurrencySeeded(currentCurrency);
       writeG8Fields(g8ValuesByCurrency[currentCurrency]);
 
-      // Apply legacy FX for the initial currency (if untouched)
       applyLegacyFxForCurrency(currentCurrency);
 
       currencySelect.addEventListener('change', function () {
@@ -2057,7 +2057,6 @@
       });
     }
 
-    /* wire up every popover */
     setupPopover('currency_info_btn',             'currency_info_popover');
     setupPopover('num_workers_info_btn',          'num_workers_info_popover');
     setupPopover('hourly_cost_info_btn',          'hourly_cost_info_popover');
@@ -2082,24 +2081,27 @@
     setupPopover('roi_info_btn',                  'roi_info_popover');
     setupPopover('payback_info_btn',              'payback_info_popover');
 
-    /* tabs in inline details panels */
     setupPopoverTabs('admin_details_panel');
     setupPopoverTabs('gas_details_panel');
 
-    /* inline details toggles */
     setupInlineDetails('minutes_details_open_btn', 'minutes_details_close_btn', 'minutes_details_row', 'minutes_saved_info_popover', 'minutes_saved_info_btn');
     setupInlineDetails('admin_details_open_btn', 'admin_details_close_btn', 'admin_details_row', 'admin_minutes_week_info_popover', 'admin_minutes_week_info_btn');
     setupInlineDetails('gas_details_open_btn',   'gas_details_close_btn',   'gas_details_row',   'gas_savings_info_popover',        'gas_savings_info_btn');
 
-    /* disclaimer */
     setupDisclaimerToggle('disclaimer_btn', 'disclaimer_panel');
 
-    /* sliders */
     setupSlider('pct_replace_radio', 'pct_replace_radio_value');
     setupSlider('pct_replace_detector', 'pct_replace_detector_value');
     setupSlider('pct_replace_lw', 'pct_replace_lw_value');
 
-    /* initial render */
+    /* ✅ Close popovers on resize/orientation/scroll to avoid mobile “stuck” or mispositioned popovers */
+    ['resize', 'orientationchange', 'scroll'].forEach(function (evt) {
+      window.addEventListener(evt, function () {
+        closeAllPopovers(null);
+        showBackdrop(false);
+      }, { passive: true });
+    });
+
     updateCurrencyLabels();
     recalc();
   });
